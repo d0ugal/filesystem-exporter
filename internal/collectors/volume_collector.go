@@ -207,6 +207,8 @@ func (fc *FilesystemCollector) collectFilesystemUsage(filesystem config.Filesyst
 		// Multi-line format: size is in parts[0], available in parts[2]
 		if len(parts) >= 3 {
 			availableKB, parseErr = strconv.ParseInt(parts[2], 10, 64)
+		} else {
+			return fmt.Errorf("insufficient fields in multi-line format, expected at least 3, got %d", len(parts))
 		}
 	} else {
 		// Single-line format: size is in parts[1], available in parts[3]
@@ -216,6 +218,11 @@ func (fc *FilesystemCollector) collectFilesystemUsage(filesystem config.Filesyst
 				return fmt.Errorf("failed to parse size: %w", parseErr)
 			}
 			availableKB, parseErr = strconv.ParseInt(parts[3], 10, 64)
+			if parseErr != nil {
+				return fmt.Errorf("failed to parse available space in single-line format: %w", parseErr)
+			}
+		} else {
+			return fmt.Errorf("insufficient fields in single-line format, expected at least 4, got %d", len(parts))
 		}
 	}
 
