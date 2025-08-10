@@ -50,4 +50,4 @@ jobs:
             draft: ${{ steps.release_please.outputs.draft }},
             prerelease: ${{ steps.release_please.outputs.prerelease }}
           });
-          console.log(`Created release: ${release.html_url}`);
+          console.log('Created release: ' + release.html_url);

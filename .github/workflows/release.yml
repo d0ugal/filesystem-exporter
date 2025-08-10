@@ -116,7 +116,7 @@ jobs:
             release_id: context.payload.release.id
           });
           
-          const notes = `${{ steps.release_notes.outputs.release_notes }}`;
+          const notes = '${{ steps.release_notes.outputs.release_notes }}';
           
           await github.rest.repos.updateRelease({
             owner: context.repo.owner,
