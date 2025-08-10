@@ -1,0 +1,30 @@
+name: Release Please
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release_please.outputs.release_created }}
+      upload_url: ${{ steps.release_please.outputs.upload_url }}
+      tag_name: ${{ steps.release_please.outputs.tag_name }}
+      name: ${{ steps.release_please.outputs.name }}
+      body: ${{ steps.release_please.outputs.body }}
+      draft: ${{ steps.release_please.outputs.draft }}
+      prerelease: ${{ steps.release_please.outputs.prerelease }}
+
+    steps:
+    - uses: google-github-actions/release-please-action@v4
+      id: release_please
+      with:
+        release-type: go
+        package-name: filesystem-exporter
+        bump-minor-pre-major: true
+        bump-patch-for-minor-pre-major: true
+        include-component-in-tag: false
+        include-v-in-tag: true
+        command: release
+        token: ${{ secrets.GITHUB_TOKEN }}

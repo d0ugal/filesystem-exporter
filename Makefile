@@ -102,6 +102,19 @@ release-build:
 	@echo "Building release version..."
 	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o $(BINARY_NAME) ./cmd/main.go
 
+# Run CI checks locally
+ci: fmt lint test security-scan
+	@echo "CI checks completed successfully"
+
+# Run security scan
+security-scan:
+	@echo "Running security scan..."
+	@if command -v trivy >/dev/null 2>&1; then \
+		trivy fs .; \
+	else \
+		echo "Trivy not found. Install with: go install github.com/aquasecurity/trivy/cmd/trivy@latest"; \
+	fi
+
 # Show help
 help:
 	@echo "Available targets:"
@@ -122,4 +135,6 @@ help:
 	@echo "  install-tools  - Install development tools"
 	@echo "  check          - Run fmt, lint, and test"
 	@echo "  release-build  - Build optimized release version"
+	@echo "  ci             - Run CI checks locally"
+	@echo "  security-scan  - Run security scan"
 	@echo "  help           - Show this help message" 
