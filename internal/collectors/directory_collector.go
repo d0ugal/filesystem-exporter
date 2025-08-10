@@ -36,6 +36,7 @@ func (dc *DirectoryCollector) Start(ctx context.Context) {
 func (dc *DirectoryCollector) run(ctx context.Context) {
 	// Create individual tickers for each directory
 	tickers := make(map[string]*time.Ticker)
+
 	defer func() {
 		for _, ticker := range tickers {
 			ticker.Stop()
@@ -79,12 +80,13 @@ func (dc *DirectoryCollector) collectSingleDirectory(groupName string, group con
 	err := dc.retryWithBackoff(func() error {
 		return dc.collectDirectoryGroup(groupName, group, collectionType)
 	}, 3, 2*time.Second)
-
 	if err != nil {
 		slog.Error("Failed to collect directory group metrics after retries", "group", groupName, "error", err)
 		dc.metrics.CollectionFailedCounter().WithLabelValues(collectionType, groupName).Inc()
+
 		return
 	}
+
 	dc.metrics.CollectionSuccessCounter().WithLabelValues(collectionType, groupName).Inc()
 
 	duration := time.Since(startTime).Seconds()
@@ -97,6 +99,7 @@ func (dc *DirectoryCollector) collectSingleDirectory(groupName string, group con
 // retryWithBackoff implements exponential backoff retry logic
 func (dc *DirectoryCollector) retryWithBackoff(operation func() error, maxRetries int, initialDelay time.Duration) error {
 	var lastErr error
+
 	delay := initialDelay
 
 	for attempt := 0; attempt <= maxRetries; attempt++ {
@@ -142,8 +145,11 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(groupName, path, collec
 
 	// Track lock waiting time
 	lockWaitStart := time.Now()
+
 	dc.duMutex.Lock()
+
 	lockWaitDuration := time.Since(lockWaitStart)
+
 	defer dc.duMutex.Unlock()
 
 	// Record lock wait duration
@@ -155,6 +161,7 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(groupName, path, collec
 	// -s: summarize only
 	// -x: don't cross filesystem boundaries (faster)
 	cmd := exec.CommandContext(ctx, "du", "-s", "-x", path)
+
 	output, err := cmd.Output()
 	if err != nil {
 		dc.metrics.DirectoriesFailedCounter().WithLabelValues(groupName, "du").Inc()
@@ -240,6 +247,7 @@ func (dc *DirectoryCollector) collectSubdirectories(groupName string, group conf
 		} else {
 			depth = len(pathComponents) // Each component represents one level of depth
 		}
+
 		if !d.IsDir() {
 			depth++ // Files are at depth + 1
 		}
@@ -258,7 +266,6 @@ func (dc *DirectoryCollector) collectSubdirectories(groupName string, group conf
 
 		return nil
 	})
-
 	if err != nil {
 		dc.metrics.DirectoriesFailedCounter().WithLabelValues(groupName, "walk").Inc()
 		return fmt.Errorf("failed to walk directory tree for %s: %w", group.Path, err)

@@ -9,7 +9,6 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
-
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -33,6 +32,7 @@ func customGinLogger() gin.HandlerFunc {
 			"client_ip", param.ClientIP,
 			"user_agent", param.Request.UserAgent(),
 		)
+
 		return "" // Return empty string since slog handles the output
 	})
 }
@@ -49,6 +49,7 @@ func New(cfg *config.Config, registry *metrics.Registry) *Server {
 	}
 
 	srv.setupRoutes()
+
 	return srv
 }
 
@@ -229,6 +230,7 @@ func (s *Server) Start() error {
 	}
 
 	slog.Info("Starting server", "address", addr)
+
 	return s.server.ListenAndServe()
 }
 

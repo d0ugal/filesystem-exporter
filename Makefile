@@ -1,12 +1,13 @@
-.PHONY: help build test lint clean fmt
+.PHONY: help build test lint clean fmt lint-only
 
 # Default target
 help:
 	@echo "Available targets:"
 	@echo "  build    - Build the application"
 	@echo "  test     - Run tests"
-	@echo "  lint     - Run golangci-lint using official container"
-	@echo "  fmt      - Format code using gofmt and goimports"
+	@echo "  lint     - Format code and run golangci-lint"
+	@echo "  fmt      - Format code using gofmt, goimports, and golangci-lint"
+	@echo "  lint-only - Run golangci-lint without formatting"
 	@echo "  clean    - Clean build artifacts"
 
 # Build the application
@@ -17,18 +18,32 @@ build:
 test:
 	go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
 
-# Run golangci-lint using official container
+# Format code using gofmt, goimports, and golangci-lint formatters
+fmt:
+	go fmt ./...
+	goimports -w .
+	docker run --rm \
+		-v "$(PWD):/app" \
+		-w /app \
+		golangci/golangci-lint:latest \
+		golangci-lint run --fix
+
+# Run golangci-lint using official container (formats first, then lints)
 lint:
+	make fmt
 	docker run --rm \
 		-v "$(PWD):/app" \
 		-w /app \
 		golangci/golangci-lint:latest \
 		golangci-lint run
 
-# Format code using gofmt and goimports
-fmt:
-	go fmt ./...
-	goimports -w .
+# Run only linting without formatting
+lint-only:
+	docker run --rm \
+		-v "$(PWD):/app" \
+		-w /app \
+		golangci/golangci-lint:latest \
+		golangci-lint run
 
 # Clean build artifacts
 clean:

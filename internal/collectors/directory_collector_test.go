@@ -2,13 +2,14 @@ package collectors
 
 import (
 	"context"
-	"filesystem-exporter/internal/config"
-	"filesystem-exporter/internal/metrics"
 	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
 	"time"
+
+	"filesystem-exporter/internal/config"
+	"filesystem-exporter/internal/metrics"
 )
 
 func TestDepthCalculation(t *testing.T) {
@@ -75,6 +76,7 @@ func TestDepthCalculation(t *testing.T) {
 
 			// Test the NEW method (what we have now)
 			pathComponents := strings.Split(relPath, string(filepath.Separator))
+
 			var newDepth int
 			if len(pathComponents) == 1 && pathComponents[0] == "." {
 				newDepth = 0
@@ -142,6 +144,7 @@ func TestDepthCalculationEdgeCases(t *testing.T) {
 			}
 
 			pathComponents := strings.Split(relPath, string(filepath.Separator))
+
 			var depth int
 			if len(pathComponents) == 1 && pathComponents[0] == "." {
 				depth = 0
@@ -180,11 +183,13 @@ func TestDirectoryCollectorMutex(t *testing.T) {
 
 	// Test that mutex prevents concurrent du operations
 	var wg sync.WaitGroup
+
 	startTime := time.Now()
 
 	// Start multiple goroutines that would normally run du concurrently
 	for i := 0; i < 3; i++ {
 		wg.Add(1)
+
 		go func(id int) {
 			defer wg.Done()
 			// This will try to acquire the mutex
@@ -196,6 +201,7 @@ func TestDirectoryCollectorMutex(t *testing.T) {
 	}
 
 	wg.Wait()
+
 	duration := time.Since(startTime)
 
 	// If the mutex is working correctly, operations should be serialized
@@ -255,6 +261,7 @@ func TestDirectoryCollectorConcurrency(t *testing.T) {
 	if collector.config == nil {
 		t.Error("Collector config should not be nil")
 	}
+
 	if collector.metrics == nil {
 		t.Error("Collector metrics should not be nil")
 	}
@@ -283,6 +290,7 @@ func TestLockWaitDurationMetric(t *testing.T) {
 	// Start multiple goroutines to create lock contention
 	for i := 0; i < 3; i++ {
 		wg.Add(1)
+
 		go func(id int) {
 			defer wg.Done()
 			// This will try to acquire the mutex and record wait time

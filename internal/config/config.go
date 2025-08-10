@@ -27,6 +27,7 @@ func (d *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		if err != nil {
 			return fmt.Errorf("invalid duration format '%s': %w", v, err)
 		}
+
 		d.Duration = duration
 	case int:
 		// Backward compatibility: treat as seconds
@@ -120,15 +121,19 @@ func Load(path string) (*Config, error) {
 	if config.Server.Host == "" {
 		config.Server.Host = "0.0.0.0"
 	}
+
 	if config.Server.Port == 0 {
 		config.Server.Port = 8080
 	}
+
 	if config.Logging.Level == "" {
 		config.Logging.Level = "info"
 	}
+
 	if config.Logging.Format == "" {
 		config.Logging.Format = "json"
 	}
+
 	if !config.Metrics.Collection.DefaultIntervalSet {
 		config.Metrics.Collection.DefaultInterval = Duration{time.Second * 300}
 	}
@@ -175,6 +180,7 @@ func (c *Config) validateServerConfig() error {
 	if c.Server.Port < 1 || c.Server.Port > 65535 {
 		return fmt.Errorf("port must be between 1 and 65535, got %d", c.Server.Port)
 	}
+
 	return nil
 }
 
@@ -204,9 +210,11 @@ func (c *Config) validateMetricsConfig() error {
 	if c.Metrics.Collection.DefaultInterval.Seconds() < 1 {
 		return fmt.Errorf("default interval must be at least 1 second, got %d", c.Metrics.Collection.DefaultInterval.Seconds())
 	}
+
 	if c.Metrics.Collection.DefaultInterval.Seconds() > 86400 {
 		return fmt.Errorf("default interval must be at most 86400 seconds (24 hours), got %d", c.Metrics.Collection.DefaultInterval.Seconds())
 	}
+
 	return nil
 }
 
@@ -223,21 +231,26 @@ func (c *Config) validateFilesystems() error {
 		if fs.Name == "" {
 			return fmt.Errorf("filesystem %d: name is required", i)
 		}
+
 		if seenNames[fs.Name] {
 			return fmt.Errorf("filesystem %d: duplicate name '%s'", i, fs.Name)
 		}
+
 		seenNames[fs.Name] = true
 
 		// Validate mount point
 		if fs.MountPoint == "" {
 			return fmt.Errorf("filesystem %d: mount_point is required", i)
 		}
+
 		if !filepath.IsAbs(fs.MountPoint) {
 			return fmt.Errorf("filesystem %d: mount_point must be absolute path, got '%s'", i, fs.MountPoint)
 		}
+
 		if seenMountPoints[fs.MountPoint] {
 			return fmt.Errorf("filesystem %d: duplicate mount_point '%s'", i, fs.MountPoint)
 		}
+
 		seenMountPoints[fs.MountPoint] = true
 
 		// Validate device
@@ -250,6 +263,7 @@ func (c *Config) validateFilesystems() error {
 			if fs.Interval.Seconds() < 1 {
 				return fmt.Errorf("filesystem %d: interval must be at least 1 second, got %d", i, fs.Interval.Seconds())
 			}
+
 			if fs.Interval.Seconds() > 86400 {
 				return fmt.Errorf("filesystem %d: interval must be at most 86400 seconds (24 hours), got %d", i, fs.Interval.Seconds())
 			}
@@ -281,18 +295,22 @@ func (c *Config) validateDirectories() error {
 		if dir.Path == "" {
 			return fmt.Errorf("directory '%s': path is required", name)
 		}
+
 		if !filepath.IsAbs(dir.Path) {
 			return fmt.Errorf("directory '%s': path must be absolute, got '%s'", name, dir.Path)
 		}
+
 		if seenPaths[dir.Path] {
 			return fmt.Errorf("directory '%s': duplicate path '%s'", name, dir.Path)
 		}
+
 		seenPaths[dir.Path] = true
 
 		// Validate subdirectory levels
 		if dir.SubdirectoryLevels < 0 {
 			return fmt.Errorf("directory '%s': subdirectory_levels must be non-negative, got %d", name, dir.SubdirectoryLevels)
 		}
+
 		if dir.SubdirectoryLevels > 10 {
 			return fmt.Errorf("directory '%s': subdirectory_levels must be at most 10, got %d", name, dir.SubdirectoryLevels)
 		}
@@ -302,6 +320,7 @@ func (c *Config) validateDirectories() error {
 			if dir.Interval.Seconds() < 1 {
 				return fmt.Errorf("directory '%s': interval must be at least 1 second, got %d", name, dir.Interval.Seconds())
 			}
+
 			if dir.Interval.Seconds() > 86400 {
 				return fmt.Errorf("directory '%s': interval must be at most 86400 seconds (24 hours), got %d", name, dir.Interval.Seconds())
 			}
@@ -321,6 +340,7 @@ func (c *Config) GetFilesystemInterval(fs FilesystemConfig) int {
 	if fs.Interval != nil {
 		return fs.Interval.Seconds()
 	}
+
 	return c.Metrics.Collection.DefaultInterval.Seconds()
 }
 
@@ -329,5 +349,6 @@ func (c *Config) GetDirectoryInterval(dir DirectoryGroup) int {
 	if dir.Interval != nil {
 		return dir.Interval.Seconds()
 	}
+
 	return c.Metrics.Collection.DefaultInterval.Seconds()
 }

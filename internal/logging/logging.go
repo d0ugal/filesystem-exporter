@@ -24,6 +24,7 @@ func Configure(cfg *config.LoggingConfig) {
 	}
 
 	var handler slog.Handler
+
 	switch cfg.Format {
 	case "json":
 		handler = slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{

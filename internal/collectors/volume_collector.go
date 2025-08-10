@@ -34,6 +34,7 @@ func (fc *FilesystemCollector) Start(ctx context.Context) {
 func (fc *FilesystemCollector) run(ctx context.Context) {
 	// Create individual tickers for each filesystem
 	tickers := make(map[string]*time.Ticker)
+
 	defer func() {
 		for _, ticker := range tickers {
 			ticker.Stop()
@@ -77,12 +78,13 @@ func (fc *FilesystemCollector) collectSingleFilesystem(filesystem config.Filesys
 	err := fc.retryWithBackoff(func() error {
 		return fc.collectFilesystemUsage(filesystem)
 	}, 3, 2*time.Second)
-
 	if err != nil {
 		slog.Error("Failed to collect filesystem metrics after retries", "filesystem", filesystem.Name, "error", err)
 		fc.metrics.CollectionFailedCounter().WithLabelValues(collectionType, filesystem.Name).Inc()
+
 		return
 	}
+
 	fc.metrics.CollectionSuccessCounter().WithLabelValues(collectionType, filesystem.Name).Inc()
 
 	duration := time.Since(startTime).Seconds()
@@ -95,6 +97,7 @@ func (fc *FilesystemCollector) collectSingleFilesystem(filesystem config.Filesys
 // retryWithBackoff implements exponential backoff retry logic
 func (fc *FilesystemCollector) retryWithBackoff(operation func() error, maxRetries int, initialDelay time.Duration) error {
 	var lastErr error
+
 	delay := initialDelay
 
 	for attempt := 0; attempt <= maxRetries; attempt++ {
@@ -128,6 +131,7 @@ func (fc *FilesystemCollector) collectFilesystemUsage(filesystem config.Filesyst
 	defer cancel()
 
 	cmd := exec.CommandContext(ctx, "df", sanitizedMountPoint)
+
 	output, err := cmd.Output()
 	if err != nil {
 		return fmt.Errorf("failed to execute df command: %w", err)
@@ -148,6 +152,7 @@ func (fc *FilesystemCollector) collectFilesystemUsage(filesystem config.Filesyst
 	// OR:     /dev/sdb1          239313084  27770148 211424152  12% /mnt/backup
 	// The filesystem name might be on a separate line, so we need to find the line with the stats
 	var statsLine string
+
 	for i := 1; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 		if line == "" {
@@ -199,10 +204,13 @@ func (fc *FilesystemCollector) collectFilesystemUsage(filesystem config.Filesyst
 	// Handle both formats:
 	// Single-line: /dev/usb1p1 239313084 27770148 211424152 12% /volumeUSB1/usbshare
 	// Multi-line:  16847009220 14430849176 2416160044 86% /mnt/data
-	var sizeKB, availableKB int64
-	var parseErr error
+	var (
+		sizeKB, availableKB int64
+		parseErr            error
+	)
 
 	// Try to parse the first field as a number
+
 	if sizeKB, parseErr = strconv.ParseInt(parts[0], 10, 64); parseErr == nil {
 		// Multi-line format: size is in parts[0], available in parts[2]
 		if len(parts) >= 3 {
@@ -217,6 +225,7 @@ func (fc *FilesystemCollector) collectFilesystemUsage(filesystem config.Filesyst
 			if parseErr != nil {
 				return fmt.Errorf("failed to parse size: %w", parseErr)
 			}
+
 			availableKB, parseErr = strconv.ParseInt(parts[3], 10, 64)
 			if parseErr != nil {
 				return fmt.Errorf("failed to parse available space in single-line format: %w", parseErr)

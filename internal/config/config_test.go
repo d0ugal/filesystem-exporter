@@ -44,6 +44,7 @@ directories:
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer func() {
 		if err := os.Remove(tmpfile.Name()); err != nil {
 			t.Logf("Failed to remove temp file: %v", err)
@@ -53,6 +54,7 @@ directories:
 	if _, err := tmpfile.WriteString(configData); err != nil {
 		t.Fatal(err)
 	}
+
 	if err := tmpfile.Close(); err != nil {
 		t.Fatal(err)
 	}
@@ -67,21 +69,27 @@ directories:
 	if cfg.Server.Host != "0.0.0.0" {
 		t.Errorf("Expected host '0.0.0.0', got '%s'", cfg.Server.Host)
 	}
+
 	if cfg.Server.Port != 8080 {
 		t.Errorf("Expected port 8080, got %d", cfg.Server.Port)
 	}
+
 	if cfg.Logging.Level != "info" {
 		t.Errorf("Expected level 'info', got '%s'", cfg.Logging.Level)
 	}
+
 	if cfg.Logging.Format != "json" {
 		t.Errorf("Expected format 'json', got '%s'", cfg.Logging.Format)
 	}
+
 	if cfg.Metrics.Collection.DefaultInterval.Seconds() != 300 { // 5m = 300s
 		t.Errorf("Expected default interval 300, got %d", cfg.Metrics.Collection.DefaultInterval.Seconds())
 	}
+
 	if len(cfg.Filesystems) != 2 {
 		t.Errorf("Expected 2 filesystems, got %d", len(cfg.Filesystems))
 	}
+
 	if len(cfg.Directories) != 2 {
 		t.Errorf("Expected 2 directories, got %d", len(cfg.Directories))
 	}
@@ -109,6 +117,7 @@ directories:
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer func() {
 		if err := os.Remove(tmpfile.Name()); err != nil {
 			t.Logf("Failed to remove temp file: %v", err)
@@ -118,6 +127,7 @@ directories:
 	if _, err := tmpfile.WriteString(configData); err != nil {
 		t.Fatal(err)
 	}
+
 	if err := tmpfile.Close(); err != nil {
 		t.Fatal(err)
 	}
@@ -132,12 +142,15 @@ directories:
 	if cfg.Server.Host != "0.0.0.0" {
 		t.Errorf("Expected default host '0.0.0.0', got '%s'", cfg.Server.Host)
 	}
+
 	if cfg.Server.Port != 8080 {
 		t.Errorf("Expected default port 8080, got %d", cfg.Server.Port)
 	}
+
 	if cfg.Logging.Level != "info" {
 		t.Errorf("Expected default level 'info', got '%s'", cfg.Logging.Level)
 	}
+
 	if cfg.Logging.Format != "json" {
 		t.Errorf("Expected default format 'json', got '%s'", cfg.Logging.Format)
 	}
@@ -163,6 +176,7 @@ server:
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer func() {
 		if err := os.Remove(tmpfile.Name()); err != nil {
 			t.Logf("Failed to remove temp file: %v", err)
@@ -172,6 +186,7 @@ server:
 	if _, err := tmpfile.WriteString(configData); err != nil {
 		t.Fatal(err)
 	}
+
 	if err := tmpfile.Close(); err != nil {
 		t.Fatal(err)
 	}
@@ -277,6 +292,7 @@ directories:
 			if err != nil {
 				t.Fatal(err)
 			}
+
 			defer func() {
 				if err := os.Remove(tmpfile.Name()); err != nil {
 					t.Logf("Failed to remove temp file: %v", err)
@@ -286,6 +302,7 @@ directories:
 			if _, err := tmpfile.WriteString(tt.config); err != nil {
 				t.Fatal(err)
 			}
+
 			if err := tmpfile.Close(); err != nil {
 				t.Fatal(err)
 			}
@@ -294,6 +311,7 @@ directories:
 			if tt.wantErr && err == nil {
 				t.Error("Expected validation error, got none")
 			}
+
 			if !tt.wantErr && err != nil {
 				t.Errorf("Unexpected error: %v", err)
 			}
@@ -319,6 +337,7 @@ func TestDurationParsing(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var d Duration
+
 			err := d.UnmarshalYAML(func(v interface{}) error {
 				*(v.(*interface{})) = tt.input
 				return nil
@@ -328,6 +347,7 @@ func TestDurationParsing(t *testing.T) {
 				if err == nil {
 					t.Errorf("expected error for input %s, got none", tt.input)
 				}
+
 				return
 			}
 
@@ -356,11 +376,11 @@ func TestDurationBackwardCompatibility(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var d Duration
+
 			err := d.UnmarshalYAML(func(v interface{}) error {
 				*(v.(*interface{})) = tt.input
 				return nil
 			})
-
 			if err != nil {
 				t.Errorf("unexpected error for input %d: %v", tt.input, err)
 				return
