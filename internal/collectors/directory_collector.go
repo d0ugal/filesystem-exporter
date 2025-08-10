@@ -50,7 +50,7 @@ func (dc *DirectoryCollector) run(ctx context.Context) {
 		tickers[groupName] = ticker
 
 		// Initial collection for this directory
-		dc.collectSingleDirectory(groupName, group)
+		dc.collectSingleDirectory(ctx, groupName, group)
 
 		// Start goroutine for this directory
 		go func(name string, dir config.DirectoryGroup) {
@@ -59,7 +59,7 @@ func (dc *DirectoryCollector) run(ctx context.Context) {
 				case <-ctx.Done():
 					return
 				case <-ticker.C:
-					dc.collectSingleDirectory(name, dir)
+					dc.collectSingleDirectory(ctx, name, dir)
 				}
 			}
 		}(groupName, group)
@@ -70,7 +70,7 @@ func (dc *DirectoryCollector) run(ctx context.Context) {
 	slog.Info("Directory collector stopped")
 }
 
-func (dc *DirectoryCollector) collectSingleDirectory(groupName string, group config.DirectoryGroup) {
+func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupName string, group config.DirectoryGroup) {
 	startTime := time.Now()
 	collectionType := "directory"
 
@@ -78,7 +78,7 @@ func (dc *DirectoryCollector) collectSingleDirectory(groupName string, group con
 
 	// Retry with exponential backoff
 	err := dc.retryWithBackoff(func() error {
-		return dc.collectDirectoryGroup(groupName, group, collectionType)
+		return dc.collectDirectoryGroup(ctx, groupName, group, collectionType)
 	}, 3, 2*time.Second)
 	if err != nil {
 		slog.Error("Failed to collect directory group metrics after retries", "group", groupName, "error", err)
@@ -118,29 +118,29 @@ func (dc *DirectoryCollector) retryWithBackoff(operation func() error, maxRetrie
 	return fmt.Errorf("operation failed after %d attempts: %w", maxRetries+1, lastErr)
 }
 
-func (dc *DirectoryCollector) collectDirectoryGroup(groupName string, group config.DirectoryGroup, collectionType string) error {
-	return dc.collectDirectorySizes(groupName, group, collectionType)
+func (dc *DirectoryCollector) collectDirectoryGroup(ctx context.Context, groupName string, group config.DirectoryGroup, collectionType string) error {
+	return dc.collectDirectorySizes(ctx, groupName, group, collectionType)
 }
 
-func (dc *DirectoryCollector) collectDirectorySizes(groupName string, group config.DirectoryGroup, collectionType string) error {
+func (dc *DirectoryCollector) collectDirectorySizes(ctx context.Context, groupName string, group config.DirectoryGroup, collectionType string) error {
 	if group.SubdirectoryLevels == 0 {
 		// Only collect the base directory
-		return dc.collectSingleDirectoryFile(groupName, group.Path, collectionType, 0)
+		return dc.collectSingleDirectoryFile(ctx, groupName, group.Path, collectionType, 0)
 	}
 
 	// Collect subdirectories recursively
-	return dc.collectSubdirectories(groupName, group, collectionType)
+	return dc.collectSubdirectories(ctx, groupName, group, collectionType)
 }
 
-func (dc *DirectoryCollector) collectSingleDirectoryFile(groupName, path, collectionType string, subdirectoryLevel int) error {
+func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, groupName, path, collectionType string, subdirectoryLevel int) error {
 	// Validate and sanitize path
 	if err := dc.validatePath(path); err != nil {
 		dc.metrics.DirectoriesFailedCounter().WithLabelValues(groupName, "validation").Inc()
 		return fmt.Errorf("path validation failed for %s: %w", path, err)
 	}
 
-	// Create context with timeout (30 seconds max)
-	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Minute)
+	// Create context with timeout (6 minutes max)
+	timeoutCtx, cancel := context.WithTimeout(ctx, 6*time.Minute)
 	defer cancel()
 
 	// Track lock waiting time
@@ -160,7 +160,7 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(groupName, path, collec
 	// Use du with performance optimizations for large directories
 	// -s: summarize only
 	// -x: don't cross filesystem boundaries (faster)
-	cmd := exec.CommandContext(ctx, "du", "-s", "-x", path)
+	cmd := exec.CommandContext(timeoutCtx, "du", "-s", "-x", path)
 
 	output, err := cmd.Output()
 	if err != nil {
@@ -198,7 +198,7 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(groupName, path, collec
 	return nil
 }
 
-func (dc *DirectoryCollector) collectSubdirectories(groupName string, group config.DirectoryGroup, collectionType string) error {
+func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupName string, group config.DirectoryGroup, collectionType string) error {
 	// Validate and sanitize base path
 	if err := dc.validatePath(group.Path); err != nil {
 		dc.metrics.DirectoriesFailedCounter().WithLabelValues(groupName, "validation").Inc()
@@ -206,7 +206,7 @@ func (dc *DirectoryCollector) collectSubdirectories(groupName string, group conf
 	}
 
 	// First, collect the base directory (level 0)
-	if err := dc.collectSingleDirectoryFile(groupName, group.Path, collectionType, 0); err != nil {
+	if err := dc.collectSingleDirectoryFile(ctx, groupName, group.Path, collectionType, 0); err != nil {
 		slog.Warn("Failed to collect base directory", "path", group.Path, "error", err)
 		// Continue with subdirectories even if base directory fails
 	}
@@ -255,7 +255,7 @@ func (dc *DirectoryCollector) collectSubdirectories(groupName string, group conf
 		// Only collect directories at the exact specified level
 		if depth == group.SubdirectoryLevels && d.IsDir() {
 			// Collect directory size
-			if err := dc.collectSingleDirectoryFile(groupName, path, collectionType, depth); err != nil {
+			if err := dc.collectSingleDirectoryFile(ctx, groupName, path, collectionType, depth); err != nil {
 				slog.Warn("Failed to collect subdirectory", "path", path, "error", err)
 				// Continue with other directories, don't fail the entire collection
 			}

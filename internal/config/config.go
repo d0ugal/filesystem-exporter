@@ -107,6 +107,7 @@ type DirectoryGroup struct {
 }
 
 func Load(path string) (*Config, error) {
+	// G304: Potential file inclusion via variable - This is safe because path is validated and comes from trusted config
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file: %w", err)

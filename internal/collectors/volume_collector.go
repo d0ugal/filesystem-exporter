@@ -48,7 +48,7 @@ func (fc *FilesystemCollector) run(ctx context.Context) {
 		tickers[filesystem.Name] = ticker
 
 		// Initial collection for this filesystem
-		fc.collectSingleFilesystem(filesystem)
+		fc.collectSingleFilesystem(ctx, filesystem)
 
 		// Start goroutine for this filesystem
 		go func(fs config.FilesystemConfig) {
@@ -57,7 +57,7 @@ func (fc *FilesystemCollector) run(ctx context.Context) {
 				case <-ctx.Done():
 					return
 				case <-ticker.C:
-					fc.collectSingleFilesystem(fs)
+					fc.collectSingleFilesystem(ctx, fs)
 				}
 			}
 		}(filesystem)
@@ -68,7 +68,7 @@ func (fc *FilesystemCollector) run(ctx context.Context) {
 	slog.Info("Filesystem collector stopped")
 }
 
-func (fc *FilesystemCollector) collectSingleFilesystem(filesystem config.FilesystemConfig) {
+func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, filesystem config.FilesystemConfig) {
 	startTime := time.Now()
 	collectionType := "filesystem"
 
@@ -76,7 +76,7 @@ func (fc *FilesystemCollector) collectSingleFilesystem(filesystem config.Filesys
 
 	// Retry with exponential backoff
 	err := fc.retryWithBackoff(func() error {
-		return fc.collectFilesystemUsage(filesystem)
+		return fc.collectFilesystemUsage(ctx, filesystem)
 	}, 3, 2*time.Second)
 	if err != nil {
 		slog.Error("Failed to collect filesystem metrics after retries", "filesystem", filesystem.Name, "error", err)
@@ -116,7 +116,7 @@ func (fc *FilesystemCollector) retryWithBackoff(operation func() error, maxRetri
 	return fmt.Errorf("operation failed after %d attempts: %w", maxRetries+1, lastErr)
 }
 
-func (fc *FilesystemCollector) collectFilesystemUsage(filesystem config.FilesystemConfig) error {
+func (fc *FilesystemCollector) collectFilesystemUsage(ctx context.Context, filesystem config.FilesystemConfig) error {
 	// Validate mount point
 	if err := fc.validateMountPoint(filesystem.MountPoint); err != nil {
 		return fmt.Errorf("mount point validation failed for %s: %w", filesystem.MountPoint, err)
@@ -127,10 +127,11 @@ func (fc *FilesystemCollector) collectFilesystemUsage(filesystem config.Filesyst
 
 	// Use df command to get filesystem information
 	// Create context with timeout (10 seconds max)
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	cmd := exec.CommandContext(ctx, "df", sanitizedMountPoint)
+	// G204: Subprocess launched with variable - This is safe because sanitizedMountPoint is validated and sanitized
+	cmd := exec.CommandContext(timeoutCtx, "df", sanitizedMountPoint)
 
 	output, err := cmd.Output()
 	if err != nil {

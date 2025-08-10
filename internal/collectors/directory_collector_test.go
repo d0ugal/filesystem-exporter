@@ -193,7 +193,7 @@ func TestDirectoryCollectorMutex(t *testing.T) {
 		go func(id int) {
 			defer wg.Done()
 			// This will try to acquire the mutex
-			err := collector.collectSingleDirectoryFile("test", "/tmp", "test", 0)
+			err := collector.collectSingleDirectoryFile(context.Background(), "test", "/tmp", "test", 0)
 			if err != nil {
 				t.Logf("Goroutine %d: Expected error for /tmp (likely doesn't exist), got: %v", id, err)
 			}
@@ -294,7 +294,7 @@ func TestLockWaitDurationMetric(t *testing.T) {
 		go func(id int) {
 			defer wg.Done()
 			// This will try to acquire the mutex and record wait time
-			err := collector.collectSingleDirectoryFile("test", "/tmp", "test", 0)
+			err := collector.collectSingleDirectoryFile(context.Background(), "test", "/tmp", "test", 0)
 			if err != nil {
 				t.Logf("Goroutine %d: Expected error for /tmp, got: %v", id, err)
 			}
