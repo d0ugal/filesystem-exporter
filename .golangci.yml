@@ -39,17 +39,16 @@ linters:
     - varnamelen  # Variable names fine
     - wsl  # Use wsl_v5 instead
     - gosec  # Security warnings are false positives for this codebase
-    - gofumpt  # Not critical
 
-lintersSettings:
-  contextcheck:
-    # Allow context to be passed implicitly in some cases
-    disable-enable-allowed: true
-  gosec:
-    # Allow some security warnings
-    excludes:
-      - G204  # Subprocess launched with variable - inputs are validated and sanitized
-      - G304  # Potential file inclusion via variable - path is validated and comes from trusted config
+  settings:
+    contextcheck:
+      # Allow context to be passed implicitly in some cases
+      disable-enable-allowed: true
+    gosec:
+      # Allow some security warnings
+      excludes:
+        - G204  # Subprocess launched with variable - inputs are validated and sanitized
+        - G304  # Potential file inclusion via variable - path is validated and comes from trusted config
 
 formatters:
   enable:
