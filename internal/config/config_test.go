@@ -196,7 +196,7 @@ metrics:
   collection:
     default_interval_seconds: 300
 filesystems:
-  - name: "volume1"
+  - name: "root"
     mount_point: "/tmp"
     device: "sda1"
 `,
