@@ -108,6 +108,8 @@ jobs:
 
     - name: Update release description
       uses: actions/github-script@v7
+      env:
+        RELEASE_NOTES: ${{ steps.release_notes.outputs.release_notes }}
       with:
         script: |
           const { data: release } = await github.rest.repos.getRelease({
@@ -116,7 +118,7 @@ jobs:
             release_id: context.payload.release.id
           });
           
-          const notes = '${{ steps.release_notes.outputs.release_notes }}';
+          const notes = process.env.RELEASE_NOTES;
           
           await github.rest.repos.updateRelease({
             owner: context.repo.owner,
