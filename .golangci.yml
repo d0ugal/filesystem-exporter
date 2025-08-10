@@ -1,5 +1,12 @@
+version: "2"
+
+output:
+  show-stats: true
+  sort-order:
+    - file
+    - linter
+
 run:
-  version: 2
   timeout: 5m
   go: "1.23"
 
