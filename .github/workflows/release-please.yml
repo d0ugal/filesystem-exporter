@@ -33,3 +33,5 @@ jobs:
         release-type: go
         path: .
         token: ${{ secrets.GITHUB_TOKEN }}
+        # Alternative: use PAT if available
+        # token: ${{ secrets.PAT_TOKEN }}
