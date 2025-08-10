@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  filesystem-exporter:
+    image: ghcr.io/d0ugal/filesystem-exporter:latest
+    container_name: filesystem-exporter
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount the host filesystem (adjust paths as needed)
+      - /:/host:ro
+      # Mount your configuration file
+      - ./config.yaml:/root/config.yaml:ro
+    environment:
+      - TZ=UTC
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+# Example with custom configuration for different environments:
+
+# Synology NAS Example:
+# services:
+#   filesystem-exporter:
+#     image: ghcr.io/d0ugal/filesystem-exporter:latest
+#     container_name: filesystem-exporter
+#     ports:
+#       - "8080:8080"
+#     volumes:
+#       - /volume1:/volume1:ro
+#       - /volumeUSB1:/volumeUSB1:ro
+#       - ./config.yaml:/root/config.yaml:ro
+#     environment:
+#       - TZ=Europe/London
+#     restart: unless-stopped
+
+# Docker Host Monitoring Example:
+# services:
+#   filesystem-exporter:
+#     image: ghcr.io/d0ugal/filesystem-exporter:latest
+#     container_name: filesystem-exporter
+#     ports:
+#       - "8080:8080"
+#     volumes:
+#       - /var/lib/docker:/host/var/lib/docker:ro
+#       - /var/log:/host/var/log:ro
+#       - ./config.yaml:/root/config.yaml:ro
+#     environment:
+#       - TZ=UTC
+#     restart: unless-stopped

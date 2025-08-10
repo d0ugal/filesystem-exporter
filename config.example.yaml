@@ -1,0 +1,101 @@
+# Filesystem Exporter Configuration Example
+# Copy this file to config.yaml and customize for your environment
+
+server:
+  host: "0.0.0.0"  # Server host address
+  port: 8080        # Server port
+
+logging:
+  level: "info"     # Log level: debug, info, warn, error
+  format: "json"    # Log format: json or text
+
+metrics:
+  collection:
+    default_interval: "5m"  # Default collection interval for all metrics
+
+# Filesystem configurations
+# Each filesystem will be monitored for disk usage using 'df' command
+filesystems:
+  - name: "root"           # Unique name for this filesystem
+    mount_point: "/"       # Mount point path
+    device: "sda1"         # Device identifier
+    interval: "1m"         # Collection interval (overrides default)
+  
+  - name: "data"
+    mount_point: "/data"
+    device: "sdb1"
+    interval: "2m"
+  
+  - name: "backup"
+    mount_point: "/backup"
+    device: "sdc1"
+    # Uses default_interval if not specified
+
+# Directory configurations
+# Each directory group will be monitored for size using 'du' command
+directories:
+  # Monitor user home directories
+  home:
+    path: "/home"
+    subdirectory_levels: 1  # How many subdirectory levels to monitor
+    interval: "10m"         # Optional: override default interval
+  
+  # Monitor system directories
+  system:
+    path: "/var"
+    subdirectory_levels: 0  # 0 = only the specified directory
+  
+  # Monitor temporary directories
+  temp:
+    path: "/tmp"
+    subdirectory_levels: 0
+  
+  # Monitor application data
+  apps:
+    path: "/opt/apps"
+    subdirectory_levels: 2  # Monitor 2 levels deep
+  
+  # Monitor backup directories
+  backups:
+    path: "/backups"
+    subdirectory_levels: 1
+    interval: "30m"         # Less frequent for large directories
+
+# Advanced Configuration Examples:
+
+# Synology NAS Example:
+# filesystems:
+#   - name: "volume1"
+#     mount_point: "/volume1"
+#     device: "sda1"
+#     interval: "1m"
+#   - name: "usb1"
+#     mount_point: "/volumeUSB1/usbshare"
+#     device: "usb1p1"
+#     interval: "2m"
+# 
+# directories:
+#   nas:
+#     path: "/volume1/nas/"
+#     subdirectory_levels: 1
+#   media:
+#     path: "/volume1/nas/Media/"
+#     subdirectory_levels: 2
+#   docker:
+#     path: "/volume1/docker/"
+#     subdirectory_levels: 0
+
+# Docker Example:
+# filesystems:
+#   - name: "host"
+#     mount_point: "/host"
+#     device: "host"
+#     interval: "1m"
+# 
+# directories:
+#   containers:
+#     path: "/host/var/lib/docker/containers"
+#     subdirectory_levels: 1
+#   volumes:
+#     path: "/host/var/lib/docker/volumes"
+#     subdirectory_levels: 1

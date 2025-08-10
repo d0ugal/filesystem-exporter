@@ -1,0 +1,291 @@
+package collectors
+
+import (
+	"context"
+	"fmt"
+	"log/slog"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
+	"filesystem-exporter/internal/config"
+	"filesystem-exporter/internal/metrics"
+)
+
+type DirectoryCollector struct {
+	config  *config.Config
+	metrics *metrics.Registry
+	duMutex sync.Mutex // Mutex to ensure only one du operation at a time
+}
+
+func NewDirectoryCollector(cfg *config.Config, registry *metrics.Registry) *DirectoryCollector {
+	return &DirectoryCollector{
+		config:  cfg,
+		metrics: registry,
+	}
+}
+
+func (dc *DirectoryCollector) Start(ctx context.Context) {
+	go dc.run(ctx)
+}
+
+func (dc *DirectoryCollector) run(ctx context.Context) {
+	// Create individual tickers for each directory
+	tickers := make(map[string]*time.Ticker)
+	defer func() {
+		for _, ticker := range tickers {
+			ticker.Stop()
+		}
+	}()
+
+	// Start individual tickers for each directory
+	for groupName, group := range dc.config.Directories {
+		interval := dc.config.GetDirectoryInterval(group)
+		ticker := time.NewTicker(time.Duration(interval) * time.Second)
+		tickers[groupName] = ticker
+
+		// Initial collection for this directory
+		dc.collectSingleDirectory(groupName, group)
+
+		// Start goroutine for this directory
+		go func(name string, dir config.DirectoryGroup) {
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				case <-ticker.C:
+					dc.collectSingleDirectory(name, dir)
+				}
+			}
+		}(groupName, group)
+	}
+
+	// Wait for context cancellation
+	<-ctx.Done()
+	slog.Info("Directory collector stopped")
+}
+
+func (dc *DirectoryCollector) collectSingleDirectory(groupName string, group config.DirectoryGroup) {
+	startTime := time.Now()
+	collectionType := "directory"
+
+	slog.Info("Starting directory metrics collection", "group", groupName)
+
+	// Retry with exponential backoff
+	err := dc.retryWithBackoff(func() error {
+		return dc.collectDirectoryGroup(groupName, group, collectionType)
+	}, 3, 2*time.Second)
+
+	if err != nil {
+		slog.Error("Failed to collect directory group metrics after retries", "group", groupName, "error", err)
+		dc.metrics.CollectionFailedCounter().WithLabelValues(collectionType, groupName).Inc()
+		return
+	}
+	dc.metrics.CollectionSuccessCounter().WithLabelValues(collectionType, groupName).Inc()
+
+	duration := time.Since(startTime).Seconds()
+	dc.metrics.CollectionDurationGauge().WithLabelValues(collectionType, groupName).Set(duration)
+	dc.metrics.CollectionTimestampGauge().WithLabelValues(collectionType, groupName).Set(float64(time.Now().Unix()))
+
+	slog.Info("Directory metrics collection completed", "group", groupName, "duration", duration)
+}
+
+// retryWithBackoff implements exponential backoff retry logic
+func (dc *DirectoryCollector) retryWithBackoff(operation func() error, maxRetries int, initialDelay time.Duration) error {
+	var lastErr error
+	delay := initialDelay
+
+	for attempt := 0; attempt <= maxRetries; attempt++ {
+		if err := operation(); err == nil {
+			return nil
+		} else {
+			lastErr = err
+			if attempt < maxRetries {
+				slog.Warn("Operation failed, retrying", "attempt", attempt+1, "max_retries", maxRetries, "delay", delay, "error", err)
+				time.Sleep(delay)
+				delay *= 2 // Exponential backoff
+			}
+		}
+	}
+
+	return fmt.Errorf("operation failed after %d attempts: %w", maxRetries+1, lastErr)
+}
+
+func (dc *DirectoryCollector) collectDirectoryGroup(groupName string, group config.DirectoryGroup, collectionType string) error {
+	return dc.collectDirectorySizes(groupName, group, collectionType)
+}
+
+func (dc *DirectoryCollector) collectDirectorySizes(groupName string, group config.DirectoryGroup, collectionType string) error {
+	if group.SubdirectoryLevels == 0 {
+		// Only collect the base directory
+		return dc.collectSingleDirectoryFile(groupName, group.Path, collectionType, 0)
+	}
+
+	// Collect subdirectories recursively
+	return dc.collectSubdirectories(groupName, group, collectionType)
+}
+
+func (dc *DirectoryCollector) collectSingleDirectoryFile(groupName, path, collectionType string, subdirectoryLevel int) error {
+	// Validate and sanitize path
+	if err := dc.validatePath(path); err != nil {
+		dc.metrics.DirectoriesFailedCounter().WithLabelValues(groupName, "validation").Inc()
+		return fmt.Errorf("path validation failed for %s: %w", path, err)
+	}
+
+	// Create context with timeout (30 seconds max)
+	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Minute)
+	defer cancel()
+
+	// Track lock waiting time
+	lockWaitStart := time.Now()
+	dc.duMutex.Lock()
+	lockWaitDuration := time.Since(lockWaitStart)
+	defer dc.duMutex.Unlock()
+
+	// Record lock wait duration
+	dc.metrics.DuLockWaitDurationGauge().WithLabelValues(groupName, path).Set(lockWaitDuration.Seconds())
+
+	slog.Debug("Acquired du mutex lock", "path", path, "group", groupName, "wait_duration_ms", lockWaitDuration.Milliseconds())
+
+	// Use du with performance optimizations for large directories
+	// -s: summarize only
+	// -x: don't cross filesystem boundaries (faster)
+	cmd := exec.CommandContext(ctx, "du", "-s", "-x", path)
+	output, err := cmd.Output()
+	if err != nil {
+		dc.metrics.DirectoriesFailedCounter().WithLabelValues(groupName, "du").Inc()
+		return fmt.Errorf("failed to execute du command for %s: %w", path, err)
+	}
+
+	// Parse du output: "size\tpath"
+	parts := strings.Fields(string(output))
+	if len(parts) < 2 {
+		dc.metrics.DirectoriesFailedCounter().WithLabelValues(groupName, "du").Inc()
+		return fmt.Errorf("unexpected du output format for %s", path)
+	}
+
+	sizeKB, err := strconv.ParseInt(parts[0], 10, 64)
+	if err != nil {
+		dc.metrics.DirectoriesFailedCounter().WithLabelValues(groupName, "du").Inc()
+		return fmt.Errorf("failed to parse directory size for %s: %w", path, err)
+	}
+
+	// Convert KB to bytes
+	sizeBytes := sizeKB * 1024
+
+	// Update metrics
+	dc.metrics.DirectorySizeGauge().WithLabelValues(groupName, path, "du", fmt.Sprintf("%d", subdirectoryLevel)).Set(float64(sizeBytes))
+	dc.metrics.DirectoriesProcessedCounter().WithLabelValues(groupName, "du").Inc()
+
+	slog.Debug("Directory size collected",
+		"group", groupName,
+		"directory", path,
+		"size_bytes", sizeBytes,
+		"collection_type", collectionType,
+	)
+
+	return nil
+}
+
+func (dc *DirectoryCollector) collectSubdirectories(groupName string, group config.DirectoryGroup, collectionType string) error {
+	// Validate and sanitize base path
+	if err := dc.validatePath(group.Path); err != nil {
+		dc.metrics.DirectoriesFailedCounter().WithLabelValues(groupName, "validation").Inc()
+		return fmt.Errorf("base path validation failed for %s: %w", group.Path, err)
+	}
+
+	// First, collect the base directory (level 0)
+	if err := dc.collectSingleDirectoryFile(groupName, group.Path, collectionType, 0); err != nil {
+		slog.Warn("Failed to collect base directory", "path", group.Path, "error", err)
+		// Continue with subdirectories even if base directory fails
+	}
+
+	// Walk the directory tree up to the specified level
+	err := filepath.WalkDir(group.Path, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			slog.Warn("Error accessing path during walk", "path", path, "error", err)
+			return nil // Continue walking, don't fail the entire collection
+		}
+
+		// Skip the root directory itself (we already collected it above)
+		if path == group.Path {
+			return nil
+		}
+
+		// Skip system directories
+		dirName := filepath.Base(path)
+		if dirName == "#recycle" || dirName == "@eaDir" || dirName == ".DS_Store" {
+			return nil
+		}
+
+		// Calculate the depth relative to the base path
+		relPath, err := filepath.Rel(group.Path, path)
+		if err != nil {
+			slog.Warn("Failed to calculate relative path", "path", path, "error", err)
+			return nil
+		}
+
+		// Calculate depth based on directory components
+		// Split the relative path and count the components
+		pathComponents := strings.Split(relPath, string(filepath.Separator))
+
+		// Handle special case: if relative path is "." (same directory), depth is 0
+		var depth int
+		if len(pathComponents) == 1 && pathComponents[0] == "." {
+			depth = 0
+		} else {
+			depth = len(pathComponents) // Each component represents one level of depth
+		}
+		if !d.IsDir() {
+			depth++ // Files are at depth + 1
+		}
+
+		// Only collect directories at the exact specified level
+		if depth == group.SubdirectoryLevels && d.IsDir() {
+			// Collect directory size
+			if err := dc.collectSingleDirectoryFile(groupName, path, collectionType, depth); err != nil {
+				slog.Warn("Failed to collect subdirectory", "path", path, "error", err)
+				// Continue with other directories, don't fail the entire collection
+			}
+		} else if depth > group.SubdirectoryLevels {
+			// Skip deeper directories
+			return filepath.SkipDir
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		dc.metrics.DirectoriesFailedCounter().WithLabelValues(groupName, "walk").Inc()
+		return fmt.Errorf("failed to walk directory tree for %s: %w", group.Path, err)
+	}
+
+	return nil
+}
+
+// validatePath ensures the path is safe to use with du command
+func (dc *DirectoryCollector) validatePath(path string) error {
+	// Check if path exists
+	if _, err := os.Stat(path); err != nil {
+		return fmt.Errorf("path does not exist: %s", path)
+	}
+
+	// Ensure path is absolute
+	if !filepath.IsAbs(path) {
+		return fmt.Errorf("path must be absolute: %s", path)
+	}
+
+	// Basic sanitization - check for dangerous patterns
+	dangerousPatterns := []string{"..", "~", "*", "?", "["}
+	for _, pattern := range dangerousPatterns {
+		if strings.Contains(path, pattern) {
+			return fmt.Errorf("path contains dangerous pattern '%s': %s", pattern, path)
+		}
+	}
+
+	return nil
+}
