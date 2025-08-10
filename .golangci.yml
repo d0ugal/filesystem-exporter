@@ -41,9 +41,6 @@ linters:
     - gosec  # Security warnings are false positives for this codebase
 
   settings:
-    contextcheck:
-      # Allow context to be passed implicitly in some cases
-      disable-enable-allowed: true
     gosec:
       # Allow some security warnings
       excludes:
@@ -54,5 +51,4 @@ formatters:
   enable:
     - gci
     - gofmt
-    - gofumpt
     - goimports
