@@ -1,4 +1,4 @@
-.PHONY: help build test lint clean
+.PHONY: help build test lint clean fmt
 
 # Default target
 help:
@@ -6,6 +6,7 @@ help:
 	@echo "  build    - Build the application"
 	@echo "  test     - Run tests"
 	@echo "  lint     - Run golangci-lint using official container"
+	@echo "  fmt      - Format code using gofmt and goimports"
 	@echo "  clean    - Clean build artifacts"
 
 # Build the application
@@ -23,6 +24,11 @@ lint:
 		-w /app \
 		golangci/golangci-lint:latest \
 		golangci-lint run
+
+# Format code using gofmt and goimports
+fmt:
+	go fmt ./...
+	goimports -w .
 
 # Clean build artifacts
 clean:

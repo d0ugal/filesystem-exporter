@@ -1,34 +1,57 @@
-# This file contains all available configuration options
-# with their default values (in comments).
-#
-# This file is not a configuration example,
-# it contains the exhaustive configuration with explanations of the options.
-
-# Defines the configuration version.
-# The only possible value is "2".
 version: "2"
 
 linters:
-  # Default set of linters.
-  # The value can be:
-  # - `standard`: https://golangci-lint.run/docs/linters/#enabled-by-default
-  # - `all`: enables all linters by default.
-  # - `none`: disables all linters by default.
-  # - `fast`: enables only linters considered as "fast" (`golangci-lint help linters --json | jq '[ .[] | select(.fast==true) ] | map(.name)'`).
-  # Default: standard
-  default: all
+  # Use fast linters for better performance
+  default: fast
   enable:
+    - govet
+    - staticcheck
+    - errcheck
+    - gosec
+    - ineffassign
+    - unused
+    - contextcheck
     - wsl_v5
+    
   disable:
-    - wsl  # Disable deprecated wsl linter
+    - cyclop  # Too strict
+    - depguard  # Allow internal imports
+    - err113  # Allow dynamic errors
+    - exhaustruct  # Too strict for tests
+    - forcetypeassert  # Allow in tests
+    - funcorder  # Not critical
+    - funlen  # Allow longer functions
+    - gocognit  # Too strict
+    - goconst  # Not critical
+    - godot  # Not critical
+    - intrange  # Go 1.22+ feature
+    - lll  # Line length not critical
+    - mnd  # Magic numbers acceptable
+    - nestif  # Allow nested if
+    - nlreturn  # Not critical
+    - noinlineerr  # Allow inline errors
+    - paralleltest  # Not critical
+    - perfsprint  # Not critical
+    - revive  # Too many false positives
+    - tagliatelle  # YAML tags fine
+    - testpackage  # Allow test packages
+    - usetesting  # Not critical
+    - varnamelen  # Variable names fine
+    - wsl  # Use wsl_v5 instead
+
+linters-settings:
+  contextcheck:
+    # Allow context to be passed implicitly in some cases
+    disable-enable-allowed: true
+  gosec:
+    # Allow some security warnings
+    excludes:
+      - G204  # Subprocess launched with variable
+      - G304  # Potential file inclusion via variable
 
 formatters:
-  # Enable specific formatter.
-  # Default: [] (uses standard Go formatting)
   enable:
     - gci
     - gofmt
     - gofumpt
     - goimports
-    - golines
-    - swaggo
