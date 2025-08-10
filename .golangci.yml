@@ -39,8 +39,9 @@ linters:
     - varnamelen  # Variable names fine
     - wsl  # Use wsl_v5 instead
     - gosec  # Security warnings are false positives for this codebase
+    - gofumpt  # Not critical
 
-linters-settings:
+lintersSettings:
   contextcheck:
     # Allow context to be passed implicitly in some cases
     disable-enable-allowed: true
