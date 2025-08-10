@@ -137,13 +137,23 @@ Before committing, ensure:
 
 1. ✅ Tests pass: `make test`
 2. ✅ Code is formatted: `make fmt`
-3. ✅ Linting passes: `make lint`
+3. ✅ **Linting passes: `make lint`** - **CRITICAL: Never commit with linting errors**
 4. ✅ **Inspect changes**: Review what you're committing with `git diff --staged`
 5. ✅ **Choose appropriate message**: Use conventional commit format
 6. ✅ **Keep commits focused**: Avoid multiple unrelated changes in one commit
 7. ✅ **Prefer smaller commits**: Break large changes into logical, focused commits
 8. ✅ Documentation is updated if needed
 9. ✅ Changes are verified and working
+
+### Linting Requirements
+
+**ALWAYS fix linting issues before committing:**
+- Run `make lint` and address ALL issues
+- If linting fails, fix the issues before committing
+- Never commit code that fails linting checks
+- Use `make fmt` to fix formatting issues automatically
+- For complex linting issues, consider disabling specific linters in `.golangci.yml` if they're too strict
+- The goal is to maintain clean, consistent code quality
 
 ### Post-commit Workflow
 
