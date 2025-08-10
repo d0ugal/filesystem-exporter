@@ -45,18 +45,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.24'
-
-    - name: Install golangci-lint
-      uses: golangci/golangci-lint-action@v8
-      with:
-        version: latest
-
     - name: Run golangci-lint
-      run: golangci-lint run
+      uses: docker://golangci/golangci-lint:latest
+      with:
+        args: run
 
   build:
     name: Build

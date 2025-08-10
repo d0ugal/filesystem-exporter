@@ -5,7 +5,7 @@ help:
 	@echo "Available targets:"
 	@echo "  build    - Build the application"
 	@echo "  test     - Run tests"
-	@echo "  lint     - Run golangci-lint in container"
+	@echo "  lint     - Run golangci-lint using official container"
 	@echo "  clean    - Clean build artifacts"
 
 # Build the application
@@ -16,9 +16,13 @@ build:
 test:
 	go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
 
-# Run golangci-lint in container
+# Run golangci-lint using official container
 lint:
-	./scripts/lint.sh
+	docker run --rm \
+		-v "$(PWD):/app" \
+		-w /app \
+		golangci/golangci-lint:latest \
+		golangci-lint run
 
 # Clean build artifacts
 clean:
