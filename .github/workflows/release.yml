@@ -3,6 +3,13 @@ name: Release
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name to build'
+        required: true
+        default: 'v1.1.0'
+        type: string
 
 permissions:
   contents: read
@@ -13,9 +20,30 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  debug:
+    name: Debug Release Event
+    runs-on: ubuntu-latest
+    steps:
+    - name: Debug Information
+      run: |
+        echo "Release event triggered!"
+        echo "Event name: ${{ github.event_name }}"
+        if [ "${{ github.event_name }}" = "release" ]; then
+          echo "Release ID: ${{ github.event.release.id }}"
+          echo "Release tag: ${{ github.event.release.tag_name }}"
+          echo "Release name: ${{ github.event.release.name }}"
+          echo "Release draft: ${{ github.event.release.draft }}"
+          echo "Release prerelease: ${{ github.event.release.prerelease }}"
+        elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "Manual trigger with tag: ${{ github.event.inputs.tag_name }}"
+        fi
+        echo "Actor: ${{ github.actor }}"
+        echo "Repository: ${{ github.repository }}"
+
   build-and-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
+    needs: [debug]
     permissions:
       contents: read
       packages: write
@@ -60,6 +88,7 @@ jobs:
   create-release-notes:
     name: Create Release Notes
     runs-on: ubuntu-latest
+    needs: [debug]
     if: github.event_name == 'release'
     permissions:
       contents: read
