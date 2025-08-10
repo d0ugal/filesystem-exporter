@@ -51,4 +51,3 @@ formatters:
   enable:
     - gci
     - gofmt
-    - goimports
