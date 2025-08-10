@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.0.0...v1.1.0) (2025-08-10)
+
+
+### Features
+
+* **build:** improve formatting and linting workflow ([037340e](https://github.com/d0ugal/filesystem-exporter/commit/037340e37abe1de73fccca8108a9f48c65779b2e))
+
+
+### Bug Fixes
+
+* **ci:** optimize golangci-lint configuration and add formatting ([4c93bd6](https://github.com/d0ugal/filesystem-exporter/commit/4c93bd63d0a9c907555895e6668514f918ab5a8f))
+* **ci:** replace golangci-lint docker action with official action ([22bdd29](https://github.com/d0ugal/filesystem-exporter/commit/22bdd29fdf9e8d6c890eae83456992fd78138363))
+* **ci:** update golangci-lint action to v8 ([a21a5e1](https://github.com/d0ugal/filesystem-exporter/commit/a21a5e1bdc150cd05bdabc09d5634dd8316bab66))
+* **collectors:** pass context through all collector functions ([524f4af](https://github.com/d0ugal/filesystem-exporter/commit/524f4afc3befbe6e8cc50e32e0c4377836e50005))
+* **deps:** update module github.com/gin-gonic/gin to v1.10.1 ([5ab3027](https://github.com/d0ugal/filesystem-exporter/commit/5ab30274408c195dece40593e17ef9b63d70131c))
+* **deps:** update module github.com/gin-gonic/gin to v1.10.1 ([8511f9c](https://github.com/d0ugal/filesystem-exporter/commit/8511f9cc3229b315ebdf3820bed815d808bd42f3))
+* **deps:** update module github.com/prometheus/client_golang to v1.23.0 ([dff2648](https://github.com/d0ugal/filesystem-exporter/commit/dff264869ceae5efd60aa77d5e7e7c92eb1af44e))
+* **deps:** update module github.com/prometheus/client_golang to v1.23.0 ([dc93d69](https://github.com/d0ugal/filesystem-exporter/commit/dc93d694d654d08db3ea6b74871bb4e555b41e7c))
+* **tests:** handle os.Remove errors in test cleanup ([eb696f3](https://github.com/d0ugal/filesystem-exporter/commit/eb696f3d68c715905b1225d396456a1f24460ddc))
+* update dependencies to fix security vulnerabilities ([2cbb12d](https://github.com/d0ugal/filesystem-exporter/commit/2cbb12d3d1be645994a020cc7f627fc5604f015f))
+* update golangci-lint configuration and server improvements ([6aafe69](https://github.com/d0ugal/filesystem-exporter/commit/6aafe69c3e3172e19206f0318eeeb6b4f8656332))
+* use a minimal config ([6f1a107](https://github.com/d0ugal/filesystem-exporter/commit/6f1a1071edb0343c228bcd337eb78f45b11e9615))
+
 ## 1.0.0 (2025-08-10)
 
 
@@ -45,5 +68,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 - N/A
-
-
