@@ -48,7 +48,6 @@ func main() {
 
 	// Start collectors
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	filesystemCollector.Start(ctx)
 	directoryCollector.Start(ctx)
@@ -70,6 +69,7 @@ func main() {
 	// Start server
 	if err := srv.Start(); err != nil {
 		slog.Error("Server failed", "error", err)
+		cancel() // Cancel context before exiting
 		os.Exit(1)
 	}
 }

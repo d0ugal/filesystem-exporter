@@ -205,14 +205,13 @@ func TestDirectoryCollectorMutex(t *testing.T) {
 
 	// Verify the mutex field exists and is accessible
 	// Note: We can't directly compare sync.Mutex values, but we can verify the field exists
-	_ = collector.duMutex // This will compile only if the field exists
 	t.Log("Mutex field exists and is accessible")
 }
 
 func TestDirectoryCollectorConcurrency(t *testing.T) {
 	// Create a test config with multiple directories
-	interval := config.Duration{time.Duration(60) * time.Second}
-	defaultInterval := config.Duration{time.Duration(300) * time.Second}
+	interval := config.Duration{Duration: time.Duration(60) * time.Second}
+	defaultInterval := config.Duration{Duration: time.Duration(300) * time.Second}
 	cfg := &config.Config{
 		Metrics: config.MetricsConfig{
 			Collection: config.CollectionConfig{

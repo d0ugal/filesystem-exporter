@@ -46,7 +46,7 @@ directories:
 	}
 	defer os.Remove(tmpfile.Name())
 
-	if _, err := tmpfile.Write([]byte(configData)); err != nil {
+	if _, err := tmpfile.WriteString(configData); err != nil {
 		t.Fatal(err)
 	}
 	if err := tmpfile.Close(); err != nil {
@@ -107,7 +107,7 @@ directories:
 	}
 	defer os.Remove(tmpfile.Name())
 
-	if _, err := tmpfile.Write([]byte(configData)); err != nil {
+	if _, err := tmpfile.WriteString(configData); err != nil {
 		t.Fatal(err)
 	}
 	if err := tmpfile.Close(); err != nil {
@@ -157,7 +157,7 @@ server:
 	}
 	defer os.Remove(tmpfile.Name())
 
-	if _, err := tmpfile.Write([]byte(configData)); err != nil {
+	if _, err := tmpfile.WriteString(configData); err != nil {
 		t.Fatal(err)
 	}
 	if err := tmpfile.Close(); err != nil {
@@ -267,7 +267,7 @@ directories:
 			}
 			defer os.Remove(tmpfile.Name())
 
-			if _, err := tmpfile.Write([]byte(tt.config)); err != nil {
+			if _, err := tmpfile.WriteString(tt.config); err != nil {
 				t.Fatal(err)
 			}
 			if err := tmpfile.Close(); err != nil {

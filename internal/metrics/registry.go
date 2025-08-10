@@ -1,8 +1,6 @@
 package metrics
 
 import (
-	"sync"
-
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -31,8 +29,6 @@ type Registry struct {
 
 	// The underlying Prometheus registry
 	registry *prometheus.Registry
-
-	mu sync.RWMutex
 }
 
 func NewRegistry() *Registry {
