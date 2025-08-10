@@ -35,19 +35,3 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         # Alternative: use PAT if available
         # token: ${{ secrets.PAT_TOKEN }}
-
-    - name: Create GitHub Release
-      if: steps.release_please.outputs.release_created == 'true'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const { data: release } = await github.rest.repos.createRelease({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            tag_name: '${{ steps.release_please.outputs.tag_name }}',
-            name: '${{ steps.release_please.outputs.name }}',
-            body: '${{ steps.release_please.outputs.body }}',
-            draft: ${{ steps.release_please.outputs.draft }},
-            prerelease: ${{ steps.release_please.outputs.prerelease }}
-          });
-          console.log(`Created release: ${release.html_url}`);
