@@ -1,0 +1,169 @@
+# Cursor Rules for Filesystem Exporter
+
+## Commit Message Guidelines
+
+This project uses [release-please](https://github.com/googleapis/release-please) for automated releases. Follow these commit message conventions to ensure proper versioning and changelog generation.
+
+### Commit Message Format
+
+Use conventional commit format with the following structure:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+### Types
+
+- **feat**: A new feature (triggers minor version bump)
+- **fix**: A bug fix (triggers patch version bump)
+- **docs**: Documentation only changes
+- **style**: Changes that do not affect the meaning of the code (white-space, formatting, etc)
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **perf**: A code change that improves performance
+- **test**: Adding missing tests or correcting existing tests
+- **build**: Changes that affect the build system or external dependencies
+- **ci**: Changes to CI configuration files and scripts
+- **chore**: Other changes that don't modify src or test files
+- **revert**: Reverts a previous commit
+
+### Scopes (Optional)
+
+Use scopes to indicate which part of the codebase is affected:
+
+- **config**: Configuration changes
+- **metrics**: Metrics collection or export changes
+- **filesystem**: Filesystem monitoring changes
+- **directory**: Directory size monitoring changes
+- **server**: HTTP server changes
+- **logging**: Logging system changes
+- **docker**: Docker-related changes
+- **docs**: Documentation changes
+- **ci**: CI/CD changes
+
+### Examples
+
+✅ **Good commit messages:**
+
+```
+feat(metrics): add filesystem usage percentage metric
+
+feat: add support for custom mount point labels
+
+fix(filesystem): handle missing mount points gracefully
+
+fix: resolve memory leak in directory size collection
+
+docs: update configuration examples in README
+
+refactor(server): improve HTTP handler error handling
+
+perf: optimize directory size calculation algorithm
+
+test: add unit tests for configuration validation
+
+build: update Go version to 1.21
+
+ci: add automated security scanning
+
+chore: update dependencies to latest versions
+```
+
+❌ **Bad commit messages:**
+
+```
+update code
+fix stuff
+add feature
+bug fix
+```
+
+### Breaking Changes
+
+For breaking changes, add `!` after the type/scope and include `BREAKING CHANGE:` in the footer:
+
+```
+feat!: remove deprecated config option
+
+BREAKING CHANGE: The `old_config_option` has been removed. Use `new_config_option` instead.
+```
+
+### Commit Message Best Practices
+
+1. **Use imperative mood**: "add" not "added" or "adds"
+2. **Don't capitalize the first letter**: "add feature" not "Add feature"
+3. **No period at the end**: "add feature" not "add feature."
+4. **Keep it under 72 characters** for the first line
+5. **Be specific and descriptive**
+6. **Reference issues when relevant**: "fix: resolve memory leak (#123)"
+
+### Release-Please Integration
+
+- **feat** commits trigger minor version bumps
+- **fix** commits trigger patch version bumps
+- **BREAKING CHANGE** commits trigger major version bumps
+- **docs**, **style**, **refactor**, **perf**, **test**, **build**, **ci**, **chore** don't trigger version bumps
+
+### Development Workflow
+
+**Always follow this workflow when making changes:**
+
+1. ✅ **Make your changes**
+2. ✅ **Run tests**: `make test` - Ensure all tests pass
+3. ✅ **Run linting**: `make lint` - Fix any linting issues
+4. ✅ **Format code**: `make fmt` - Ensure consistent formatting
+5. ✅ **Verify changes work** - Test your changes manually if needed
+6. ✅ **Commit when it works**: Use conventional commit format
+7. ✅ **Push immediately**: `git push` - Don't let changes sit locally
+
+### Pre-commit Checklist
+
+Before committing, ensure:
+
+1. ✅ Tests pass: `make test`
+2. ✅ Code is formatted: `make fmt`
+3. ✅ Linting passes: `make lint`
+4. ✅ Commit message follows conventional format
+5. ✅ Changes are focused and atomic
+6. ✅ Documentation is updated if needed
+7. ✅ Changes are verified and working
+
+### Post-commit Workflow
+
+After committing, always:
+
+1. ✅ Push changes to remote: `git push`
+2. ✅ Verify CI checks pass
+3. ✅ Create/update PR if working on a feature branch
+
+### Branch Naming
+
+Use descriptive branch names:
+
+```
+feat/add-custom-metrics
+fix/memory-leak-in-collector
+docs/update-api-documentation
+refactor/improve-error-handling
+```
+
+### Pull Request Guidelines
+
+- Use conventional commit format for PR titles
+- Include detailed description of changes
+- Reference related issues
+- Ensure CI checks pass
+- Request reviews from maintainers
+
+### Automated Release Process
+
+1. Push commits to `main` branch
+2. Release-please analyzes commit messages
+3. Creates/updates release PR automatically
+4. Merging release PR creates new GitHub release
+5. Changelog is automatically generated
+
+Remember: Good commit messages make the project history more readable and enable automated tools like release-please to work effectively!
