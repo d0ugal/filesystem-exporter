@@ -17,6 +17,10 @@ linters:
   # - `fast`: enables only linters considered as "fast" (`golangci-lint help linters --json | jq '[ .[] | select(.fast==true) ] | map(.name)'`).
   # Default: standard
   default: all
+  enable:
+    - wsl_v5
+  disable:
+    - wsl  # Disable deprecated wsl linter
 
 formatters:
   # Enable specific formatter.

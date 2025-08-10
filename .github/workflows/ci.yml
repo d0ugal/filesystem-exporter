@@ -46,9 +46,9 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run golangci-lint
-      uses: docker://golangci/golangci-lint:latest
+      uses: golangci/golangci-lint-action@v4
       with:
-        args: run
+        version: latest
 
   build:
     name: Build
