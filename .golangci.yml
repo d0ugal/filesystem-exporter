@@ -1,4 +1,5 @@
 run:
+  version: "1.0"
   timeout: 5m
   go: "1.23"
 
