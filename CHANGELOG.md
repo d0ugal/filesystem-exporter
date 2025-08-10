@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2](https://github.com/d0ugal/filesystem-exporter/compare/v1.1.1...v1.1.2) (2025-08-10)
+
+
+### Bug Fixes
+
+* **ci:** resolve JavaScript syntax errors in GitHub Actions workflows ([b65ff5f](https://github.com/d0ugal/filesystem-exporter/commit/b65ff5ff3c1eb052a1824d359de7cecabda022c4))
+* resolve critical memory leak in directory size calculation ([5c899f8](https://github.com/d0ugal/filesystem-exporter/commit/5c899f853f465df776e82e903dfca5fa3894e6ff))
+
 ## [1.1.1](https://github.com/d0ugal/filesystem-exporter/compare/v1.1.0...v1.1.1) (2025-08-10)
 
 
