@@ -35,4 +35,4 @@ EXPOSE 8080
 ENV CONFIG_PATH=/root/config.yaml
 
 # Run the application
-CMD ["./filesystem-exporter", "-config", "/root/config.yaml"] 
+CMD ["./filesystem-exporter"] 

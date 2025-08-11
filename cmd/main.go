@@ -30,7 +30,7 @@ func main() {
 	}
 
 	// Load configuration
-	cfg, err := config.Load(configPath)
+	cfg, err := config.LoadConfig(configPath)
 	if err != nil {
 		slog.Error("Failed to load configuration", "error", err, "path", configPath)
 		os.Exit(1)

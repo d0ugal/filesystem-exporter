@@ -63,7 +63,130 @@ make build
 
 ## Configuration
 
-The application is configured via `config.yaml`. Copy `config.example.yaml` to `config.yaml` and customize for your environment.
+The application can be configured via `config.yaml` file or environment variables. Copy `config.example.yaml` to `config.yaml` and customize for your environment.
+
+### Configuration Methods
+
+1. **YAML Configuration File** (default): Use `config.yaml` for complex configurations
+2. **Environment Variables**: Use environment variables for simple configurations or containerized deployments
+3. **Hybrid Mode**: Use environment variables to override specific settings
+
+### Environment Variable Configuration
+
+For containerized deployments, you can configure the application entirely through environment variables, similar to Prometheus. This is especially useful for Kubernetes, Docker Compose, and other container orchestration systems.
+
+#### Environment Variable Format
+
+All environment variables are prefixed with `FILESYSTEM_EXPORTER_`:
+
+- `FILESYSTEM_EXPORTER_CONFIG_FROM_ENV=true` - Force environment-only configuration mode
+- `FILESYSTEM_EXPORTER_SERVER_HOST` - Server host (default: "0.0.0.0")
+- `FILESYSTEM_EXPORTER_SERVER_PORT` - Server port (default: 8080)
+- `FILESYSTEM_EXPORTER_LOG_LEVEL` - Log level: debug, info, warn, error (default: "info")
+- `FILESYSTEM_EXPORTER_LOG_FORMAT` - Log format: json, text (default: "json")
+- `FILESYSTEM_EXPORTER_METRICS_DEFAULT_INTERVAL` - Default collection interval (default: "5m")
+
+#### Filesystems Configuration
+
+Configure filesystems using the `FILESYSTEM_EXPORTER_FILESYSTEMS` environment variable:
+
+```
+FILESYSTEM_EXPORTER_FILESYSTEMS=name1:mount1:device1[:interval1],name2:mount2:device2[:interval2]
+```
+
+**Format**: `name:mount:device[:interval]`
+
+**Examples**:
+```bash
+# Basic filesystem
+FILESYSTEM_EXPORTER_FILESYSTEMS=root:/:sda1
+
+# Multiple filesystems with intervals
+FILESYSTEM_EXPORTER_FILESYSTEMS=root:/:sda1:1m,data:/data:sdb1:2m
+
+# Host filesystem for Docker
+FILESYSTEM_EXPORTER_FILESYSTEMS=host:/host:sda1:1m
+```
+
+#### Directories Configuration
+
+Configure directories using the `FILESYSTEM_EXPORTER_DIRECTORIES` environment variable:
+
+```
+FILESYSTEM_EXPORTER_DIRECTORIES=name1:path1:levels1[:interval1],name2:path2:levels2[:interval2]
+```
+
+**Format**: `name:path:levels[:interval]`
+
+**Examples**:
+```bash
+# Basic directory
+FILESYSTEM_EXPORTER_DIRECTORIES=home:/home:1
+
+# Multiple directories with intervals
+FILESYSTEM_EXPORTER_DIRECTORIES=home:/home:1:10m,logs:/var/log:0:5m,apps:/opt/apps:2:30m
+
+# Docker host directories
+FILESYSTEM_EXPORTER_DIRECTORIES=containers:/host/var/lib/docker/containers:1:5m,volumes:/host/var/lib/docker/volumes:1:5m
+```
+
+#### Docker Compose Example
+
+```yaml
+version: '3.8'
+services:
+  filesystem-exporter:
+    image: ghcr.io/d0ugal/filesystem-exporter:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/host:ro
+    environment:
+      - FILESYSTEM_EXPORTER_CONFIG_FROM_ENV=true
+      - FILESYSTEM_EXPORTER_FILESYSTEMS=root:/host:sda1:1m,data:/host/data:sdb1:2m
+      - FILESYSTEM_EXPORTER_DIRECTORIES=home:/host/home:1:10m,logs:/host/var/log:0:5m
+    restart: unless-stopped
+```
+
+#### Kubernetes Example
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filesystem-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: filesystem-exporter
+  template:
+    metadata:
+      labels:
+        app: filesystem-exporter
+    spec:
+      containers:
+      - name: filesystem-exporter
+        image: ghcr.io/d0ugal/filesystem-exporter:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: FILESYSTEM_EXPORTER_CONFIG_FROM_ENV
+          value: "true"
+        - name: FILESYSTEM_EXPORTER_FILESYSTEMS
+          value: "root:/host:sda1:1m"
+        - name: FILESYSTEM_EXPORTER_DIRECTORIES
+          value: "home:/host/home:1:10m,logs:/host/var/log:0:5m"
+        volumeMounts:
+        - name: host-root
+          mountPath: /host
+          readOnly: true
+      volumes:
+      - name: host-root
+        hostPath:
+          path: /
+          type: Directory
+```
 
 ### Duration Format
 - `"60s"` - 60 seconds
