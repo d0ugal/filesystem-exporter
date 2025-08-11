@@ -30,30 +30,6 @@ jobs:
         release-type: go
         path: .
         token: ${{ secrets.GITHUB_TOKEN }}
-        # Alternative: use PAT if available
-        # token: ${{ secrets.PAT_TOKEN }}
-
-    - name: Create GitHub Release
-      if: steps.release_please.outputs.release_created == 'true'
-      uses: actions/github-script@v7
-      env:
-        TAG_NAME: ${{ steps.release_please.outputs.tag_name }}
-        RELEASE_NAME: ${{ steps.release_please.outputs.name }}
-        RELEASE_BODY: ${{ steps.release_please.outputs.body }}
-        RELEASE_DRAFT: ${{ steps.release_please.outputs.draft }}
-        RELEASE_PRERELEASE: ${{ steps.release_please.outputs.prerelease }}
-      with:
-        script: |
-          const { data: release } = await github.rest.repos.createRelease({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            tag_name: process.env.TAG_NAME,
-            name: process.env.RELEASE_NAME,
-            body: process.env.RELEASE_BODY,
-            draft: process.env.RELEASE_DRAFT === 'true',
-            prerelease: process.env.RELEASE_PRERELEASE === 'true'
-          });
-          console.log('Created release: ' + release.html_url);
 
     # Debug info
     - name: Debug Release Info
@@ -70,7 +46,7 @@ jobs:
       if: steps.release_please.outputs.release_created == 'true'
       uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Container Registry
+    - name: Log in to GHCR
       if: steps.release_please.outputs.release_created == 'true'
       uses: docker/login-action@v3
       with:
@@ -84,9 +60,7 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=semver,pattern={{version}},value=${{ steps.release_please.outputs.tag_name }}
-          type=semver,pattern={{major}}.{{minor}},value=${{ steps.release_please.outputs.tag_name }}
+        tags: ${{ steps.release_please.outputs.tag_name }}
 
     - name: Build and push Docker image
       if: steps.release_please.outputs.release_created == 'true'
@@ -98,4 +72,5 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-to: type=gha,mode=min
+        continue-on-error: false
