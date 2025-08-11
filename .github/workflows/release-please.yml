@@ -60,7 +60,9 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        tags: ${{ steps.release_please.outputs.tag_name }}
+        tags: |
+          ${{ steps.release_please.outputs.tag_name }}
+          latest
 
     - name: Build and push Docker image
       if: steps.release_please.outputs.release_created == 'true'
