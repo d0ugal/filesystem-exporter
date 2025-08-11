@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.1.5...v1.2.0) (2025-08-11)
+
+
+### Features
+
+* add environment variable configuration support ([c47fee8](https://github.com/d0ugal/filesystem-exporter/commit/c47fee84693fd56d9819805f977e236d3c7f5daa))
+
 ## [1.1.5](https://github.com/d0ugal/filesystem-exporter/compare/v1.1.4...v1.1.5) (2025-08-11)
 
 
