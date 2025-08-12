@@ -130,6 +130,19 @@ FILESYSTEM_EXPORTER_DIRECTORIES=home:/home:1:10m,logs:/var/log:0:5m,apps:/opt/ap
 FILESYSTEM_EXPORTER_DIRECTORIES=containers:/host/var/lib/docker/containers:1:5m,volumes:/host/var/lib/docker/volumes:1:5m
 ```
 
+**Multi-line Format (Docker Compose)**:
+When using Docker Compose, you can use YAML's folded block scalar syntax (`>`) for better readability:
+
+```yaml
+environment:
+  - FILESYSTEM_EXPORTER_DIRECTORIES=>
+      home:/home:1:10m,
+      logs:/var/log:0:5m,
+      apps:/opt/apps:2:30m,
+      containers:/host/var/lib/docker/containers:1:5m,
+      volumes:/host/var/lib/docker/volumes:1:5m
+```
+
 #### Docker Compose Example
 
 ```yaml
@@ -144,7 +157,10 @@ services:
     environment:
       - FILESYSTEM_EXPORTER_CONFIG_FROM_ENV=true
       - FILESYSTEM_EXPORTER_FILESYSTEMS=root:/host:sda1:1m,data:/host/data:sdb1:2m
-      - FILESYSTEM_EXPORTER_DIRECTORIES=home:/host/home:1:10m,logs:/host/var/log:0:5m
+      - FILESYSTEM_EXPORTER_DIRECTORIES=>
+          home:/host/home:1:10m,
+          logs:/host/var/log:0:5m,
+          containers:/host/var/lib/docker/containers:1:5m
     restart: unless-stopped
 ```
 
@@ -176,7 +192,7 @@ spec:
         - name: FILESYSTEM_EXPORTER_FILESYSTEMS
           value: "root:/host:sda1:1m"
         - name: FILESYSTEM_EXPORTER_DIRECTORIES
-          value: "home:/host/home:1:10m,logs:/host/var/log:0:5m"
+          value: "home:/host/home:1:10m,logs:/host/var/log:0:5m,containers:/host/var/lib/docker/containers:1:5m"
         volumeMounts:
         - name: host-root
           mountPath: /host
