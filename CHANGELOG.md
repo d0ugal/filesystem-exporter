@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1](https://github.com/d0ugal/filesystem-exporter/compare/v1.2.0...v1.2.1) (2025-08-13)
+
+
+### Bug Fixes
+
+* **docker:** update Alpine base image to 3.22.1 for better security and reproducibility ([0bcedff](https://github.com/d0ugal/filesystem-exporter/commit/0bcedff69460b7df225631370c408c0650b81ac9))
+
 ## [1.2.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.1.5...v1.2.0) (2025-08-11)
 
 
