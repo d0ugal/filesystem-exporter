@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.2.1...v1.3.0) (2025-08-13)
+
+
+### Features
+
+* add dynamic version information to web UI and CLI ([dc4c65b](https://github.com/d0ugal/filesystem-exporter/commit/dc4c65b69c04f4df9ebb6a16001a8262ebe252c8))
+
 ## [1.2.1](https://github.com/d0ugal/filesystem-exporter/compare/v1.2.0...v1.2.1) (2025-08-13)
 
 
