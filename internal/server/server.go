@@ -9,6 +9,7 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
+	"filesystem-exporter/internal/version"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -65,6 +66,7 @@ func (s *Server) setupRoutes() {
 }
 
 func (s *Server) handleRoot(c *gin.Context) {
+	versionInfo := version.Get()
 	html := `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -200,6 +202,9 @@ func (s *Server) handleRoot(c *gin.Context) {
     <div class="metrics-info">
         <h3>Configuration</h3>
         <ul>
+            <li><strong>Version:</strong> ` + versionInfo.Version + `</li>
+            <li><strong>Commit:</strong> ` + versionInfo.Commit + `</li>
+            <li><strong>Build Date:</strong> ` + versionInfo.BuildDate + `</li>
             <li><strong>Filesystems:</strong> ` + fmt.Sprintf("%d", len(s.config.Filesystems)) + ` configured</li>
             <li><strong>Directories:</strong> ` + fmt.Sprintf("%d", len(s.config.Directories)) + ` configured</li>
         </ul>
@@ -212,11 +217,14 @@ func (s *Server) handleRoot(c *gin.Context) {
 }
 
 func (s *Server) handleHealth(c *gin.Context) {
+	versionInfo := version.Get()
 	c.JSON(http.StatusOK, gin.H{
 		"status":    "healthy",
 		"timestamp": time.Now().Unix(),
 		"service":   "filesystem-exporter",
-		"version":   "1.0.0",
+		"version":   versionInfo.Version,
+		"commit":    versionInfo.Commit,
+		"build_date": versionInfo.BuildDate,
 	})
 }
 

@@ -12,7 +12,15 @@ help:
 
 # Build the application
 build:
-	go build -v -ldflags="-s -w" -o filesystem-exporter ./cmd
+	@echo "Building filesystem-exporter..."
+	@VERSION=$$(git describe --tags --always --dirty 2>/dev/null || echo "dev") && \
+	COMMIT=$$(git rev-parse --short HEAD 2>/dev/null || echo "unknown") && \
+	BUILD_DATE=$$(date -u +"%Y-%m-%dT%H:%M:%SZ") && \
+	go build -v -ldflags="-s -w \
+		-X filesystem-exporter/internal/version.Version=$$VERSION \
+		-X filesystem-exporter/internal/version.Commit=$$COMMIT \
+		-X filesystem-exporter/internal/version.BuildDate=$$BUILD_DATE" \
+		-o filesystem-exporter ./cmd
 
 # Run tests
 test:
