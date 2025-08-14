@@ -1,6 +1,6 @@
 # Filesystem Exporter
 
-A lightweight, high-performance Go-based metrics collection service for monitoring filesystem usage and directory sizes. This service provides Prometheus metrics for comprehensive filesystem monitoring and directory size tracking across any Linux environment.
+A lightweight, high-performance Go-based metrics collection service designed primarily for use with Prometheus and tailored for monitoring Synology NAS systems. While it works across any Linux environment, it is especially built to provide detailed filesystem and directory size metrics for Synology devices, making it ideal for comprehensive storage monitoring in Prometheus setups.
 
 ## Features
 
