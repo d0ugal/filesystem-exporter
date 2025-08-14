@@ -6,6 +6,9 @@ import (
 )
 
 type Registry struct {
+	// Version info metric
+	versionInfoGauge *prometheus.GaugeVec
+
 	// Volume metrics
 	volumeSizeGauge      *prometheus.GaugeVec
 	volumeAvailableGauge *prometheus.GaugeVec
@@ -36,6 +39,13 @@ func NewRegistry() *Registry {
 	factory := promauto.With(registry)
 
 	return &Registry{
+		versionInfoGauge: factory.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_info",
+				Help: "Information about the filesystem exporter",
+			},
+			[]string{"version", "commit", "build_date"},
+		),
 		volumeSizeGauge: factory.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "filesystem_exporter_volume_size_bytes",
@@ -160,6 +170,10 @@ func (r *Registry) DirectoriesProcessedCounter() *prometheus.CounterVec {
 
 func (r *Registry) DirectoriesFailedCounter() *prometheus.CounterVec {
 	return r.directoriesFailedCounter
+}
+
+func (r *Registry) VersionInfoGauge() *prometheus.GaugeVec {
+	return r.versionInfoGauge
 }
 
 func (r *Registry) DuLockWaitDurationGauge() *prometheus.GaugeVec {

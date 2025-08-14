@@ -59,6 +59,10 @@ func main() {
 	// Initialize metrics
 	metricsRegistry := metrics.NewRegistry()
 
+	// Set version info metric
+	versionInfo := version.Get()
+	metricsRegistry.VersionInfoGauge().WithLabelValues(versionInfo.Version, versionInfo.Commit, versionInfo.BuildDate).Set(1)
+
 	// Create collectors
 	filesystemCollector := collectors.NewFilesystemCollector(cfg, metricsRegistry)
 	directoryCollector := collectors.NewDirectoryCollector(cfg, metricsRegistry)
