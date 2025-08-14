@@ -3,6 +3,9 @@ FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
+# Install git for version detection
+RUN apk add --no-cache git
+
 # Copy go mod files
 COPY go.mod go.sum ./
 
@@ -12,8 +15,16 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o filesystem-exporter ./cmd/main.go
+# Build the application with version information
+RUN VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "dev") && \
+    COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown") && \
+    BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") && \
+    CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo \
+    -ldflags="-s -w \
+        -X filesystem-exporter/internal/version.Version=$VERSION \
+        -X filesystem-exporter/internal/version.Commit=$COMMIT \
+        -X filesystem-exporter/internal/version.BuildDate=$BUILD_DATE" \
+    -o filesystem-exporter ./cmd/main.go
 
 # Final stage
 FROM alpine:3.22.1
@@ -35,4 +46,4 @@ EXPOSE 8080
 ENV CONFIG_PATH=/root/config.yaml
 
 # Run the application
-CMD ["./filesystem-exporter"] 
+CMD ["./filesystem-exporter"]
