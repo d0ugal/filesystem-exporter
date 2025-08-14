@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.3.0...v1.4.0) (2025-08-14)
+
+
+### Features
+
+* add version info metric and subtle version display in h1 header ([1df4595](https://github.com/d0ugal/filesystem-exporter/commit/1df4595ee9c77a5662ae40704086cb42310c2362))
+* add version to title, separate version info, and add copyright footer with GitHub links ([b345a64](https://github.com/d0ugal/filesystem-exporter/commit/b345a643b106e671927d183c0e6a56d19787c452))
+
+
+### Bug Fixes
+
+* update Dockerfile to inject version information during build ([c28308e](https://github.com/d0ugal/filesystem-exporter/commit/c28308e91d81b4f9e735a357fcdabb5fb18927d3))
+
 ## [1.3.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.2.1...v1.3.0) (2025-08-13)
 
 
