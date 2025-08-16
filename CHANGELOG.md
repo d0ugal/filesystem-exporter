@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.4.1...v1.5.0) (2025-08-16)
+
+
+### Features
+
+* add automerge rules for minor/patch updates and dev dependencies ([6e9f0a1](https://github.com/d0ugal/filesystem-exporter/commit/6e9f0a1f5f5a4d9772def1bfdbb098a3555f9b4c))
+* upgrade to Go 1.25 ([3dc1bb6](https://github.com/d0ugal/filesystem-exporter/commit/3dc1bb6e1ed68ef8b32e95d1e6456bcb5010d742))
+
+
+### Bug Fixes
+
+* revert golangci-lint config to version 2 for compatibility ([32285a6](https://github.com/d0ugal/filesystem-exporter/commit/32285a6b271f71259b7000cc855ad262b80abc73))
+* update golangci-lint config for Go 1.25 compatibility ([15d2aed](https://github.com/d0ugal/filesystem-exporter/commit/15d2aeddf96347cacfac735ab1e33759643cee5b))
+
 ## [1.4.1](https://github.com/d0ugal/filesystem-exporter/compare/v1.4.0...v1.4.1) (2025-08-14)
 
 
