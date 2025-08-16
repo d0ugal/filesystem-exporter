@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1](https://github.com/d0ugal/filesystem-exporter/compare/v1.5.0...v1.5.1) (2025-08-16)
+
+
+### Bug Fixes
+
+* update golangci-lint config to match working mqtt-exporter pattern ([508ff61](https://github.com/d0ugal/filesystem-exporter/commit/508ff61b4af1bb02f62c994a7361097de376b073))
+
 ## [1.5.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.4.1...v1.5.0) (2025-08-16)
 
 
