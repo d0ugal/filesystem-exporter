@@ -226,7 +226,12 @@ func TestLoadFromEnvDirectoriesWithColons(t *testing.T) {
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			t.Fatalf("failed to create test directory %s: %v", dir, err)
 		}
-		defer os.RemoveAll(dir) // Clean up after test
+
+		defer func() {
+			if err := os.RemoveAll(dir); err != nil {
+				t.Logf("failed to remove test directory %s: %v", dir, err)
+			}
+		}() // Clean up after test
 	}
 
 	tests := []struct {
