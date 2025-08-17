@@ -10,6 +10,7 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/version"
+
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -234,6 +235,22 @@ func (s *Server) handleRoot(c *gin.Context) {
         <ul>
             <li><strong>Filesystems:</strong> ` + fmt.Sprintf("%d", len(s.config.Filesystems)) + ` configured</li>
             <li><strong>Directories:</strong> ` + fmt.Sprintf("%d", len(s.config.Directories)) + ` configured</li>
+        </ul>
+    </div>
+
+    <div class="metrics-info">
+        <h3>Available Metrics</h3>
+        <ul>
+            <li><strong>filesystem_exporter_volume_size_bytes:</strong> Total size of filesystem in bytes</li>
+            <li><strong>filesystem_exporter_volume_available_bytes:</strong> Available space on filesystem in bytes</li>
+            <li><strong>filesystem_exporter_volume_used_ratio:</strong> Ratio of used space (0.0 to 1.0)</li>
+            <li><strong>filesystem_exporter_directory_size_bytes:</strong> Size of directory in bytes</li>
+            <li><strong>filesystem_exporter_collection_duration_seconds:</strong> Duration of collection in seconds</li>
+            <li><strong>filesystem_exporter_collection_timestamp:</strong> Timestamp of last collection</li>
+            <li><strong>filesystem_exporter_collection_success_total:</strong> Total number of successful collections</li>
+            <li><strong>filesystem_exporter_collection_failed_total:</strong> Total number of failed collections</li>
+            <li><strong>filesystem_exporter_directories_processed_total:</strong> Total number of directories processed</li>
+            <li><strong>filesystem_exporter_directories_failed_total:</strong> Total number of directories that failed to process</li>
         </ul>
     </div>
 
