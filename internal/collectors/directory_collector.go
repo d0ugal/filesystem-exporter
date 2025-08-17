@@ -253,8 +253,8 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 			depth++ // Files are at depth + 1
 		}
 
-		// Only collect directories at the exact specified level
-		if depth == group.SubdirectoryLevels && d.IsDir() {
+		// Collect directories up to the specified level (inclusive)
+		if depth <= group.SubdirectoryLevels && d.IsDir() {
 			// Collect directory size
 			if err := dc.collectSingleDirectoryFile(ctx, groupName, path, collectionType, depth); err != nil {
 				slog.Warn("Failed to collect subdirectory", "path", path, "error", err)

@@ -13,9 +13,9 @@ import (
 	"filesystem-exporter/internal/metrics"
 )
 
-// TestSubdirectoryLevelsBehavior demonstrates the important behavior
-// where setting subdirectory_levels: 2 skips level 1 directories
-// and only collects level 2 subdirectories
+// TestSubdirectoryLevelsBehavior demonstrates the corrected behavior
+// where setting subdirectory_levels: 2 collects directories at levels 0, 1, and 2
+// (up to the specified level, inclusive)
 func TestSubdirectoryLevelsBehavior(t *testing.T) {
 	// Create a temporary directory structure that mimics the real setup
 	tempDir := t.TempDir()
@@ -75,7 +75,7 @@ func TestSubdirectoryLevelsBehavior(t *testing.T) {
 	// Give it time to collect metrics
 	time.Sleep(2 * time.Second)
 
-	// Test what gets collected with subdirectory_levels: 2
+	// Test what gets collected with subdirectory_levels: 2 (should collect levels 0, 1, 2)
 	t.Run("SubdirectoryLevels2", func(t *testing.T) {
 		metrics := registry.GetRegistry()
 
@@ -88,15 +88,16 @@ func TestSubdirectoryLevelsBehavior(t *testing.T) {
 
 		// With subdirectory_levels: 2, we should get:
 		// - Base directory (dougalDir) at level 0
+		// - icloud-photos at level 1
 		// - yearDir (2024) at level 2
-		// But NOT icloud-photos at level 1
 		expectedDirectories := []string{
-			dougalDir, // Base directory (level 0)
-			yearDir,   // Level 2 directory (2024)
+			dougalDir,       // Base directory (level 0)
+			icloudPhotosDir, // Level 1 directory
+			yearDir,         // Level 2 directory (2024)
 		}
 
 		unexpectedDirectories := []string{
-			icloudPhotosDir, // Should NOT be collected (level 1)
+			// No unexpected directories - all levels up to 2 should be collected
 		}
 
 		// Check that expected directories are collected
