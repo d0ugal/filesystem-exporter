@@ -219,6 +219,33 @@ func TestLoadFromEnvDirectories(t *testing.T) {
 	runEnvTests(t, tests)
 }
 
+func TestLoadFromEnvDirectoriesWithColons(t *testing.T) {
+	tests := []struct {
+		name        string
+		envVars     map[string]string
+		expectError bool
+		validate    func(*Config) error
+	}{
+		{
+			name: "directories with paths containing colons",
+			envVars: map[string]string{
+				"FILESYSTEM_EXPORTER_DIRECTORIES": "hoose:/usr/share/hoose/:0,frigate:/mnt/media/frigate/:1",
+				"FILESYSTEM_EXPORTER_FILESYSTEMS": "root:/:sda1",
+			},
+			expectError: false, // Let's see what actually gets parsed
+			validate: func(cfg *Config) error {
+				t.Logf("Parsed directories: %+v", cfg.Directories)
+				for name, dir := range cfg.Directories {
+					t.Logf("Directory %s: path=%s, levels=%d", name, dir.Path, dir.SubdirectoryLevels)
+				}
+				return nil
+			},
+		},
+	}
+
+	runEnvTests(t, tests)
+}
+
 func TestLoadFromEnvErrors(t *testing.T) {
 	tests := []struct {
 		name        string

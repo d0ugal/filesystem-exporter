@@ -126,8 +126,8 @@ func (fc *FilesystemCollector) collectFilesystemUsage(ctx context.Context, files
 	sanitizedMountPoint := fc.sanitizePath(filesystem.MountPoint)
 
 	// Use df command to get filesystem information
-	// Create context with timeout (10 seconds max)
-	timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	// Create context with timeout (10 seconds max) - use background context to avoid cancellation propagation
+	timeoutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	// G204: Subprocess launched with variable - This is safe because sanitizedMountPoint is validated and sanitized

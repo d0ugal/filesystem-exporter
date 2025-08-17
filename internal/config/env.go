@@ -134,48 +134,97 @@ func loadFilesystemsConfig(cfg *Config) error {
 }
 
 func loadDirectoriesConfig(cfg *Config) error {
-	// Check if directories are configured via environment
-	directoriesStr := getEnv(EnvPrefix + "DIRECTORIES")
-	if directoriesStr == "" {
-		return nil // No directories configured via env
-	}
-
-	// Parse directories from comma-separated list
-	// Format: "name1:path1:levels1:interval1,name2:path2:levels2:interval2"
-	directoryList := strings.Split(directoriesStr, ",")
-
 	cfg.Directories = make(map[string]DirectoryGroup)
 
-	for i, dirStr := range directoryList {
-		parts := strings.Split(strings.TrimSpace(dirStr), ":")
-		if len(parts) < 3 || len(parts) > 4 {
-			return fmt.Errorf("invalid directory format at index %d: expected 'name:path:levels[:interval]', got '%s'", i, dirStr)
-		}
-
-		name := strings.TrimSpace(parts[0])
-		path := strings.TrimSpace(parts[1])
-
-		levels, err := strconv.Atoi(strings.TrimSpace(parts[2]))
-		if err != nil {
-			return fmt.Errorf("invalid subdirectory levels for directory %s: %s", name, parts[2])
-		}
-
-		dir := DirectoryGroup{
-			Path:               path,
-			SubdirectoryLevels: levels,
-		}
-
-		// Optional interval
-		if len(parts) == 4 && parts[3] != "" {
-			duration, err := time.ParseDuration(strings.TrimSpace(parts[3]))
-			if err != nil {
-				return fmt.Errorf("invalid interval for directory %s: %s", name, parts[3])
+	// First, check for individual directory environment variables
+	// Format: FILESYSTEM_EXPORTER_DIRECTORIES_<name>=path:levels[:interval]
+	envVars := os.Environ()
+	for _, envVar := range envVars {
+		if strings.HasPrefix(envVar, EnvPrefix+"DIRECTORIES_") {
+			parts := strings.SplitN(envVar, "=", 2)
+			if len(parts) != 2 {
+				continue
 			}
 
-			dir.Interval = &Duration{duration}
+			// Extract directory name from environment variable name
+			// FILESYSTEM_EXPORTER_DIRECTORIES_<name> -> <name>
+			dirName := strings.TrimPrefix(parts[0], EnvPrefix+"DIRECTORIES_")
+			dirValue := parts[1]
+
+			// Parse directory configuration
+			// Format: path:levels[:interval]
+			dirParts := strings.Split(strings.TrimSpace(dirValue), ":")
+			if len(dirParts) < 2 || len(dirParts) > 3 {
+				return fmt.Errorf("invalid directory format for %s: expected 'path:levels[:interval]', got '%s'", dirName, dirValue)
+			}
+
+			path := strings.TrimSpace(dirParts[0])
+			levels, err := strconv.Atoi(strings.TrimSpace(dirParts[1]))
+			if err != nil {
+				return fmt.Errorf("invalid subdirectory levels for directory %s: %s", dirName, dirParts[1])
+			}
+
+			dir := DirectoryGroup{
+				Path:               path,
+				SubdirectoryLevels: levels,
+			}
+
+			// Optional interval
+			if len(dirParts) == 3 && dirParts[2] != "" {
+				duration, err := time.ParseDuration(strings.TrimSpace(dirParts[2]))
+				if err != nil {
+					return fmt.Errorf("invalid interval for directory %s: %s", dirName, dirParts[2])
+				}
+
+				dir.Interval = &Duration{duration}
+			}
+
+			cfg.Directories[dirName] = dir
+		}
+	}
+
+	// If no individual directory variables found, check for the legacy comma-separated format
+	if len(cfg.Directories) == 0 {
+		directoriesStr := getEnv(EnvPrefix + "DIRECTORIES")
+		if directoriesStr == "" {
+			return nil // No directories configured via env
 		}
 
-		cfg.Directories[name] = dir
+		// Parse directories from comma-separated list
+		// Format: "name1:path1:levels1:interval1,name2:path2:levels2:interval2"
+		directoryList := strings.Split(directoriesStr, ",")
+
+		for i, dirStr := range directoryList {
+			parts := strings.Split(strings.TrimSpace(dirStr), ":")
+			if len(parts) < 3 || len(parts) > 4 {
+				return fmt.Errorf("invalid directory format at index %d: expected 'name:path:levels[:interval]', got '%s'", i, dirStr)
+			}
+
+			name := strings.TrimSpace(parts[0])
+			path := strings.TrimSpace(parts[1])
+
+			levels, err := strconv.Atoi(strings.TrimSpace(parts[2]))
+			if err != nil {
+				return fmt.Errorf("invalid subdirectory levels for directory %s: %s", name, parts[2])
+			}
+
+			dir := DirectoryGroup{
+				Path:               path,
+				SubdirectoryLevels: levels,
+			}
+
+			// Optional interval
+			if len(parts) == 4 && parts[3] != "" {
+				duration, err := time.ParseDuration(strings.TrimSpace(parts[3]))
+				if err != nil {
+					return fmt.Errorf("invalid interval for directory %s: %s", name, parts[3])
+				}
+
+				dir.Interval = &Duration{duration}
+			}
+
+			cfg.Directories[name] = dir
+		}
 	}
 
 	return nil

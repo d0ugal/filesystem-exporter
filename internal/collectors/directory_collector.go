@@ -139,8 +139,8 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 		return fmt.Errorf("path validation failed for %s: %w", path, err)
 	}
 
-	// Create context with timeout (6 minutes max)
-	timeoutCtx, cancel := context.WithTimeout(ctx, 6*time.Minute)
+	// Create context with timeout (6 minutes max) - use background context to avoid cancellation propagation
+	timeoutCtx, cancel := context.WithTimeout(context.Background(), 6*time.Minute)
 	defer cancel()
 
 	// Track lock waiting time
