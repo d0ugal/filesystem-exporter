@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.5.1...v1.6.0) (2025-08-17)
+
+
+### Features
+
+* add available metrics section to web UI ([fbedc2b](https://github.com/d0ugal/filesystem-exporter/commit/fbedc2b8f4c6d3bd7c512831558aa5dd669d9f20))
+
 ## [1.5.1](https://github.com/d0ugal/filesystem-exporter/compare/v1.5.0...v1.5.1) (2025-08-16)
 
 
