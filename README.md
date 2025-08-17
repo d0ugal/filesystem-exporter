@@ -14,6 +14,26 @@ A lightweight, high-performance Go-based metrics collection service designed pri
 - **Structured Logging**: JSON and text logging with configurable levels
 - **Retry Logic**: Exponential backoff retry for failed collections
 
+## Metrics
+
+### Filesystem Metrics
+- `filesystem_exporter_volume_size_bytes`: Total size of filesystem in bytes
+- `filesystem_exporter_volume_available_bytes`: Available space on filesystem in bytes
+- `filesystem_exporter_volume_used_ratio`: Ratio of used space (0.0 to 1.0)
+
+### Directory Metrics
+- `filesystem_exporter_directory_size_bytes`: Size of directory in bytes
+
+### Collection Metrics
+- `filesystem_exporter_collection_duration_seconds`: Duration of collection in seconds
+- `filesystem_exporter_collection_timestamp`: Timestamp of last collection
+- `filesystem_exporter_collection_success_total`: Total number of successful collections
+- `filesystem_exporter_collection_failed_total`: Total number of failed collections
+
+### Processing Metrics
+- `filesystem_exporter_directories_processed_total`: Total number of directories processed
+- `filesystem_exporter_directories_failed_total`: Total number of directories that failed to process
+
 ## Quick Start
 
 ### Using Docker
@@ -223,26 +243,6 @@ directories:
     path: "/home"
     subdirectory_levels: 1
 ```
-
-## Metrics
-
-### Filesystem Metrics
-- `filesystem_exporter_volume_size_bytes`: Total size of filesystem in bytes
-- `filesystem_exporter_volume_available_bytes`: Available space on filesystem in bytes
-- `filesystem_exporter_volume_used_ratio`: Ratio of used space (0.0 to 1.0)
-
-### Directory Metrics
-- `filesystem_exporter_directory_size_bytes`: Size of directory in bytes
-
-### Collection Metrics
-- `filesystem_exporter_collection_duration_seconds`: Duration of collection in seconds
-- `filesystem_exporter_collection_timestamp`: Timestamp of last collection
-- `filesystem_exporter_collection_success_total`: Total number of successful collections
-- `filesystem_exporter_collection_failed_total`: Total number of failed collections
-
-### Processing Metrics
-- `filesystem_exporter_directories_processed_total`: Total number of directories processed
-- `filesystem_exporter_directories_failed_total`: Total number of directories that failed to process
 
 ## Endpoints
 
