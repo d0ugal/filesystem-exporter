@@ -220,6 +220,15 @@ func TestLoadFromEnvDirectories(t *testing.T) {
 }
 
 func TestLoadFromEnvDirectoriesWithColons(t *testing.T) {
+	// Create temporary directories for testing
+	testDirs := []string{"/tmp/test1", "/tmp/test2"}
+	for _, dir := range testDirs {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			t.Fatalf("failed to create test directory %s: %v", dir, err)
+		}
+		defer os.RemoveAll(dir) // Clean up after test
+	}
+
 	tests := []struct {
 		name        string
 		envVars     map[string]string
@@ -229,7 +238,7 @@ func TestLoadFromEnvDirectoriesWithColons(t *testing.T) {
 		{
 			name: "directories with paths containing colons",
 			envVars: map[string]string{
-				"FILESYSTEM_EXPORTER_DIRECTORIES": "hoose:/usr/share/hoose/:0,frigate:/mnt/media/frigate/:1",
+				"FILESYSTEM_EXPORTER_DIRECTORIES": "test1:/tmp/test1:0,test2:/tmp/test2:1",
 				"FILESYSTEM_EXPORTER_FILESYSTEMS": "root:/:sda1",
 			},
 			expectError: false, // Let's see what actually gets parsed
