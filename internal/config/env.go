@@ -159,6 +159,7 @@ func loadDirectoriesConfig(cfg *Config) error {
 			}
 
 			path := strings.TrimSpace(dirParts[0])
+
 			levels, err := strconv.Atoi(strings.TrimSpace(dirParts[1]))
 			if err != nil {
 				return fmt.Errorf("invalid subdirectory levels for directory %s: %s", dirName, dirParts[1])

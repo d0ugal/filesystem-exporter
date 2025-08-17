@@ -131,6 +131,7 @@ func (fc *FilesystemCollector) collectFilesystemUsage(ctx context.Context, files
 	defer cancel()
 
 	// G204: Subprocess launched with variable - This is safe because sanitizedMountPoint is validated and sanitized
+	//nolint:contextcheck // Intentionally use background context to prevent cancellation propagation
 	cmd := exec.CommandContext(timeoutCtx, "df", sanitizedMountPoint)
 
 	output, err := cmd.Output()

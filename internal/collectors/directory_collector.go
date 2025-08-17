@@ -160,6 +160,7 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 	// Use du with performance optimizations for large directories
 	// -s: summarize only
 	// -x: don't cross filesystem boundaries (faster)
+	//nolint:contextcheck // Intentionally use background context to prevent cancellation propagation
 	cmd := exec.CommandContext(timeoutCtx, "du", "-s", "-x", path)
 
 	output, err := cmd.Output()
