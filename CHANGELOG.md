@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.4](https://github.com/d0ugal/filesystem-exporter/compare/v1.6.3...v1.6.4) (2025-08-17)
+
+
+### Bug Fixes
+
+* collect directories up to specified level (inclusive) ([37abe72](https://github.com/d0ugal/filesystem-exporter/commit/37abe723a7e8772d1a3ba86db3199585a9260421))
+* **lint:** handle error return from os.RemoveAll in test cleanup ([155fdaf](https://github.com/d0ugal/filesystem-exporter/commit/155fdaf86c1475069d303f48f594ff557e97b896))
+
 ## [1.6.3](https://github.com/d0ugal/filesystem-exporter/compare/v1.6.2...v1.6.3) (2025-08-17)
 
 
