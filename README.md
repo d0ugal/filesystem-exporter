@@ -25,10 +25,11 @@ A lightweight, high-performance Go-based metrics collection service designed pri
 - `filesystem_exporter_directory_size_bytes`: Size of directory in bytes
 
 ### Collection Metrics
-- `filesystem_exporter_collection_duration_seconds`: Duration of collection in seconds
-- `filesystem_exporter_collection_timestamp`: Timestamp of last collection
-- `filesystem_exporter_collection_success_total`: Total number of successful collections
-- `filesystem_exporter_collection_failed_total`: Total number of failed collections
+- `filesystem_exporter_collection_duration_seconds`: Duration of collection in seconds (labeled with `interval_seconds`)
+- `filesystem_exporter_collection_timestamp`: Timestamp of last collection (labeled with `interval_seconds`)
+- `filesystem_exporter_collection_success_total`: Total number of successful collections (labeled with `interval_seconds`)
+- `filesystem_exporter_collection_failed_total`: Total number of failed collections (labeled with `interval_seconds`)
+- `filesystem_exporter_collection_interval_seconds`: Configured collection interval in seconds (for PromQL arithmetic)
 
 ### Processing Metrics
 - `filesystem_exporter_directories_processed_total`: Total number of directories processed

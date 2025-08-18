@@ -71,6 +71,7 @@ func (fc *FilesystemCollector) run(ctx context.Context) {
 func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, filesystem config.FilesystemConfig) {
 	startTime := time.Now()
 	collectionType := "filesystem"
+	interval := fc.config.GetFilesystemInterval(filesystem)
 
 	slog.Info("Starting filesystem metrics collection", "filesystem", filesystem.Name)
 
@@ -80,16 +81,18 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 	}, 3, 2*time.Second)
 	if err != nil {
 		slog.Error("Failed to collect filesystem metrics after retries", "filesystem", filesystem.Name, "error", err)
-		fc.metrics.CollectionFailedCounter().WithLabelValues(collectionType, filesystem.Name).Inc()
+		fc.metrics.CollectionFailedCounter().WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Inc()
 
 		return
 	}
 
-	fc.metrics.CollectionSuccessCounter().WithLabelValues(collectionType, filesystem.Name).Inc()
+	fc.metrics.CollectionSuccessCounter().WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Inc()
+	// Expose configured interval as a numeric gauge for PromQL arithmetic
+	fc.metrics.CollectionIntervalGauge().WithLabelValues(collectionType, filesystem.Name).Set(float64(interval))
 
 	duration := time.Since(startTime).Seconds()
-	fc.metrics.CollectionDurationGauge().WithLabelValues(collectionType, filesystem.Name).Set(duration)
-	fc.metrics.CollectionTimestampGauge().WithLabelValues(collectionType, filesystem.Name).Set(float64(time.Now().Unix()))
+	fc.metrics.CollectionDurationGauge().WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Set(duration)
+	fc.metrics.CollectionTimestampGauge().WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Set(float64(time.Now().Unix()))
 
 	slog.Info("Filesystem metrics collection completed", "filesystem", filesystem.Name, "duration", duration)
 }

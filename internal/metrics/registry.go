@@ -20,6 +20,7 @@ type Registry struct {
 	// Collection metrics
 	collectionDurationGauge  *prometheus.GaugeVec
 	collectionTimestampGauge *prometheus.GaugeVec
+	collectionIntervalGauge  *prometheus.GaugeVec
 	collectionSuccessCounter *prometheus.CounterVec
 	collectionFailedCounter  *prometheus.CounterVec
 
@@ -79,12 +80,19 @@ func NewRegistry() *Registry {
 				Name: "filesystem_exporter_collection_duration_seconds",
 				Help: "Duration of collection in seconds",
 			},
-			[]string{"type", "group"},
+			[]string{"type", "group", "interval_seconds"},
 		),
 		collectionTimestampGauge: factory.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "filesystem_exporter_collection_timestamp",
 				Help: "Timestamp of last collection",
+			},
+			[]string{"type", "group", "interval_seconds"},
+		),
+		collectionIntervalGauge: factory.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_collection_interval_seconds",
+				Help: "Configured collection interval in seconds",
 			},
 			[]string{"type", "group"},
 		),
@@ -93,14 +101,14 @@ func NewRegistry() *Registry {
 				Name: "filesystem_exporter_collection_success_total",
 				Help: "Total number of successful collections",
 			},
-			[]string{"type", "group"},
+			[]string{"type", "group", "interval_seconds"},
 		),
 		collectionFailedCounter: factory.NewCounterVec(
 			prometheus.CounterOpts{
 				Name: "filesystem_exporter_collection_failed_total",
 				Help: "Total number of failed collections",
 			},
-			[]string{"type", "group"},
+			[]string{"type", "group", "interval_seconds"},
 		),
 		directoriesProcessedCounter: factory.NewCounterVec(
 			prometheus.CounterOpts{
@@ -154,6 +162,10 @@ func (r *Registry) CollectionDurationGauge() *prometheus.GaugeVec {
 
 func (r *Registry) CollectionTimestampGauge() *prometheus.GaugeVec {
 	return r.collectionTimestampGauge
+}
+
+func (r *Registry) CollectionIntervalGauge() *prometheus.GaugeVec {
+	return r.collectionIntervalGauge
 }
 
 func (r *Registry) CollectionSuccessCounter() *prometheus.CounterVec {

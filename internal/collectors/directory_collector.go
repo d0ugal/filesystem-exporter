@@ -73,6 +73,7 @@ func (dc *DirectoryCollector) run(ctx context.Context) {
 func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupName string, group config.DirectoryGroup) {
 	startTime := time.Now()
 	collectionType := "directory"
+	interval := dc.config.GetDirectoryInterval(group)
 
 	slog.Info("Starting directory metrics collection", "group", groupName)
 
@@ -82,16 +83,18 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 	}, 3, 2*time.Second)
 	if err != nil {
 		slog.Error("Failed to collect directory group metrics after retries", "group", groupName, "error", err)
-		dc.metrics.CollectionFailedCounter().WithLabelValues(collectionType, groupName).Inc()
+		dc.metrics.CollectionFailedCounter().WithLabelValues(collectionType, groupName, strconv.Itoa(interval)).Inc()
 
 		return
 	}
 
-	dc.metrics.CollectionSuccessCounter().WithLabelValues(collectionType, groupName).Inc()
+	dc.metrics.CollectionSuccessCounter().WithLabelValues(collectionType, groupName, strconv.Itoa(interval)).Inc()
+	// Expose configured interval as a numeric gauge for PromQL arithmetic
+	dc.metrics.CollectionIntervalGauge().WithLabelValues(collectionType, groupName).Set(float64(interval))
 
 	duration := time.Since(startTime).Seconds()
-	dc.metrics.CollectionDurationGauge().WithLabelValues(collectionType, groupName).Set(duration)
-	dc.metrics.CollectionTimestampGauge().WithLabelValues(collectionType, groupName).Set(float64(time.Now().Unix()))
+	dc.metrics.CollectionDurationGauge().WithLabelValues(collectionType, groupName, strconv.Itoa(interval)).Set(duration)
+	dc.metrics.CollectionTimestampGauge().WithLabelValues(collectionType, groupName, strconv.Itoa(interval)).Set(float64(time.Now().Unix()))
 
 	slog.Info("Directory metrics collection completed", "group", groupName, "duration", duration)
 }

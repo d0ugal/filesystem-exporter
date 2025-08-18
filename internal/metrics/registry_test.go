@@ -43,6 +43,10 @@ func TestNewRegistry(t *testing.T) {
 		t.Error("Expected collection failed counter to be initialized")
 	}
 
+	if registry.CollectionIntervalGauge() == nil {
+		t.Error("Expected collection interval gauge to be initialized")
+	}
+
 	if registry.DirectoriesProcessedCounter() == nil {
 		t.Error("Expected directories processed counter to be initialized")
 	}
