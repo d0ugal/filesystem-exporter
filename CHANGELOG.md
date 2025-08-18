@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.6.4...v1.7.0) (2025-08-18)
+
+
+### Features
+
+* add interval metrics for better PromQL monitoring ([2e9035c](https://github.com/d0ugal/filesystem-exporter/commit/2e9035c21abe6d853148a2badb648d9e4c7a1e86))
+
 ## [1.6.4](https://github.com/d0ugal/filesystem-exporter/compare/v1.6.3...v1.6.4) (2025-08-17)
 
 
