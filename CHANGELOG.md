@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.7.0...v1.8.0) (2025-08-19)
+
+
+### Features
+
+* **server:** add dynamic metrics information with collapsible interface ([936114a](https://github.com/d0ugal/filesystem-exporter/commit/936114ae9a8d59f8b29c4811ebe92ea7dcb511fb))
+
+
+### Bug Fixes
+
+* **lint:** pre-allocate slices to resolve golangci-lint prealloc warnings ([8bba4cc](https://github.com/d0ugal/filesystem-exporter/commit/8bba4cc379c1cc37525e5cfb88bc5269497fc4df))
+
 ## [1.7.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.6.4...v1.7.0) (2025-08-18)
 
 
