@@ -203,8 +203,8 @@ func (s *Server) handleMetricsInfo(c *gin.Context) {
 
 	// Generate JSON response
 	response := gin.H{
-		"metrics":     metricsInfo,
-		"total_count": len(metricsInfo),
+		"metrics":      metricsInfo,
+		"total_count":  len(metricsInfo),
 		"generated_at": time.Now().Unix(),
 	}
 
@@ -217,13 +217,16 @@ func (s *Server) handleRoot(c *gin.Context) {
 
 	// Generate metrics HTML dynamically
 	metricsHTML := ""
+
 	for i, metric := range metricsInfo {
 		labelsStr := ""
+
 		if len(metric.Labels) > 0 {
 			var labelPairs []string
 			for k, v := range metric.Labels {
 				labelPairs = append(labelPairs, fmt.Sprintf(`%s="%s"`, k, v))
 			}
+
 			labelsStr = "{" + strings.Join(labelPairs, ", ") + "}"
 		}
 
