@@ -11,7 +11,6 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/version"
-
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -78,7 +77,7 @@ func (s *Server) setupRoutes() {
 }
 
 func (s *Server) getMetricsInfo() []MetricInfo {
-	var metricsInfo []MetricInfo
+	metricsInfo := make([]MetricInfo, 0, 13)
 
 	// Define all metrics manually since reflection approach is complex with Prometheus metrics
 	metrics := []struct {
