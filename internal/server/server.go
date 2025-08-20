@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -72,9 +71,6 @@ func (s *Server) setupRoutes() {
 
 	// Health endpoint
 	s.router.GET("/health", s.handleHealth)
-
-	// Metrics info endpoint
-	s.router.GET("/metrics-info", s.handleMetricsInfo)
 }
 
 func (s *Server) getMetricsInfo() []MetricInfo {
@@ -199,28 +195,6 @@ func (s *Server) getMetricHelp(metricName string) string {
 	}
 }
 
-func (s *Server) handleMetricsInfo(c *gin.Context) {
-	metricsInfo := s.getMetricsInfo()
-
-	// Generate JSON response
-	response := gin.H{
-		"metrics":      metricsInfo,
-		"total_count":  len(metricsInfo),
-		"generated_at": time.Now().Unix(),
-	}
-
-	// Marshal the response to pretty JSON
-	jsonBytes, err := json.MarshalIndent(response, "", "    ")
-	if err != nil {
-		slog.Error("Failed to marshal metrics info to JSON", "error", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate metrics info"})
-		return
-	}
-
-	c.Header("Content-Type", "application/json")
-	c.String(http.StatusOK, string(jsonBytes))
-}
-
 func (s *Server) handleRoot(c *gin.Context) {
 	versionInfo := version.Get()
 	metricsInfo := s.getMetricsInfo()
@@ -290,7 +264,7 @@ func (s *Server) handleRoot(c *gin.Context) {
         }
         .endpoints-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
             margin: 1rem 0;
         }
@@ -480,12 +454,6 @@ func (s *Server) handleRoot(c *gin.Context) {
         <div class="endpoint">
             <h3><a href="/metrics">📊 Metrics</a></h3>
             <p class="description">Prometheus metrics endpoint</p>
-            <span class="status metrics">Available</span>
-        </div>
-
-        <div class="endpoint">
-            <h3><a href="/metrics-info">📋 Metrics Info</a></h3>
-            <p class="description">Detailed metrics information with examples</p>
             <span class="status metrics">Available</span>
         </div>
 
