@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.10.0...v1.11.0) (2025-08-20)
+
+
+### Features
+
+* optimize linting performance with caching ([b9b1d82](https://github.com/d0ugal/filesystem-exporter/commit/b9b1d82278988f694dcb392b475665b0d0574db3))
+
+
+### Bug Fixes
+
+* run Docker containers as current user to prevent permission issues ([f9c3606](https://github.com/d0ugal/filesystem-exporter/commit/f9c360672a56f933428307362618d090b57fb12b))
+
 ## [1.10.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.9.0...v1.10.0) (2025-08-20)
 
 
