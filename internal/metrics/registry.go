@@ -5,6 +5,14 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
+// MetricInfo contains information about a metric for the UI
+type MetricInfo struct {
+	Name         string
+	Help         string
+	Labels       []string
+	ExampleValue string
+}
+
 type Registry struct {
 	// Version info metric
 	versionInfoGauge *prometheus.GaugeVec
@@ -33,13 +41,26 @@ type Registry struct {
 
 	// The underlying Prometheus registry
 	registry *prometheus.Registry
+
+	// Metric information for UI
+	metricInfo []MetricInfo
+}
+
+// addMetricInfo adds metric information to the registry
+func (r *Registry) addMetricInfo(name, help string, labels []string) {
+	r.metricInfo = append(r.metricInfo, MetricInfo{
+		Name:         name,
+		Help:         help,
+		Labels:       labels,
+		ExampleValue: "",
+	})
 }
 
 func NewRegistry() *Registry {
 	registry := prometheus.NewRegistry()
 	factory := promauto.With(registry)
 
-	return &Registry{
+	r := &Registry{
 		versionInfoGauge: factory.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "filesystem_exporter_info",
@@ -133,6 +154,23 @@ func NewRegistry() *Registry {
 		),
 		registry: registry,
 	}
+
+	// Add metric information for UI
+	r.addMetricInfo("filesystem_exporter_info", "Information about the filesystem exporter", []string{"version", "commit", "build_date"})
+	r.addMetricInfo("filesystem_exporter_volume_size_bytes", "Total size of volume in bytes", []string{"volume", "mount_point", "device"})
+	r.addMetricInfo("filesystem_exporter_volume_available_bytes", "Available space on volume in bytes", []string{"volume", "mount_point", "device"})
+	r.addMetricInfo("filesystem_exporter_volume_used_ratio", "Ratio of used space on volume (0.0 to 1.0)", []string{"volume", "mount_point", "device"})
+	r.addMetricInfo("filesystem_exporter_directory_size_bytes", "Size of directory in bytes", []string{"group", "directory", "mode", "subdirectory_level"})
+	r.addMetricInfo("filesystem_exporter_collection_duration_seconds", "Duration of collection in seconds", []string{"type", "group", "interval_seconds"})
+	r.addMetricInfo("filesystem_exporter_collection_timestamp", "Timestamp of last collection", []string{"type", "group", "interval_seconds"})
+	r.addMetricInfo("filesystem_exporter_collection_interval_seconds", "Configured collection interval in seconds", []string{"type", "group"})
+	r.addMetricInfo("filesystem_exporter_collection_success_total", "Total number of successful collections", []string{"type", "group", "interval_seconds"})
+	r.addMetricInfo("filesystem_exporter_collection_failed_total", "Total number of failed collections", []string{"type", "group", "interval_seconds"})
+	r.addMetricInfo("filesystem_exporter_directories_processed_total", "Total number of directories processed", []string{"group", "mode"})
+	r.addMetricInfo("filesystem_exporter_directories_failed_total", "Total number of directories that failed to process", []string{"group", "mode"})
+	r.addMetricInfo("filesystem_exporter_du_lock_wait_duration_seconds", "Time spent waiting for du mutex lock in seconds", []string{"group", "directory"})
+
+	return r
 }
 
 // GetRegistry returns the underlying Prometheus registry for HTTP exposure
@@ -190,4 +228,9 @@ func (r *Registry) VersionInfoGauge() *prometheus.GaugeVec {
 
 func (r *Registry) DuLockWaitDurationGauge() *prometheus.GaugeVec {
 	return r.duLockWaitDurationGauge
+}
+
+// GetMetricsInfo returns information about all metrics for the UI
+func (r *Registry) GetMetricsInfo() []MetricInfo {
+	return r.metricInfo
 }
