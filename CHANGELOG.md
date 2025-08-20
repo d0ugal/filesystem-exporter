@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.8.0...v1.9.0) (2025-08-20)
+
+
+### Features
+
+* **api:** add pretty JSON formatting for metrics info endpoint ([4750345](https://github.com/d0ugal/filesystem-exporter/commit/4750345cd0ea1ec016968f2186734956341b70fe))
+* **ui:** improve layout with grid endpoints and reorder sections ([dc9cecc](https://github.com/d0ugal/filesystem-exporter/commit/dc9cecc71f817931ee1ccad38127de2cf398c3a0))
+
 ## [1.8.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.7.0...v1.8.0) (2025-08-19)
 
 
