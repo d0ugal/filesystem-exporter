@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -208,7 +209,16 @@ func (s *Server) handleMetricsInfo(c *gin.Context) {
 		"generated_at": time.Now().Unix(),
 	}
 
-	c.JSON(http.StatusOK, response)
+	// Marshal the response to pretty JSON
+	jsonBytes, err := json.MarshalIndent(response, "", "    ")
+	if err != nil {
+		slog.Error("Failed to marshal metrics info to JSON", "error", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate metrics info"})
+		return
+	}
+
+	c.Header("Content-Type", "application/json")
+	c.String(http.StatusOK, string(jsonBytes))
 }
 
 func (s *Server) handleRoot(c *gin.Context) {
