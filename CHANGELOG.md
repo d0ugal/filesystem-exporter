@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.1](https://github.com/d0ugal/filesystem-exporter/compare/v1.11.0...v1.11.1) (2025-08-20)
+
+
+### Bug Fixes
+
+* remove redundant Service Information section from UI ([009825b](https://github.com/d0ugal/filesystem-exporter/commit/009825b8f8cab635eb05a282d31231fe7fbfbbcf))
+
 ## [1.11.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.10.0...v1.11.0) (2025-08-20)
 
 
