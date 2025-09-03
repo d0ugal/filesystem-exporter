@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.2](https://github.com/d0ugal/filesystem-exporter/compare/v1.11.1...v1.11.2) (2025-09-03)
+
+
+### Bug Fixes
+
+* add build-args to pass version information in CI workflow ([c45c557](https://github.com/d0ugal/filesystem-exporter/commit/c45c5572f12931f64e75962da6332007820afa00))
+
 ## [1.11.1](https://github.com/d0ugal/filesystem-exporter/compare/v1.11.0...v1.11.1) (2025-08-20)
 
 
