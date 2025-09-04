@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.12.0...v1.13.0) (2025-09-04)
+
+
+### Features
+
+* update dev build versioning to use semver-compatible pre-release tags ([82ec723](https://github.com/d0ugal/filesystem-exporter/commit/82ec723d196a237319aacb3999bce561839738c5))
+
+
+### Bug Fixes
+
+* **ci:** add v prefix to dev tags for consistent versioning ([bef4422](https://github.com/d0ugal/filesystem-exporter/commit/bef4422954cedec8bf713e21288cce655c5f60b1))
+* use actual release version as base for dev tags instead of hardcoded 0.0.0 ([b0e18b0](https://github.com/d0ugal/filesystem-exporter/commit/b0e18b07573b70ebbce7eb78ef6bab0b4ab3cfb1))
+* use fetch-depth: 0 instead of fetch-tags for full git history ([e988aee](https://github.com/d0ugal/filesystem-exporter/commit/e988aee7c763a64155e12ddf7529d547241eb5c1))
+* use fetch-tags instead of fetch-depth for GitHub Actions ([0381f92](https://github.com/d0ugal/filesystem-exporter/commit/0381f92eb0dba9fce0b9e13d5269e5b96428ba73))
+
 ## [1.12.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.11.2...v1.12.0) (2025-09-04)
 
 
