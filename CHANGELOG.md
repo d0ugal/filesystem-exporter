@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.1](https://github.com/d0ugal/filesystem-exporter/compare/v1.13.0...v1.13.1) (2025-09-04)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/prometheus/client_golang to v1.23.1 ([23d04b3](https://github.com/d0ugal/filesystem-exporter/commit/23d04b3eda85d209822178dbf8b6eab0f0691095))
+* **deps:** update module github.com/prometheus/client_golang to v1.23.1 ([f9d74ba](https://github.com/d0ugal/filesystem-exporter/commit/f9d74baab6e5e2824a902cc83d195432f4408744))
+
 ## [1.13.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.12.0...v1.13.0) (2025-09-04)
 
 
