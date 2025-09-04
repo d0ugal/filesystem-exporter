@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.11.2...v1.12.0) (2025-09-04)
+
+
+### Features
+
+* enable global automerge in Renovate config ([c4e1ea7](https://github.com/d0ugal/filesystem-exporter/commit/c4e1ea74f450d2300a8f42554372aa739306ca8b))
+
 ## [1.11.2](https://github.com/d0ugal/filesystem-exporter/compare/v1.11.1...v1.11.2) (2025-09-03)
 
 
