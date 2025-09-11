@@ -215,26 +215,6 @@ scrape_configs:
       - targets: ['filesystem-exporter:8080']
 ```
 
-## Metrics
-
-### Filesystem Metrics
-- `filesystem_exporter_volume_size_bytes`: Total size of filesystem in bytes
-- `filesystem_exporter_volume_available_bytes`: Available space on filesystem in bytes
-- `filesystem_exporter_volume_used_ratio`: Ratio of used space (0.0 to 1.0)
-
-### Directory Metrics
-- `filesystem_exporter_directory_size_bytes`: Size of directory in bytes
-
-### Collection Metrics
-- `filesystem_exporter_collection_duration_seconds`: Duration of collection in seconds
-- `filesystem_exporter_collection_success_total`: Total number of successful collections
-- `filesystem_exporter_collection_failed_total`: Total number of failed collections
-
-### Endpoints
-- `GET /`: HTML dashboard with service status and metrics information
-- `GET /metrics`: Prometheus metrics endpoint
-- `GET /health`: Health check endpoint
-
 ## Troubleshooting
 
 ### Common Issues
