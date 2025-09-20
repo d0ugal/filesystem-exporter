@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.1](https://github.com/d0ugal/filesystem-exporter/compare/v1.14.0...v1.14.1) (2025-09-20)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/gin-gonic/gin to v1.11.0 ([8b5bdd5](https://github.com/d0ugal/filesystem-exporter/commit/8b5bdd5138a72863a704938919b4134987b252db))
+* **deps:** update module github.com/gin-gonic/gin to v1.11.0 ([4044c1f](https://github.com/d0ugal/filesystem-exporter/commit/4044c1faba2df119131fb5e571be5c23edbda129))
+
 ## [1.14.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.13.3...v1.14.0) (2025-09-12)
 
 
