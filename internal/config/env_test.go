@@ -25,9 +25,11 @@ func TestLoadFromEnvBasic(t *testing.T) {
 				if cfg.Server.Host != "127.0.0.1" {
 					t.Errorf("expected host 127.0.0.1, got %s", cfg.Server.Host)
 				}
+
 				if cfg.Server.Port != 9090 {
 					t.Errorf("expected port 9090, got %d", cfg.Server.Port)
 				}
+
 				return nil
 			},
 		},
@@ -43,9 +45,11 @@ func TestLoadFromEnvBasic(t *testing.T) {
 				if cfg.Logging.Level != "debug" {
 					t.Errorf("expected log level debug, got %s", cfg.Logging.Level)
 				}
+
 				if cfg.Logging.Format != "text" {
 					t.Errorf("expected log format text, got %s", cfg.Logging.Format)
 				}
+
 				return nil
 			},
 		},
@@ -60,6 +64,7 @@ func TestLoadFromEnvBasic(t *testing.T) {
 				if cfg.Metrics.Collection.DefaultInterval.Duration != time.Minute {
 					t.Errorf("expected interval 1m, got %v", cfg.Metrics.Collection.DefaultInterval.Duration)
 				}
+
 				return nil
 			},
 		},
@@ -90,12 +95,15 @@ func TestLoadFromEnvFilesystems(t *testing.T) {
 				if cfg.Filesystems[0].Name != "root" {
 					t.Errorf("expected name root, got %s", cfg.Filesystems[0].Name)
 				}
+
 				if cfg.Filesystems[0].MountPoint != "/" {
 					t.Errorf("expected mount point /, got %s", cfg.Filesystems[0].MountPoint)
 				}
+
 				if cfg.Filesystems[0].Device != "sda1" {
 					t.Errorf("expected device sda1, got %s", cfg.Filesystems[0].Device)
 				}
+
 				if cfg.Filesystems[0].Interval == nil || cfg.Filesystems[0].Interval.Duration != time.Minute {
 					t.Errorf("expected interval 1m, got %v", cfg.Filesystems[0].Interval)
 				}
@@ -104,15 +112,19 @@ func TestLoadFromEnvFilesystems(t *testing.T) {
 				if cfg.Filesystems[1].Name != "data" {
 					t.Errorf("expected name data, got %s", cfg.Filesystems[1].Name)
 				}
+
 				if cfg.Filesystems[1].MountPoint != "/tmp" {
 					t.Errorf("expected mount point /tmp, got %s", cfg.Filesystems[1].MountPoint)
 				}
+
 				if cfg.Filesystems[1].Device != "sdb1" {
 					t.Errorf("expected device sdb1, got %s", cfg.Filesystems[1].Device)
 				}
+
 				if cfg.Filesystems[1].Interval == nil || cfg.Filesystems[1].Interval.Duration != 2*time.Minute {
 					t.Errorf("expected interval 2m, got %v", cfg.Filesystems[1].Interval)
 				}
+
 				return nil
 			},
 		},
@@ -130,9 +142,11 @@ func TestLoadFromEnvFilesystems(t *testing.T) {
 				if cfg.Filesystems[0].Interval != nil {
 					t.Errorf("expected no interval for first filesystem, got %v", cfg.Filesystems[0].Interval)
 				}
+
 				if cfg.Filesystems[1].Interval != nil {
 					t.Errorf("expected no interval for second filesystem, got %v", cfg.Filesystems[1].Interval)
 				}
+
 				return nil
 			},
 		},
@@ -164,12 +178,15 @@ func TestLoadFromEnvDirectories(t *testing.T) {
 				if !exists {
 					t.Error("expected home directory to exist")
 				}
+
 				if home.Path != "/home" {
 					t.Errorf("expected path /home, got %s", home.Path)
 				}
+
 				if home.SubdirectoryLevels != 1 {
 					t.Errorf("expected subdirectory levels 1, got %d", home.SubdirectoryLevels)
 				}
+
 				if home.Interval == nil || home.Interval.Duration != 10*time.Minute {
 					t.Errorf("expected interval 10m, got %v", home.Interval)
 				}
@@ -179,15 +196,19 @@ func TestLoadFromEnvDirectories(t *testing.T) {
 				if !exists {
 					t.Error("expected logs directory to exist")
 				}
+
 				if logs.Path != "/tmp" {
 					t.Errorf("expected path /tmp, got %s", logs.Path)
 				}
+
 				if logs.SubdirectoryLevels != 0 {
 					t.Errorf("expected subdirectory levels 0, got %d", logs.SubdirectoryLevels)
 				}
+
 				if logs.Interval == nil || logs.Interval.Duration != 5*time.Minute {
 					t.Errorf("expected interval 5m, got %v", logs.Interval)
 				}
+
 				return nil
 			},
 		},
@@ -211,6 +232,7 @@ func TestLoadFromEnvDirectories(t *testing.T) {
 				if logs.Interval != nil {
 					t.Errorf("expected no interval for logs directory, got %v", logs.Interval)
 				}
+
 				return nil
 			},
 		},
@@ -223,7 +245,7 @@ func TestLoadFromEnvDirectoriesWithColons(t *testing.T) {
 	// Create temporary directories for testing
 	testDirs := []string{"/tmp/test1", "/tmp/test2"}
 	for _, dir := range testDirs {
-		if err := os.MkdirAll(dir, 0755); err != nil {
+		if err := os.MkdirAll(dir, 0750); err != nil {
 			t.Fatalf("failed to create test directory %s: %v", dir, err)
 		}
 
@@ -249,9 +271,11 @@ func TestLoadFromEnvDirectoriesWithColons(t *testing.T) {
 			expectError: false, // Let's see what actually gets parsed
 			validate: func(cfg *Config) error {
 				t.Logf("Parsed directories: %+v", cfg.Directories)
+
 				for name, dir := range cfg.Directories {
 					t.Logf("Directory %s: path=%s, levels=%d", name, dir.Path, dir.SubdirectoryLevels)
 				}
+
 				return nil
 			},
 		},
