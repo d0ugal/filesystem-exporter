@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// Environment variable prefix
+// EnvPrefix is the environment variable prefix
 const EnvPrefix = "FILESYSTEM_EXPORTER_"
 
 // LoadFromEnv loads configuration from environment variables
