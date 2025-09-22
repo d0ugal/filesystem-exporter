@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.3](https://github.com/d0ugal/filesystem-exporter/compare/v1.14.2...v1.14.3) (2025-09-22)
+
+
+### Bug Fixes
+
+* **lint:** resolve godoclint and gosec issues ([5cb09b5](https://github.com/d0ugal/filesystem-exporter/commit/5cb09b52440a0da6870754fe7204dac2ca9e3592))
+
 ## [1.14.2](https://github.com/d0ugal/filesystem-exporter/compare/v1.14.1...v1.14.2) (2025-09-20)
 
 
