@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.14.5...v1.15.0) (2025-10-02)
+
+
+### Features
+
+* **deps:** migrate to YAML v3 ([d39e5d4](https://github.com/d0ugal/filesystem-exporter/commit/d39e5d4b67d4bcbf42f12608277b02e87da0116a))
+* **renovate:** add gomodTidy post-update option for Go modules ([6d1f638](https://github.com/d0ugal/filesystem-exporter/commit/6d1f638189250a97825a6ef8ca6efb8842811c92))
+
+
+### Reverts
+
+* remove unnecessary renovate config changes ([6185079](https://github.com/d0ugal/filesystem-exporter/commit/6185079c7e99f9766d762f4792280f01d6512648))
+
 ## [1.14.5](https://github.com/d0ugal/filesystem-exporter/compare/v1.14.4...v1.14.5) (2025-10-02)
 
 
