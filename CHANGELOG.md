@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.5](https://github.com/d0ugal/filesystem-exporter/compare/v1.14.4...v1.14.5) (2025-10-02)
+
+
+### Reverts
+
+* remove unnecessary renovate config changes ([5f38ac8](https://github.com/d0ugal/filesystem-exporter/commit/5f38ac8c13641394c8c6fe971a392da947725b4e))
+
 ## [1.14.4](https://github.com/d0ugal/filesystem-exporter/compare/v1.14.3...v1.14.4) (2025-10-02)
 
 
