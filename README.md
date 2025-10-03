@@ -2,7 +2,7 @@
 
 A lightweight Go-based metrics collection service for Prometheus that monitors filesystem and directory sizes.
 
-**Image**: `ghcr.io/d0ugal/filesystem-exporter:latest`
+**Image**: `ghcr.io/d0ugal/filesystem-exporter:v1.15.0`
 
 ## Metrics
 
@@ -32,7 +32,7 @@ A lightweight Go-based metrics collection service for Prometheus that monitors f
 version: '3.8'
 services:
   filesystem-exporter:
-    image: ghcr.io/d0ugal/filesystem-exporter:latest
+    image: ghcr.io/d0ugal/filesystem-exporter:v1.15.0
     ports:
       - "8080:8080"
     volumes:
@@ -82,7 +82,7 @@ directories:
 version: '3.8'
 services:
   filesystem-exporter:
-    image: ghcr.io/d0ugal/filesystem-exporter:latest
+    image: ghcr.io/d0ugal/filesystem-exporter:v1.15.0
     ports:
       - "8080:8080"
     volumes:
@@ -113,7 +113,7 @@ spec:
     spec:
       containers:
       - name: filesystem-exporter
-        image: ghcr.io/d0ugal/filesystem-exporter:latest
+        image: ghcr.io/d0ugal/filesystem-exporter:v1.15.0
         ports:
         - containerPort: 8080
         env:
