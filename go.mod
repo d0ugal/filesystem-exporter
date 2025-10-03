@@ -6,8 +6,8 @@ toolchain go1.25.1
 
 require (
 	github.com/gin-gonic/gin v1.11.0
-	github.com/prometheus/client_golang v1.23.2
-	gopkg.in/yaml.v3 v3.0.1
+	github.com/prometheus/client_golang v2.4.3+incompatible
+	gopkg.in/yaml.v2 v2.4.3
 )
 
 require (
