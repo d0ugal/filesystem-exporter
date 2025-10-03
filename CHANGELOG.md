@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.15.0...v1.16.0) (2025-10-03)
+
+
+### Features
+
+* **renovate:** add docs commit message format for documentation updates ([6f346c9](https://github.com/d0ugal/filesystem-exporter/commit/6f346c90edef091831983dbc7278afb46f0116fb))
+
 ## [1.15.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.14.5...v1.15.0) (2025-10-02)
 
 
