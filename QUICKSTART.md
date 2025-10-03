@@ -6,7 +6,7 @@ Get filesystem-exporter running in minutes!
 
 ### 1. Pull the image
 ```bash
-docker pull ghcr.io/d0ugal/filesystem-exporter:latest
+docker pull ghcr.io/d0ugal/filesystem-exporter:v1.14.4
 ```
 
 ### 2. Create a configuration file
@@ -25,7 +25,7 @@ docker run -d \
   -p 8080:8080 \
   -v /:/host:ro \
   -v $(pwd)/config.yaml:/root/config.yaml:ro \
-  ghcr.io/d0ugal/filesystem-exporter:latest
+  ghcr.io/d0ugal/filesystem-exporter:v1.14.4
 ```
 
 ### 4. Verify it's working
@@ -61,7 +61,7 @@ make build
 version: '3.8'
 services:
   filesystem-exporter:
-    image: ghcr.io/d0ugal/filesystem-exporter:latest
+    image: ghcr.io/d0ugal/filesystem-exporter:v1.14.4
     ports:
       - "8080:8080"
     volumes:

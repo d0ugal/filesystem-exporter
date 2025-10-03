@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   filesystem-exporter:
-    image: ghcr.io/d0ugal/filesystem-exporter:latest
+    image: ghcr.io/d0ugal/filesystem-exporter:v1.14.4
     container_name: filesystem-exporter
     ports:
       - "8080:8080"
@@ -26,7 +26,7 @@ services:
 # Synology NAS Example:
 # services:
 #   filesystem-exporter:
-#     image: ghcr.io/d0ugal/filesystem-exporter:latest
+#     image: ghcr.io/d0ugal/filesystem-exporter:v1.14.4
 #     container_name: filesystem-exporter
 #     ports:
 #       - "8080:8080"
@@ -41,7 +41,7 @@ services:
 # Docker Host Monitoring Example:
 # services:
 #   filesystem-exporter:
-#     image: ghcr.io/d0ugal/filesystem-exporter:latest
+#     image: ghcr.io/d0ugal/filesystem-exporter:v1.14.4
 #     container_name: filesystem-exporter
 #     ports:
 #       - "8080:8080"
