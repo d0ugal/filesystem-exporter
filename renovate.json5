@@ -37,8 +37,6 @@
         '**/docker-compose*.yaml',
       ],
       commitMessagePrefix: 'docs:',
-      commitMessageAction: 'update',
-      commitMessageTopic: 'documentation versions',
     },
     {
       matchManagers: [
@@ -54,7 +52,6 @@
       ],
       commitMessagePrefix: 'feat:',
       commitMessageAction: 'update',
-      commitMessageTopic: 'dependencies',
     },
   ],
   customManagers: [
