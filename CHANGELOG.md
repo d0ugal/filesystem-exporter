@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.17.0...v1.18.0) (2025-10-08)
+
+
+### Features
+
+* update dependencies to v0.45.0 ([e70c98d](https://github.com/d0ugal/filesystem-exporter/commit/e70c98dc2fe473815350c43d42acc3c90e1f4957))
+* update dependencies to v1.25.2 ([967e787](https://github.com/d0ugal/filesystem-exporter/commit/967e7875a5e7d99e7ff9be4b3324086d0b1d3cfb))
+
 ## [1.17.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.16.0...v1.17.0) (2025-10-07)
 
 
