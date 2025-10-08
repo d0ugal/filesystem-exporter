@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.18.0...v1.19.0) (2025-10-08)
+
+
+### Features
+
+* update dependencies to v0.22.0 ([af29e88](https://github.com/d0ugal/filesystem-exporter/commit/af29e88d58e8970f76076a5d4290b61c72950577))
+* update module go.yaml.in/yaml/v2 to v3 ([7b8931b](https://github.com/d0ugal/filesystem-exporter/commit/7b8931bbc17512608c6a82aa48dae9be11d12360))
+* update module golang.org/x/crypto to v0.43.0 ([853c868](https://github.com/d0ugal/filesystem-exporter/commit/853c868cf5a721ef579c0ea43591561209ee7207))
+* update module golang.org/x/mod to v0.29.0 ([39f9b91](https://github.com/d0ugal/filesystem-exporter/commit/39f9b91474902724af48f1557e32efbee42c6595))
+* update module golang.org/x/sys to v0.37.0 ([a3f4d76](https://github.com/d0ugal/filesystem-exporter/commit/a3f4d76f7242faa7004052178c7995f9de0ef196))
+
+
+### Bug Fixes
+
+* update gomod commitMessagePrefix from feat to fix ([b88040d](https://github.com/d0ugal/filesystem-exporter/commit/b88040da84a337c3c424ada29ece1ad1e53103df))
+
 ## [1.18.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.17.0...v1.18.0) (2025-10-08)
 
 
