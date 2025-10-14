@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.1](https://github.com/d0ugal/filesystem-exporter/compare/v1.19.0...v1.19.1) (2025-10-14)
+
+
+### Bug Fixes
+
+* update dependency go to v1.25.3 ([0b9eb16](https://github.com/d0ugal/filesystem-exporter/commit/0b9eb163da70cce93007642bb65fd3c5ad851c3c))
+* update module golang.org/x/tools to v0.38.0 ([5c2196f](https://github.com/d0ugal/filesystem-exporter/commit/5c2196f84cf141a34cc1a08184dc446978457fb2))
+
 ## [1.19.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.18.0...v1.19.0) (2025-10-08)
 
 
