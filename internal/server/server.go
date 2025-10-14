@@ -7,12 +7,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/version"
+	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Server struct {
