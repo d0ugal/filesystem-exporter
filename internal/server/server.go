@@ -10,6 +10,7 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/version"
+
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -39,7 +40,11 @@ func customGinLogger() gin.HandlerFunc {
 }
 
 func New(cfg *config.Config, registry *metrics.Registry) *Server {
-	gin.SetMode(gin.ReleaseMode)
+	// Set Gin to release mode unless debug logging is enabled
+	if cfg.Logging.Level != "debug" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	router := gin.New()
 	router.Use(customGinLogger(), gin.Recovery())
 
