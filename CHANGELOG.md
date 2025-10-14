@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.19.1...v1.20.0) (2025-10-14)
+
+
+### Features
+
+* set Gin to release mode unless debug logging is enabled ([34a8257](https://github.com/d0ugal/filesystem-exporter/commit/34a82571970894842f35a29df5ae0bf2ed27eea9))
+
+
+### Bug Fixes
+
+* correct import ordering for gci linter ([9bd5203](https://github.com/d0ugal/filesystem-exporter/commit/9bd5203e71f5f69683decf60938940a593421acf))
+* correct import ordering for gci linter ([3c869b6](https://github.com/d0ugal/filesystem-exporter/commit/3c869b61074750c91833517b6ef0a8c1731f9e22))
+
 ## [1.19.1](https://github.com/d0ugal/filesystem-exporter/compare/v1.19.0...v1.19.1) (2025-10-14)
 
 
