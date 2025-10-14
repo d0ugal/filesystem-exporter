@@ -17,14 +17,19 @@ import (
 
 type FilesystemCollector struct {
 	config  *config.Config
-	metrics *metrics.Registry
+	metrics *metrics.FilesystemRegistry
 }
 
-func NewFilesystemCollector(cfg *config.Config, registry *metrics.Registry) *FilesystemCollector {
+func NewFilesystemCollector(cfg *config.Config, registry *metrics.FilesystemRegistry) *FilesystemCollector {
 	return &FilesystemCollector{
 		config:  cfg,
 		metrics: registry,
 	}
+}
+
+// Stop stops the collector
+func (fc *FilesystemCollector) Stop() {
+	// No cleanup needed for this collector
 }
 
 func (fc *FilesystemCollector) Start(ctx context.Context) {
@@ -81,18 +86,18 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 	}, 3, 2*time.Second)
 	if err != nil {
 		slog.Error("Failed to collect filesystem metrics after retries", "filesystem", filesystem.Name, "error", err)
-		fc.metrics.CollectionFailedCounter().WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Inc()
+		fc.metrics.CollectionFailedCounter.WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Inc()
 
 		return
 	}
 
-	fc.metrics.CollectionSuccessCounter().WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Inc()
+	fc.metrics.CollectionSuccessCounter.WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Inc()
 	// Expose configured interval as a numeric gauge for PromQL arithmetic
-	fc.metrics.CollectionIntervalGauge().WithLabelValues(collectionType, filesystem.Name).Set(float64(interval))
+	fc.metrics.CollectionIntervalGauge.WithLabelValues(collectionType, filesystem.Name).Set(float64(interval))
 
 	duration := time.Since(startTime).Seconds()
-	fc.metrics.CollectionDurationGauge().WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Set(duration)
-	fc.metrics.CollectionTimestampGauge().WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Set(float64(time.Now().Unix()))
+	fc.metrics.CollectionDurationGauge.WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Set(duration)
+	fc.metrics.CollectionTimestampGauge.WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Set(float64(time.Now().Unix()))
 
 	slog.Info("Filesystem metrics collection completed", "filesystem", filesystem.Name, "duration", duration)
 }
@@ -251,9 +256,9 @@ func (fc *FilesystemCollector) collectFilesystemUsage(ctx context.Context, files
 	usedRatio := float64(usedBytes) / float64(sizeBytes)
 
 	// Update metrics
-	fc.metrics.VolumeSizeGauge().WithLabelValues(filesystem.Name, filesystem.MountPoint, filesystem.Device).Set(float64(sizeBytes))
-	fc.metrics.VolumeAvailableGauge().WithLabelValues(filesystem.Name, filesystem.MountPoint, filesystem.Device).Set(float64(availableBytes))
-	fc.metrics.VolumeUsedRatioGauge().WithLabelValues(filesystem.Name, filesystem.MountPoint, filesystem.Device).Set(usedRatio)
+	fc.metrics.VolumeSizeGauge.WithLabelValues(filesystem.Name, filesystem.MountPoint, filesystem.Device).Set(float64(sizeBytes))
+	fc.metrics.VolumeAvailableGauge.WithLabelValues(filesystem.Name, filesystem.MountPoint, filesystem.Device).Set(float64(availableBytes))
+	fc.metrics.VolumeUsedRatioGauge.WithLabelValues(filesystem.Name, filesystem.MountPoint, filesystem.Device).Set(usedRatio)
 
 	slog.Debug("Filesystem metrics collected",
 		"filesystem", filesystem.Name,
