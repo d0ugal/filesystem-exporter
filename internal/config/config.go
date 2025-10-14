@@ -6,108 +6,34 @@ import (
 	"path/filepath"
 	"time"
 
+	promexporter_config "github.com/d0ugal/promexporter/config"
 	"gopkg.in/yaml.v3"
 )
 
-// Duration represents a time duration that can be parsed from strings
-type Duration struct {
-	time.Duration
-}
-
-// UnmarshalYAML implements custom unmarshaling for duration strings
-func (d *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var value interface{}
-	if err := unmarshal(&value); err != nil {
-		return err
-	}
-
-	switch v := value.(type) {
-	case string:
-		duration, err := time.ParseDuration(v)
-		if err != nil {
-			return fmt.Errorf("invalid duration format '%s': %w", v, err)
-		}
-
-		d.Duration = duration
-	case int:
-		// Backward compatibility: treat as seconds
-		d.Duration = time.Duration(v) * time.Second
-	case int64:
-		// Backward compatibility: treat as seconds
-		d.Duration = time.Duration(v) * time.Second
-	default:
-		return fmt.Errorf("duration must be a string (e.g., '60s', '1h') or integer (seconds)")
-	}
-
-	return nil
-}
-
-// Seconds returns the duration in seconds
-func (d *Duration) Seconds() int {
-	return int(d.Duration.Seconds())
-}
+// Use promexporter Duration type
+type Duration = promexporter_config.Duration
 
 type Config struct {
-	Server      ServerConfig              `yaml:"server"`
-	Logging     LoggingConfig             `yaml:"logging"`
-	Metrics     MetricsConfig             `yaml:"metrics"`
+	promexporter_config.BaseConfig
 	Filesystems []FilesystemConfig        `yaml:"filesystems"`
 	Directories map[string]DirectoryGroup `yaml:"directories"`
 }
 
-type ServerConfig struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
-}
-
-type LoggingConfig struct {
-	Level  string `yaml:"level"`
-	Format string `yaml:"format"` // "json" or "text"
-}
-
-type MetricsConfig struct {
-	Collection CollectionConfig `yaml:"collection"`
-}
-
-type CollectionConfig struct {
-	DefaultInterval Duration `yaml:"default_interval"`
-	// Track if the value was explicitly set
-	DefaultIntervalSet bool `yaml:"-"`
-}
-
-// UnmarshalYAML implements custom unmarshaling to track if the value was set
-func (c *CollectionConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	// Create a temporary struct to unmarshal into
-	type tempCollectionConfig struct {
-		DefaultInterval Duration `yaml:"default_interval"`
-	}
-
-	var temp tempCollectionConfig
-	if err := unmarshal(&temp); err != nil {
-		return err
-	}
-
-	c.DefaultInterval = temp.DefaultInterval
-	c.DefaultIntervalSet = true
-
-	return nil
-}
-
 type FilesystemConfig struct {
-	Name       string    `yaml:"name"`
-	MountPoint string    `yaml:"mount_point"`
-	Device     string    `yaml:"device"`
-	Interval   *Duration `yaml:"interval,omitempty"`
+	Name       string   `yaml:"name"`
+	MountPoint string   `yaml:"mount_point"`
+	Device     string   `yaml:"device"`
+	Interval   Duration `yaml:"interval"`
 }
 
 type DirectoryGroup struct {
-	Path               string    `yaml:"path"`
-	SubdirectoryLevels int       `yaml:"subdirectory_levels"`
-	Interval           *Duration `yaml:"interval,omitempty"`
+	Path               string   `yaml:"path"`
+	SubdirectoryLevels int      `yaml:"subdirectory_levels"`
+	Interval           Duration `yaml:"interval"`
 }
 
-func Load(path string) (*Config, error) {
-	// G304: Potential file inclusion via variable - This is safe because path is validated and comes from trusted config
+// LoadConfig loads configuration from a YAML file
+func LoadConfig(path string) (*Config, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file: %w", err)
@@ -119,6 +45,18 @@ func Load(path string) (*Config, error) {
 	}
 
 	// Set defaults
+	setDefaults(&config)
+
+	// Validate configuration
+	if err := config.Validate(); err != nil {
+		return nil, fmt.Errorf("configuration validation failed: %w", err)
+	}
+
+	return &config, nil
+}
+
+// setDefaults sets default values for configuration
+func setDefaults(config *Config) {
 	if config.Server.Host == "" {
 		config.Server.Host = "0.0.0.0"
 	}
@@ -136,15 +74,34 @@ func Load(path string) (*Config, error) {
 	}
 
 	if !config.Metrics.Collection.DefaultIntervalSet {
-		config.Metrics.Collection.DefaultInterval = Duration{time.Second * 300}
+		config.Metrics.Collection.DefaultInterval = promexporter_config.Duration{time.Second * 30}
 	}
 
-	// Validate configuration
-	if err := config.Validate(); err != nil {
-		return nil, fmt.Errorf("configuration validation failed: %w", err)
+	if len(config.Filesystems) == 0 {
+		config.Filesystems = []FilesystemConfig{
+			{
+				Name:       "root",
+				MountPoint: "/",
+				Device:     "root",
+				Interval:   Duration{time.Minute * 5},
+			},
+		}
 	}
 
-	return &config, nil
+	// Set defaults for filesystems
+	for i := range config.Filesystems {
+		if config.Filesystems[i].Interval.Duration == 0 {
+			config.Filesystems[i].Interval = Duration{time.Minute * 5}
+		}
+	}
+
+	// Set defaults for directories
+	for name, group := range config.Directories {
+		if group.Interval.Duration == 0 {
+			group.Interval = Duration{time.Minute * 5}
+			config.Directories[name] = group
+		}
+	}
 }
 
 // Validate performs comprehensive validation of the configuration
@@ -164,13 +121,13 @@ func (c *Config) Validate() error {
 		return fmt.Errorf("metrics config: %w", err)
 	}
 
-	// Validate filesystems
-	if err := c.validateFilesystems(); err != nil {
+	// Validate filesystem configuration
+	if err := c.validateFilesystemsConfig(); err != nil {
 		return fmt.Errorf("filesystems config: %w", err)
 	}
 
-	// Validate directories
-	if err := c.validateDirectories(); err != nil {
+	// Validate directory configuration
+	if err := c.validateDirectoriesConfig(); err != nil {
 		return fmt.Errorf("directories config: %w", err)
 	}
 
@@ -219,137 +176,59 @@ func (c *Config) validateMetricsConfig() error {
 	return nil
 }
 
-func (c *Config) validateFilesystems() error {
+func (c *Config) validateFilesystemsConfig() error {
 	if len(c.Filesystems) == 0 {
-		return fmt.Errorf("at least one filesystem must be configured")
+		return fmt.Errorf("at least one filesystem must be specified")
 	}
 
-	seenNames := make(map[string]bool)
-	seenMountPoints := make(map[string]bool)
-
-	for i, fs := range c.Filesystems {
-		// Validate name
+	for _, fs := range c.Filesystems {
 		if fs.Name == "" {
-			return fmt.Errorf("filesystem %d: name is required", i)
+			return fmt.Errorf("filesystem name cannot be empty")
 		}
-
-		if seenNames[fs.Name] {
-			return fmt.Errorf("filesystem %d: duplicate name '%s'", i, fs.Name)
-		}
-
-		seenNames[fs.Name] = true
-
-		// Validate mount point
-		if fs.MountPoint == "" {
-			return fmt.Errorf("filesystem %d: mount_point is required", i)
-		}
-
 		if !filepath.IsAbs(fs.MountPoint) {
-			return fmt.Errorf("filesystem %d: mount_point must be absolute path, got '%s'", i, fs.MountPoint)
+			return fmt.Errorf("filesystem mount point must be absolute: %s", fs.MountPoint)
 		}
-
-		if seenMountPoints[fs.MountPoint] {
-			return fmt.Errorf("filesystem %d: duplicate mount_point '%s'", i, fs.MountPoint)
-		}
-
-		seenMountPoints[fs.MountPoint] = true
-
-		// Validate device
-		if fs.Device == "" {
-			return fmt.Errorf("filesystem %d: device is required", i)
-		}
-
-		// Validate interval
-		if fs.Interval != nil {
-			if fs.Interval.Seconds() < 1 {
-				return fmt.Errorf("filesystem %d: interval must be at least 1 second, got %d", i, fs.Interval.Seconds())
-			}
-
-			if fs.Interval.Seconds() > 86400 {
-				return fmt.Errorf("filesystem %d: interval must be at most 86400 seconds (24 hours), got %d", i, fs.Interval.Seconds())
-			}
-		}
-
-		// Validate mount point exists (if possible)
-		if _, err := os.Stat(fs.MountPoint); err != nil {
-			return fmt.Errorf("filesystem %d: mount_point '%s' does not exist or is not accessible", i, fs.MountPoint)
+		if fs.Interval.Seconds() < 1 {
+			return fmt.Errorf("filesystem interval must be at least 1 second, got %d", fs.Interval.Seconds())
 		}
 	}
 
 	return nil
 }
 
-func (c *Config) validateDirectories() error {
-	if len(c.Directories) == 0 {
-		return fmt.Errorf("at least one directory must be configured")
-	}
-
-	seenPaths := make(map[string]bool)
-
-	for name, dir := range c.Directories {
-		// Validate name
+func (c *Config) validateDirectoriesConfig() error {
+	for name, group := range c.Directories {
 		if name == "" {
-			return fmt.Errorf("directory: name is required")
+			return fmt.Errorf("directory group name cannot be empty")
 		}
-
-		// Validate path
-		if dir.Path == "" {
-			return fmt.Errorf("directory '%s': path is required", name)
+		if !filepath.IsAbs(group.Path) {
+			return fmt.Errorf("directory path must be absolute: %s", group.Path)
 		}
-
-		if !filepath.IsAbs(dir.Path) {
-			return fmt.Errorf("directory '%s': path must be absolute, got '%s'", name, dir.Path)
-		}
-
-		if seenPaths[dir.Path] {
-			return fmt.Errorf("directory '%s': duplicate path '%s'", name, dir.Path)
-		}
-
-		seenPaths[dir.Path] = true
-
-		// Validate subdirectory levels
-		if dir.SubdirectoryLevels < 0 {
-			return fmt.Errorf("directory '%s': subdirectory_levels must be non-negative, got %d", name, dir.SubdirectoryLevels)
-		}
-
-		if dir.SubdirectoryLevels > 10 {
-			return fmt.Errorf("directory '%s': subdirectory_levels must be at most 10, got %d", name, dir.SubdirectoryLevels)
-		}
-
-		// Validate interval
-		if dir.Interval != nil {
-			if dir.Interval.Seconds() < 1 {
-				return fmt.Errorf("directory '%s': interval must be at least 1 second, got %d", name, dir.Interval.Seconds())
-			}
-
-			if dir.Interval.Seconds() > 86400 {
-				return fmt.Errorf("directory '%s': interval must be at most 86400 seconds (24 hours), got %d", name, dir.Interval.Seconds())
-			}
-		}
-
-		// Validate path exists (if possible)
-		if _, err := os.Stat(dir.Path); err != nil {
-			return fmt.Errorf("directory '%s': path '%s' does not exist or is not accessible", name, dir.Path)
+		if group.Interval.Seconds() < 1 {
+			return fmt.Errorf("directory interval must be at least 1 second, got %d", group.Interval.Seconds())
 		}
 	}
 
 	return nil
 }
 
-// GetFilesystemInterval returns the effective interval for a filesystem
+// GetDefaultInterval returns the default collection interval
+func (c *Config) GetDefaultInterval() int {
+	return c.Metrics.Collection.DefaultInterval.Seconds()
+}
+
+// GetFilesystemInterval returns the interval for a filesystem
 func (c *Config) GetFilesystemInterval(fs FilesystemConfig) int {
-	if fs.Interval != nil {
+	if fs.Interval.Duration > 0 {
 		return fs.Interval.Seconds()
 	}
-
-	return c.Metrics.Collection.DefaultInterval.Seconds()
+	return c.GetDefaultInterval()
 }
 
-// GetDirectoryInterval returns the effective interval for a directory
-func (c *Config) GetDirectoryInterval(dir DirectoryGroup) int {
-	if dir.Interval != nil {
-		return dir.Interval.Seconds()
+// GetDirectoryInterval returns the interval for a directory group
+func (c *Config) GetDirectoryInterval(group DirectoryGroup) int {
+	if group.Interval.Duration > 0 {
+		return group.Interval.Seconds()
 	}
-
-	return c.Metrics.Collection.DefaultInterval.Seconds()
+	return c.GetDefaultInterval()
 }
