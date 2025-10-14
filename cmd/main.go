@@ -23,8 +23,12 @@ func main() {
 	flag.BoolVar(&showVersion, "version", false, "Show version information")
 	flag.BoolVar(&showVersion, "v", false, "Show version information")
 
-	var configPath string
+	var (
+		configPath string
+		debug      bool
+	)
 	flag.StringVar(&configPath, "config", "", "Path to configuration file")
+	flag.BoolVar(&debug, "debug", false, "Enable debug mode for Gin framework")
 	flag.Parse()
 
 	// Show version if requested
@@ -74,7 +78,7 @@ func main() {
 	directoryCollector.Start(ctx)
 
 	// Create and start server
-	srv := server.New(cfg, metricsRegistry)
+	srv := server.New(cfg, metricsRegistry, debug)
 
 	// Handle graceful shutdown
 	sigChan := make(chan os.Signal, 1)
