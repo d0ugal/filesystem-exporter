@@ -43,14 +43,13 @@ type FilesystemRegistry struct {
 	DuLockWaitDurationGauge     *prometheus.GaugeVec
 	DirectorySizeGauge          *prometheus.GaugeVec
 	DirectoriesProcessedCounter *prometheus.CounterVec
-	VolumeSizeGauge            *prometheus.GaugeVec
-	VolumeAvailableGauge       *prometheus.GaugeVec
-	VolumeUsedRatioGauge       *prometheus.GaugeVec
+	VolumeSizeGauge             *prometheus.GaugeVec
+	VolumeAvailableGauge        *prometheus.GaugeVec
+	VolumeUsedRatioGauge        *prometheus.GaugeVec
 }
 
 // NewFilesystemRegistry creates a new filesystem metrics registry
-func NewFilesystemRegistry() *FilesystemRegistry {
-	baseRegistry := promexporter_metrics.NewRegistry()
+func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *FilesystemRegistry {
 
 	filesystem := &FilesystemRegistry{
 		Registry: baseRegistry,
@@ -167,31 +166,31 @@ func NewFilesystemRegistry() *FilesystemRegistry {
 		// Collection metrics
 		LastCollectionTime: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "filesystem_last_collection_timestamp",
+				Name: "filesystem_exporter_last_collection_timestamp",
 				Help: "Timestamp of last successful collection",
 			},
-			[]string{"collector"},
+			[]string{"group", "interval_seconds", "type"},
 		),
 		CollectionDuration: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "filesystem_collection_duration_seconds",
+				Name: "filesystem_exporter_collection_duration_seconds",
 				Help: "Duration of last collection in seconds",
 			},
-			[]string{"collector"},
+			[]string{"group", "interval_seconds", "type"},
 		),
 		CollectionErrors: promauto.With(baseRegistry.GetRegistry()).NewCounterVec(
 			prometheus.CounterOpts{
-				Name: "filesystem_collection_errors_total",
+				Name: "filesystem_exporter_collection_errors_total",
 				Help: "Total number of collection errors",
 			},
-			[]string{"collector"},
+			[]string{"group", "interval_seconds", "type"},
 		),
 		CollectionSuccess: promauto.With(baseRegistry.GetRegistry()).NewCounterVec(
 			prometheus.CounterOpts{
-				Name: "filesystem_collection_success_total",
+				Name: "filesystem_exporter_collection_success_total",
 				Help: "Total number of successful collections",
 			},
-			[]string{"collector"},
+			[]string{"group", "interval_seconds", "type"},
 		),
 		CollectionFailedCounter: promauto.With(baseRegistry.GetRegistry()).NewCounterVec(
 			prometheus.CounterOpts{
@@ -202,31 +201,31 @@ func NewFilesystemRegistry() *FilesystemRegistry {
 		),
 		CollectionSuccessCounter: promauto.With(baseRegistry.GetRegistry()).NewCounterVec(
 			prometheus.CounterOpts{
-				Name: "filesystem_collection_success_total",
-				Help: "Total number of successful collections",
+				Name: "filesystem_collection_success_by_group_total",
+				Help: "Total number of successful collections by group",
 			},
 			[]string{"collector", "group", "interval"},
 		),
 		CollectionIntervalGauge: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "filesystem_collection_interval_seconds",
+				Name: "filesystem_exporter_collection_interval_seconds",
 				Help: "Collection interval in seconds",
 			},
-			[]string{"collector", "group"},
+			[]string{"group", "type"},
 		),
 		CollectionDurationGauge: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "filesystem_collection_duration_seconds",
-				Help: "Duration of collection in seconds",
+				Name: "filesystem_exporter_collection_duration_by_group_seconds",
+				Help: "Duration of collection by group in seconds",
 			},
-			[]string{"collector", "group", "interval"},
+			[]string{"group", "interval_seconds", "type"},
 		),
 		CollectionTimestampGauge: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "filesystem_collection_timestamp",
+				Name: "filesystem_exporter_collection_timestamp",
 				Help: "Timestamp of collection",
 			},
-			[]string{"collector", "group", "interval"},
+			[]string{"group", "interval_seconds", "type"},
 		),
 		DirectoriesFailedCounter: promauto.With(baseRegistry.GetRegistry()).NewCounterVec(
 			prometheus.CounterOpts{
@@ -237,45 +236,45 @@ func NewFilesystemRegistry() *FilesystemRegistry {
 		),
 		DuLockWaitDurationGauge: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "filesystem_du_lock_wait_duration_seconds",
+				Name: "filesystem_exporter_du_lock_wait_duration_seconds",
 				Help: "Duration waiting for du lock",
 			},
 			[]string{"group", "path"},
 		),
 		DirectorySizeGauge: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "filesystem_directory_size_bytes",
+				Name: "filesystem_exporter_directory_size_bytes",
 				Help: "Directory size in bytes",
 			},
 			[]string{"group", "path", "method", "level"},
 		),
 		DirectoriesProcessedCounter: promauto.With(baseRegistry.GetRegistry()).NewCounterVec(
 			prometheus.CounterOpts{
-				Name: "filesystem_directories_processed_total",
+				Name: "filesystem_exporter_directories_processed_total",
 				Help: "Total number of directories processed",
 			},
 			[]string{"group", "method"},
 		),
 		VolumeSizeGauge: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "filesystem_volume_size_bytes",
+				Name: "filesystem_exporter_volume_size_bytes",
 				Help: "Volume size in bytes",
 			},
-			[]string{"name", "mountpoint", "device"},
+			[]string{"device", "mount_point", "volume"},
 		),
 		VolumeAvailableGauge: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "filesystem_volume_available_bytes",
+				Name: "filesystem_exporter_volume_available_bytes",
 				Help: "Volume available space in bytes",
 			},
-			[]string{"name", "mountpoint", "device"},
+			[]string{"device", "mount_point", "volume"},
 		),
 		VolumeUsedRatioGauge: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "filesystem_volume_used_ratio",
+				Name: "filesystem_exporter_volume_used_ratio",
 				Help: "Volume used space ratio (0-1)",
 			},
-			[]string{"name", "mountpoint", "device"},
+			[]string{"device", "mount_point", "volume"},
 		),
 	}
 
@@ -299,6 +298,8 @@ func NewFilesystemRegistry() *FilesystemRegistry {
 	filesystem.AddMetricInfo("filesystem_collection_duration_seconds", "Duration of the last collection in seconds", []string{"collector"})
 	filesystem.AddMetricInfo("filesystem_collection_errors_total", "Total number of collection errors", []string{"collector"})
 	filesystem.AddMetricInfo("filesystem_collection_success_total", "Total number of successful collections", []string{"collector"})
+	filesystem.AddMetricInfo("filesystem_collection_success_by_group_total", "Total number of successful collections by group", []string{"collector", "group", "interval"})
+	filesystem.AddMetricInfo("filesystem_collection_duration_by_group_seconds", "Duration of collection by group in seconds", []string{"collector", "group", "interval"})
 
 	return filesystem
 }

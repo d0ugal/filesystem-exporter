@@ -2,8 +2,10 @@ package config
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	promexporter_config "github.com/d0ugal/promexporter/config"
@@ -33,7 +35,11 @@ type DirectoryGroup struct {
 }
 
 // LoadConfig loads configuration from a YAML file
-func LoadConfig(path string) (*Config, error) {
+func LoadConfig(path string, configFromEnv bool) (*Config, error) {
+	if configFromEnv {
+		return loadFromEnv()
+	}
+
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file: %w", err)
@@ -53,6 +59,69 @@ func LoadConfig(path string) (*Config, error) {
 	}
 
 	return &config, nil
+}
+
+// loadFromEnv loads configuration from environment variables
+func loadFromEnv() (*Config, error) {
+	config := &Config{}
+
+	// Load base configuration from environment
+	baseConfig := &promexporter_config.BaseConfig{}
+
+	// Server configuration
+	if address := os.Getenv("FILESYSTEM_EXPORTER_SERVER_ADDRESS"); address != "" {
+		// Parse host:port from address
+		if host, portStr, err := net.SplitHostPort(address); err == nil {
+			baseConfig.Server.Host = host
+			if port, err := strconv.Atoi(portStr); err != nil {
+				return nil, fmt.Errorf("invalid server port in address: %w", err)
+			} else {
+				baseConfig.Server.Port = port
+			}
+		} else {
+			return nil, fmt.Errorf("invalid server address format: %w", err)
+		}
+	} else {
+		baseConfig.Server.Host = "0.0.0.0"
+		baseConfig.Server.Port = 8080
+	}
+
+	// Logging configuration
+	if level := os.Getenv("FILESYSTEM_EXPORTER_LOGGING_LEVEL"); level != "" {
+		baseConfig.Logging.Level = level
+	} else {
+		baseConfig.Logging.Level = "info"
+	}
+
+	if format := os.Getenv("FILESYSTEM_EXPORTER_LOGGING_FORMAT"); format != "" {
+		baseConfig.Logging.Format = format
+	} else {
+		baseConfig.Logging.Format = "json"
+	}
+
+	// Metrics configuration
+	if intervalStr := os.Getenv("FILESYSTEM_EXPORTER_METRICS_COLLECTION_DEFAULT_INTERVAL"); intervalStr != "" {
+		if interval, err := time.ParseDuration(intervalStr); err != nil {
+			return nil, fmt.Errorf("invalid metrics default interval: %w", err)
+		} else {
+			baseConfig.Metrics.Collection.DefaultInterval = promexporter_config.Duration{interval}
+			baseConfig.Metrics.Collection.DefaultIntervalSet = true
+		}
+	} else {
+		baseConfig.Metrics.Collection.DefaultInterval = promexporter_config.Duration{time.Second * 30}
+	}
+
+	config.BaseConfig = *baseConfig
+
+	// Set defaults for any missing values
+	setDefaults(config)
+
+	// Validate configuration
+	if err := config.Validate(); err != nil {
+		return nil, fmt.Errorf("configuration validation failed: %w", err)
+	}
+
+	return config, nil
 }
 
 // setDefaults sets default values for configuration

@@ -11,6 +11,7 @@ import (
 
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/logging"
+	promexporter_metrics "github.com/d0ugal/promexporter/metrics"
 	"github.com/d0ugal/promexporter/version"
 )
 
@@ -31,17 +32,25 @@ func main() {
 		os.Exit(0)
 	}
 
-	// Use environment variable if config flag is not provided
-	if configPath == "" {
-		if envConfig := os.Getenv("CONFIG_PATH"); envConfig != "" {
-			configPath = envConfig
-		} else {
-			configPath = "config.yaml"
-		}
-	}
+	// Check if we should use environment variables
+	configFromEnv := os.Getenv("FILESYSTEM_EXPORTER_CONFIG_FROM_ENV") == "true"
 
 	// Load configuration
-	cfg, err := config.LoadConfig(configPath)
+	var cfg *config.Config
+	var err error
+	if configFromEnv {
+		cfg, err = config.LoadConfig("", true)
+	} else {
+		// Use environment variable if config flag is not provided
+		if configPath == "" {
+			if envConfig := os.Getenv("CONFIG_PATH"); envConfig != "" {
+				configPath = envConfig
+			} else {
+				configPath = "config.yaml"
+			}
+		}
+		cfg, err = config.LoadConfig(configPath, false)
+	}
 	if err != nil {
 		slog.Error("Failed to load configuration", "error", err, "path", configPath)
 		os.Exit(1)
@@ -53,21 +62,20 @@ func main() {
 		Format: cfg.Logging.Format,
 	})
 
-	// Initialize metrics
-	metricsRegistry := metrics.NewFilesystemRegistry()
+	// Initialize metrics registry using promexporter
+	metricsRegistry := promexporter_metrics.NewRegistry("filesystem_exporter_info")
 
-	// Set version info metric
-	versionInfo := version.Get()
-	metricsRegistry.VersionInfo.WithLabelValues(versionInfo.Version, versionInfo.Commit, versionInfo.BuildDate).Set(1)
+	// Add custom metrics to the registry
+	filesystemRegistry := metrics.NewFilesystemRegistry(metricsRegistry)
 
 	// Create collectors
-	filesystemCollector := collectors.NewFilesystemCollector(cfg, metricsRegistry)
-	directoryCollector := collectors.NewDirectoryCollector(cfg, metricsRegistry)
+	filesystemCollector := collectors.NewFilesystemCollector(cfg, filesystemRegistry)
+	directoryCollector := collectors.NewDirectoryCollector(cfg, filesystemRegistry)
 
 	// Build and run the application
-	app.New("filesystem-exporter").
+	app.New("Filesystem Exporter").
 		WithConfig(&cfg.BaseConfig).
-		WithMetrics(metricsRegistry.Registry).
+		WithMetrics(metricsRegistry).
 		WithCollector(filesystemCollector).
 		WithCollector(directoryCollector).
 		Build().
