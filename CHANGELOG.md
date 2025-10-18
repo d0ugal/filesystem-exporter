@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.21.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.20.0...v1.21.0) (2025-10-18)
+
+
+### Features
+
+* migrate filesystem-exporter to promexporter library ([f4e99ab](https://github.com/d0ugal/filesystem-exporter/commit/f4e99abf74eff64cc6b0d7a77aa7769b344171bc))
+* update to promexporter v1.0.0 ([de55a4a](https://github.com/d0ugal/filesystem-exporter/commit/de55a4affcdc4a86f63be304203e62ea011bc32b))
+
+
+### Bug Fixes
+
+* update metric names to match stable version ([785aa60](https://github.com/d0ugal/filesystem-exporter/commit/785aa60f32fe07a9bcdaa439b184950e50f0f597))
+* update module github.com/d0ugal/promexporter to v1 ([a6cd6cb](https://github.com/d0ugal/filesystem-exporter/commit/a6cd6cbbc572f6932372a8601570b80a0f22963c))
+* update to latest promexporter changes ([132ce2c](https://github.com/d0ugal/filesystem-exporter/commit/132ce2c2c7f96a4d8177626f6cd3a43f453a6537))
+
 ## [1.20.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.19.1...v1.20.0) (2025-10-14)
 
 
