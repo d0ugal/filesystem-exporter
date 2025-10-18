@@ -113,6 +113,9 @@ func loadFromEnv() (*Config, error) {
 
 	config.BaseConfig = *baseConfig
 
+	// Load directories from environment variables
+	config.loadDirectoriesFromEnv()
+
 	// Set defaults for any missing values
 	setDefaults(config)
 
@@ -122,6 +125,48 @@ func loadFromEnv() (*Config, error) {
 	}
 
 	return config, nil
+}
+
+// loadDirectoriesFromEnv loads directory configuration from environment variables
+func (c *Config) loadDirectoriesFromEnv() {
+	// Initialize the map if it's nil
+	if c.Directories == nil {
+		c.Directories = make(map[string]DirectoryGroup)
+	}
+
+	// Look for directory environment variables in the format FILESYSTEM_EXPORTER_DIRECTORIES_N_NAME, etc.
+	for i := 0; i < 10; i++ { // Support up to 10 directories
+		nameKey := fmt.Sprintf("FILESYSTEM_EXPORTER_DIRECTORIES_%d_NAME", i)
+		pathKey := fmt.Sprintf("FILESYSTEM_EXPORTER_DIRECTORIES_%d_PATH", i)
+		levelsKey := fmt.Sprintf("FILESYSTEM_EXPORTER_DIRECTORIES_%d_SUBDIRECTORY_LEVELS", i)
+
+		name := os.Getenv(nameKey)
+		if name == "" {
+			continue // No more directories
+		}
+
+		path := os.Getenv(pathKey)
+		if path == "" {
+			continue // Path is required
+		}
+
+		levelsStr := os.Getenv(levelsKey)
+		levels := 0
+		if levelsStr != "" {
+			if parsedLevels, err := strconv.Atoi(levelsStr); err == nil {
+				levels = parsedLevels
+			}
+		}
+
+		directory := DirectoryGroup{
+			Path:               path,
+			SubdirectoryLevels: levels,
+		}
+
+		c.Directories[name] = directory
+		fmt.Printf("Loaded directory from env: name=%s, path=%s, levels=%d\n", name, path, levels)
+	}
+	fmt.Printf("Total directories loaded: %d\n", len(c.Directories))
 }
 
 // setDefaults sets default values for configuration
