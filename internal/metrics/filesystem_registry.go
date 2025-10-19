@@ -50,7 +50,6 @@ type FilesystemRegistry struct {
 
 // NewFilesystemRegistry creates a new filesystem metrics registry
 func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *FilesystemRegistry {
-
 	filesystem := &FilesystemRegistry{
 		Registry: baseRegistry,
 
@@ -85,7 +84,7 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 		),
 		FilesystemInodesTotal: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "filesystem_inodes_total",
+				Name: "filesystem_inodes",
 				Help: "Filesystem total inodes",
 			},
 			[]string{"device", "mountpoint", "fstype"},
@@ -129,14 +128,14 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 		),
 		DirectoryFileCount: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "directory_file_count",
+				Name: "directory_files",
 				Help: "Number of files in directory",
 			},
 			[]string{"path"},
 		),
 		DirectorySubdirCount: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
-				Name: "directory_subdir_count",
+				Name: "directory_subdirs",
 				Help: "Number of subdirectories in directory",
 			},
 			[]string{"path"},

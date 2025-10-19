@@ -2,13 +2,13 @@ package main
 
 import (
 	"flag"
+	"log"
 	"log/slog"
 	"os"
 
 	"filesystem-exporter/internal/collectors"
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
-
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/logging"
 	promexporter_metrics "github.com/d0ugal/promexporter/metrics"
@@ -36,8 +36,11 @@ func main() {
 	configFromEnv := os.Getenv("FILESYSTEM_EXPORTER_CONFIG_FROM_ENV") == "true"
 
 	// Load configuration
-	var cfg *config.Config
-	var err error
+	var (
+		cfg *config.Config
+		err error
+	)
+
 	if configFromEnv {
 		cfg, err = config.LoadConfig("", true)
 	} else {
@@ -49,8 +52,10 @@ func main() {
 				configPath = "config.yaml"
 			}
 		}
+
 		cfg, err = config.LoadConfig(configPath, false)
 	}
+
 	if err != nil {
 		slog.Error("Failed to load configuration", "error", err, "path", configPath)
 		os.Exit(1)
@@ -73,11 +78,13 @@ func main() {
 	directoryCollector := collectors.NewDirectoryCollector(cfg, filesystemRegistry)
 
 	// Build and run the application
-	app.New("Filesystem Exporter").
+	if err := app.New("Filesystem Exporter").
 		WithConfig(&cfg.BaseConfig).
 		WithMetrics(metricsRegistry).
 		WithCollector(filesystemCollector).
 		WithCollector(directoryCollector).
 		Build().
-		Run()
+		Run(); err != nil {
+		log.Fatalf("Failed to run application: %v", err)
+	}
 }
