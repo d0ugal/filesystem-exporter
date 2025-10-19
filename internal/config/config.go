@@ -12,11 +12,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Use promexporter Duration type
+// Duration uses promexporter Duration type
 type Duration = promexporter_config.Duration
 
 type Config struct {
 	promexporter_config.BaseConfig
+
 	Filesystems []FilesystemConfig        `yaml:"filesystems"`
 	Directories map[string]DirectoryGroup `yaml:"directories"`
 }
@@ -73,6 +74,7 @@ func loadFromEnv() (*Config, error) {
 		// Parse host:port from address
 		if host, portStr, err := net.SplitHostPort(address); err == nil {
 			baseConfig.Server.Host = host
+
 			if port, err := strconv.Atoi(portStr); err != nil {
 				return nil, fmt.Errorf("invalid server port in address: %w", err)
 			} else {
@@ -104,11 +106,11 @@ func loadFromEnv() (*Config, error) {
 		if interval, err := time.ParseDuration(intervalStr); err != nil {
 			return nil, fmt.Errorf("invalid metrics default interval: %w", err)
 		} else {
-			baseConfig.Metrics.Collection.DefaultInterval = promexporter_config.Duration{interval}
+			baseConfig.Metrics.Collection.DefaultInterval = promexporter_config.Duration{Duration: interval}
 			baseConfig.Metrics.Collection.DefaultIntervalSet = true
 		}
 	} else {
-		baseConfig.Metrics.Collection.DefaultInterval = promexporter_config.Duration{time.Second * 30}
+		baseConfig.Metrics.Collection.DefaultInterval = promexporter_config.Duration{Duration: time.Second * 30}
 	}
 
 	config.BaseConfig = *baseConfig
@@ -152,6 +154,7 @@ func (c *Config) loadDirectoriesFromEnv() {
 
 		levelsStr := os.Getenv(levelsKey)
 		levels := 0
+
 		if levelsStr != "" {
 			if parsedLevels, err := strconv.Atoi(levelsStr); err == nil {
 				levels = parsedLevels
@@ -166,6 +169,7 @@ func (c *Config) loadDirectoriesFromEnv() {
 		c.Directories[name] = directory
 		fmt.Printf("Loaded directory from env: name=%s, path=%s, levels=%d\n", name, path, levels)
 	}
+
 	fmt.Printf("Total directories loaded: %d\n", len(c.Directories))
 }
 
@@ -188,7 +192,7 @@ func setDefaults(config *Config) {
 	}
 
 	if !config.Metrics.Collection.DefaultIntervalSet {
-		config.Metrics.Collection.DefaultInterval = promexporter_config.Duration{time.Second * 30}
+		config.Metrics.Collection.DefaultInterval = promexporter_config.Duration{Duration: time.Second * 30}
 	}
 
 	if len(config.Filesystems) == 0 {
@@ -197,7 +201,7 @@ func setDefaults(config *Config) {
 				Name:       "root",
 				MountPoint: "/",
 				Device:     "root",
-				Interval:   Duration{time.Minute * 5},
+				Interval:   Duration{Duration: time.Minute * 5},
 			},
 		}
 	}
@@ -205,14 +209,14 @@ func setDefaults(config *Config) {
 	// Set defaults for filesystems
 	for i := range config.Filesystems {
 		if config.Filesystems[i].Interval.Duration == 0 {
-			config.Filesystems[i].Interval = Duration{time.Minute * 5}
+			config.Filesystems[i].Interval = Duration{Duration: time.Minute * 5}
 		}
 	}
 
 	// Set defaults for directories
 	for name, group := range config.Directories {
 		if group.Interval.Duration == 0 {
-			group.Interval = Duration{time.Minute * 5}
+			group.Interval = Duration{Duration: time.Minute * 5}
 			config.Directories[name] = group
 		}
 	}
@@ -299,9 +303,11 @@ func (c *Config) validateFilesystemsConfig() error {
 		if fs.Name == "" {
 			return fmt.Errorf("filesystem name cannot be empty")
 		}
+
 		if !filepath.IsAbs(fs.MountPoint) {
 			return fmt.Errorf("filesystem mount point must be absolute: %s", fs.MountPoint)
 		}
+
 		if fs.Interval.Seconds() < 1 {
 			return fmt.Errorf("filesystem interval must be at least 1 second, got %d", fs.Interval.Seconds())
 		}
@@ -315,9 +321,11 @@ func (c *Config) validateDirectoriesConfig() error {
 		if name == "" {
 			return fmt.Errorf("directory group name cannot be empty")
 		}
+
 		if !filepath.IsAbs(group.Path) {
 			return fmt.Errorf("directory path must be absolute: %s", group.Path)
 		}
+
 		if group.Interval.Seconds() < 1 {
 			return fmt.Errorf("directory interval must be at least 1 second, got %d", group.Interval.Seconds())
 		}
@@ -336,6 +344,7 @@ func (c *Config) GetFilesystemInterval(fs FilesystemConfig) int {
 	if fs.Interval.Duration > 0 {
 		return fs.Interval.Seconds()
 	}
+
 	return c.GetDefaultInterval()
 }
 
@@ -344,5 +353,6 @@ func (c *Config) GetDirectoryInterval(group DirectoryGroup) int {
 	if group.Interval.Duration > 0 {
 		return group.Interval.Seconds()
 	}
+
 	return c.GetDefaultInterval()
 }
