@@ -230,21 +230,19 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 	}
 
 	// Add metric metadata for UI
-	filesystem.AddMetricInfo("filesystem_size_bytes", "Total size of the filesystem in bytes", []string{"device", "mountpoint", "fstype"})
-	filesystem.AddMetricInfo("filesystem_free_bytes", "Free space available on the filesystem in bytes", []string{"device", "mountpoint", "fstype"})
-	filesystem.AddMetricInfo("filesystem_available_bytes", "Space available to non-root users on the filesystem in bytes", []string{"device", "mountpoint", "fstype"})
-	filesystem.AddMetricInfo("filesystem_used_bytes", "Used space on the filesystem in bytes", []string{"device", "mountpoint", "fstype"})
-	filesystem.AddMetricInfo("filesystem_inodes_total", "Total number of inodes on the filesystem", []string{"device", "mountpoint", "fstype"})
-	filesystem.AddMetricInfo("filesystem_inodes_free", "Number of free inodes on the filesystem", []string{"device", "mountpoint", "fstype"})
-	filesystem.AddMetricInfo("filesystem_inodes_used", "Number of used inodes on the filesystem", []string{"device", "mountpoint", "fstype"})
-	filesystem.AddMetricInfo("filesystem_readonly", "Whether the filesystem is read-only (1) or writable (0)", []string{"device", "mountpoint", "fstype"})
-	filesystem.AddMetricInfo("filesystem_device_error", "Whether there is a device error on the filesystem (1) or not (0)", []string{"device", "mountpoint", "fstype"})
-	filesystem.AddMetricInfo("filesystem_last_collection_timestamp", "Timestamp of the last successful collection", []string{"collector"})
-	filesystem.AddMetricInfo("filesystem_collection_duration_seconds", "Duration of the last collection in seconds", []string{"collector"})
-	filesystem.AddMetricInfo("filesystem_collection_errors_total", "Total number of collection errors", []string{"collector"})
-	filesystem.AddMetricInfo("filesystem_collection_success_total", "Total number of successful collections", []string{"collector"})
-	filesystem.AddMetricInfo("filesystem_collection_success_by_group_total", "Total number of successful collections by group", []string{"collector", "group", "interval"})
-	filesystem.AddMetricInfo("filesystem_collection_duration_by_group_seconds", "Duration of collection by group in seconds", []string{"collector", "group", "interval"})
+	filesystem.AddMetricInfo("filesystem_exporter_info", "Information about the filesystem exporter", []string{"version", "commit", "build_date"})
+	filesystem.AddMetricInfo("filesystem_exporter_volume_size_bytes", "Total size of volume in bytes", []string{"volume", "mount_point", "device"})
+	filesystem.AddMetricInfo("filesystem_exporter_volume_available_bytes", "Available space on volume in bytes", []string{"volume", "mount_point", "device"})
+	filesystem.AddMetricInfo("filesystem_exporter_volume_used_ratio", "Ratio of used space on volume (0.0 to 1.0)", []string{"volume", "mount_point", "device"})
+	filesystem.AddMetricInfo("filesystem_exporter_directory_size_bytes", "Size of directory in bytes", []string{"group", "path", "method", "level"})
+	filesystem.AddMetricInfo("filesystem_exporter_collection_duration_seconds", "Duration of collection in seconds", []string{"type", "group", "interval_seconds"})
+	filesystem.AddMetricInfo("filesystem_exporter_collection_timestamp", "Timestamp of last collection", []string{"type", "group", "interval_seconds"})
+	filesystem.AddMetricInfo("filesystem_exporter_collection_interval_seconds", "Configured collection interval in seconds", []string{"type", "group"})
+	filesystem.AddMetricInfo("filesystem_exporter_collection_success_total", "Total number of successful collections", []string{"type", "group", "interval_seconds"})
+	filesystem.AddMetricInfo("filesystem_exporter_collection_failed_total", "Total number of failed collections", []string{"type", "group", "interval_seconds"})
+	filesystem.AddMetricInfo("filesystem_exporter_directories_processed_total", "Total number of directories processed", []string{"group", "method"})
+	filesystem.AddMetricInfo("filesystem_exporter_directories_failed_total", "Total number of directories that failed to process", []string{"group", "reason"})
+	filesystem.AddMetricInfo("filesystem_exporter_du_lock_wait_duration_seconds", "Time spent waiting for du mutex lock in seconds", []string{"group", "path"})
 
 	return filesystem
 }
