@@ -21,12 +21,7 @@ type FilesystemRegistry struct {
 	FilesystemReadOnly       *prometheus.GaugeVec
 	FilesystemDeviceError    *prometheus.GaugeVec
 
-	// Directory metrics
-	DirectoryFileCount    *prometheus.GaugeVec
-	DirectorySubdirCount  *prometheus.GaugeVec
-	DirectoryLastModified *prometheus.GaugeVec
-	DirectoryAccessible   *prometheus.GaugeVec
-	DirectoryError        *prometheus.GaugeVec
+	// Directory metrics (only DirectorySizeGauge is actually used)
 
 	// Collection metrics
 	LastCollectionTime          *prometheus.GaugeVec
@@ -117,42 +112,7 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 			[]string{"device", "mountpoint", "fstype"},
 		),
 
-		// Directory metrics
-		DirectoryFileCount: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
-			prometheus.GaugeOpts{
-				Name: "directory_files",
-				Help: "Number of files in directory",
-			},
-			[]string{"path"},
-		),
-		DirectorySubdirCount: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
-			prometheus.GaugeOpts{
-				Name: "directory_subdirs",
-				Help: "Number of subdirectories in directory",
-			},
-			[]string{"path"},
-		),
-		DirectoryLastModified: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
-			prometheus.GaugeOpts{
-				Name: "directory_last_modified_timestamp",
-				Help: "Directory last modified timestamp",
-			},
-			[]string{"path"},
-		),
-		DirectoryAccessible: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
-			prometheus.GaugeOpts{
-				Name: "directory_accessible",
-				Help: "Directory is accessible (1) or not (0)",
-			},
-			[]string{"path"},
-		),
-		DirectoryError: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
-			prometheus.GaugeOpts{
-				Name: "directory_error",
-				Help: "Directory error (1) or no error (0)",
-			},
-			[]string{"path"},
-		),
+		// Directory metrics (only DirectorySizeGauge is actually used)
 
 		// Collection metrics
 		LastCollectionTime: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
@@ -279,11 +239,6 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 	filesystem.AddMetricInfo("filesystem_inodes_used", "Number of used inodes on the filesystem", []string{"device", "mountpoint", "fstype"})
 	filesystem.AddMetricInfo("filesystem_readonly", "Whether the filesystem is read-only (1) or writable (0)", []string{"device", "mountpoint", "fstype"})
 	filesystem.AddMetricInfo("filesystem_device_error", "Whether there is a device error on the filesystem (1) or not (0)", []string{"device", "mountpoint", "fstype"})
-	filesystem.AddMetricInfo("directory_files", "Number of files in the directory", []string{"path"})
-	filesystem.AddMetricInfo("directory_subdir_count", "Number of subdirectories in the directory", []string{"path"})
-	filesystem.AddMetricInfo("directory_last_modified_timestamp", "Timestamp when the directory was last modified", []string{"path"})
-	filesystem.AddMetricInfo("directory_accessible", "Whether the directory is accessible (1) or not (0)", []string{"path"})
-	filesystem.AddMetricInfo("directory_error", "Whether there is an error accessing the directory (1) or not (0)", []string{"path"})
 	filesystem.AddMetricInfo("filesystem_last_collection_timestamp", "Timestamp of the last successful collection", []string{"collector"})
 	filesystem.AddMetricInfo("filesystem_collection_duration_seconds", "Duration of the last collection in seconds", []string{"collector"})
 	filesystem.AddMetricInfo("filesystem_collection_errors_total", "Total number of collection errors", []string{"collector"})
