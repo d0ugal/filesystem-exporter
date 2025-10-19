@@ -60,7 +60,7 @@ directories:
 	}
 
 	// Test loading the config
-	cfg, err := Load(tmpfile.Name())
+	cfg, err := LoadConfig(tmpfile.Name(), false)
 	if err != nil {
 		t.Fatalf("Failed to load config: %v", err)
 	}
@@ -133,7 +133,7 @@ directories:
 	}
 
 	// Test loading the config
-	cfg, err := Load(tmpfile.Name())
+	cfg, err := LoadConfig(tmpfile.Name(), false)
 	if err != nil {
 		t.Fatalf("Failed to load config: %v", err)
 	}
