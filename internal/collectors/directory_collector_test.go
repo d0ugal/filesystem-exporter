@@ -10,6 +10,8 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
+	promexporter_config "github.com/d0ugal/promexporter/config"
+	promexporter_metrics "github.com/d0ugal/promexporter/metrics"
 )
 
 func TestDepthCalculation(t *testing.T) {
@@ -176,7 +178,9 @@ func TestDirectoryCollectorMutex(t *testing.T) {
 	}
 
 	// Create metrics registry
-	registry := metrics.NewRegistry()
+	// Create a mock base registry for testing
+	baseRegistry := promexporter_metrics.NewRegistry("test_exporter_info")
+	registry := metrics.NewFilesystemRegistry(baseRegistry)
 
 	// Create collector
 	collector := NewDirectoryCollector(cfg, registry)
@@ -219,27 +223,31 @@ func TestDirectoryCollectorConcurrency(t *testing.T) {
 	interval := config.Duration{Duration: time.Duration(60) * time.Second}
 	defaultInterval := config.Duration{Duration: time.Duration(300) * time.Second}
 	cfg := &config.Config{
-		Metrics: config.MetricsConfig{
-			Collection: config.CollectionConfig{
-				DefaultInterval: defaultInterval,
+		BaseConfig: promexporter_config.BaseConfig{
+			Metrics: promexporter_config.MetricsConfig{
+				Collection: promexporter_config.CollectionConfig{
+					DefaultInterval: defaultInterval,
+				},
 			},
 		},
 		Directories: map[string]config.DirectoryGroup{
 			"test1": {
 				Path:               "/tmp",
 				SubdirectoryLevels: 0,
-				Interval:           &interval,
+				Interval:           interval,
 			},
 			"test2": {
 				Path:               "/var",
 				SubdirectoryLevels: 0,
-				Interval:           &interval,
+				Interval:           interval,
 			},
 		},
 	}
 
 	// Create metrics registry
-	registry := metrics.NewRegistry()
+	// Create a mock base registry for testing
+	baseRegistry := promexporter_metrics.NewRegistry("test_exporter_info")
+	registry := metrics.NewFilesystemRegistry(baseRegistry)
 
 	// Create collector
 	collector := NewDirectoryCollector(cfg, registry)
@@ -279,7 +287,9 @@ func TestLockWaitDurationMetric(t *testing.T) {
 	}
 
 	// Create metrics registry
-	registry := metrics.NewRegistry()
+	// Create a mock base registry for testing
+	baseRegistry := promexporter_metrics.NewRegistry("test_exporter_info")
+	registry := metrics.NewFilesystemRegistry(baseRegistry)
 
 	// Create collector
 	collector := NewDirectoryCollector(cfg, registry)
