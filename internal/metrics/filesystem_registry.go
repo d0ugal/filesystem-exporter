@@ -22,7 +22,6 @@ type FilesystemRegistry struct {
 	FilesystemDeviceError    *prometheus.GaugeVec
 
 	// Directory metrics
-	DirectorySizeBytes    *prometheus.GaugeVec
 	DirectoryFileCount    *prometheus.GaugeVec
 	DirectorySubdirCount  *prometheus.GaugeVec
 	DirectoryLastModified *prometheus.GaugeVec
@@ -119,13 +118,6 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 		),
 
 		// Directory metrics
-		DirectorySizeBytes: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
-			prometheus.GaugeOpts{
-				Name: "directory_size_bytes",
-				Help: "Directory size in bytes",
-			},
-			[]string{"path"},
-		),
 		DirectoryFileCount: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "directory_files",
@@ -287,8 +279,7 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 	filesystem.AddMetricInfo("filesystem_inodes_used", "Number of used inodes on the filesystem", []string{"device", "mountpoint", "fstype"})
 	filesystem.AddMetricInfo("filesystem_readonly", "Whether the filesystem is read-only (1) or writable (0)", []string{"device", "mountpoint", "fstype"})
 	filesystem.AddMetricInfo("filesystem_device_error", "Whether there is a device error on the filesystem (1) or not (0)", []string{"device", "mountpoint", "fstype"})
-	filesystem.AddMetricInfo("directory_size_bytes", "Total size of the directory in bytes", []string{"path"})
-	filesystem.AddMetricInfo("directory_file_count", "Number of files in the directory", []string{"path"})
+	filesystem.AddMetricInfo("directory_files", "Number of files in the directory", []string{"path"})
 	filesystem.AddMetricInfo("directory_subdir_count", "Number of subdirectories in the directory", []string{"path"})
 	filesystem.AddMetricInfo("directory_last_modified_timestamp", "Timestamp when the directory was last modified", []string{"path"})
 	filesystem.AddMetricInfo("directory_accessible", "Whether the directory is accessible (1) or not (0)", []string{"path"})
