@@ -197,7 +197,7 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 				Name: "filesystem_exporter_directory_size_bytes",
 				Help: "Directory size in bytes",
 			},
-			[]string{"group", "path", "method", "level"},
+			[]string{"group", "directory", "mode", "subdirectory_level"},
 		),
 		DirectoriesProcessedCounter: promauto.With(baseRegistry.GetRegistry()).NewCounterVec(
 			prometheus.CounterOpts{
@@ -234,7 +234,7 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 	filesystem.AddMetricInfo("filesystem_exporter_volume_size_bytes", "Total size of volume in bytes", []string{"volume", "mount_point", "device"})
 	filesystem.AddMetricInfo("filesystem_exporter_volume_available_bytes", "Available space on volume in bytes", []string{"volume", "mount_point", "device"})
 	filesystem.AddMetricInfo("filesystem_exporter_volume_used_ratio", "Ratio of used space on volume (0.0 to 1.0)", []string{"volume", "mount_point", "device"})
-	filesystem.AddMetricInfo("filesystem_exporter_directory_size_bytes", "Size of directory in bytes", []string{"group", "path", "method", "level"})
+	filesystem.AddMetricInfo("filesystem_exporter_directory_size_bytes", "Size of directory in bytes", []string{"group", "directory", "mode", "subdirectory_level"})
 	filesystem.AddMetricInfo("filesystem_exporter_collection_duration_seconds", "Duration of collection in seconds", []string{"group", "interval_seconds", "type"})
 	filesystem.AddMetricInfo("filesystem_exporter_collection_timestamp", "Timestamp of last collection", []string{"group", "interval_seconds", "type"})
 	filesystem.AddMetricInfo("filesystem_exporter_collection_interval_seconds", "Configured collection interval in seconds", []string{"group", "type"})
