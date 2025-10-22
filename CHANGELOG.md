@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.21.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.20.0...v1.21.0) (2025-10-22)
+
+
+### Features
+
+* migrate filesystem-exporter to promexporter library ([f4e99ab](https://github.com/d0ugal/filesystem-exporter/commit/f4e99abf74eff64cc6b0d7a77aa7769b344171bc))
+* update to promexporter v1.0.0 ([de55a4a](https://github.com/d0ugal/filesystem-exporter/commit/de55a4affcdc4a86f63be304203e62ea011bc32b))
+
+
+### Bug Fixes
+
+* align directory size metric labels with v1.20.0 ([ecda683](https://github.com/d0ugal/filesystem-exporter/commit/ecda683b33d31431a2c8b9331ca4dede18ce1461))
+* correct label order for collection metrics in AddMetricInfo ([19a80ef](https://github.com/d0ugal/filesystem-exporter/commit/19a80efde9d594389fba431f6bda289403445c60))
+* remove all unused directory metrics ([0a30558](https://github.com/d0ugal/filesystem-exporter/commit/0a3055834afbc965081ac556a2367bde7c759218))
+* remove problematic config tests to unblock CI ([5d0dfb7](https://github.com/d0ugal/filesystem-exporter/commit/5d0dfb781b0d5626041c2d038c62b58025349b74))
+* remove unused directory_size_bytes metric ([2e2047c](https://github.com/d0ugal/filesystem-exporter/commit/2e2047cab3b22e15e694716b7e98d13f0bf2f7d1))
+* resolve all linting issues ([0326861](https://github.com/d0ugal/filesystem-exporter/commit/0326861cfd6fd9aba10e90c23cc37ee77fb0c987))
+* restore stable version metric info registrations ([9445b00](https://github.com/d0ugal/filesystem-exporter/commit/9445b00d5172d78932df331107f745d2ad4ecfa9))
+* update directory collector tests and config tests for promexporter v1 ([bc377ce](https://github.com/d0ugal/filesystem-exporter/commit/bc377ce4a695bac652724897d9919f9693e7ac5f))
+* update go.sum for promexporter v1.0.0 ([152bd92](https://github.com/d0ugal/filesystem-exporter/commit/152bd9221af251aaf6f6f48c720c5915b8d564d5))
+* update metric names to match stable version ([785aa60](https://github.com/d0ugal/filesystem-exporter/commit/785aa60f32fe07a9bcdaa439b184950e50f0f597))
+* update module github.com/d0ugal/promexporter to v1 ([a6cd6cb](https://github.com/d0ugal/filesystem-exporter/commit/a6cd6cbbc572f6932372a8601570b80a0f22963c))
+* update module github.com/d0ugal/promexporter to v1.0.1 ([c096619](https://github.com/d0ugal/filesystem-exporter/commit/c096619c7371f71c3d9348c98580085fb42d0483))
+* update module github.com/prometheus/procfs to v0.18.0 ([ecf4384](https://github.com/d0ugal/filesystem-exporter/commit/ecf4384cca60154da937828cb5d7e40d4677a196))
+* update to latest promexporter changes ([132ce2c](https://github.com/d0ugal/filesystem-exporter/commit/132ce2c2c7f96a4d8177626f6cd3a43f453a6537))
+
 ## [1.20.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.19.1...v1.20.0) (2025-10-14)
 
 
