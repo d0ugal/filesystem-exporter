@@ -15,7 +15,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:embed templates/*.html
+//go:embed ../../templates/*.html
 var templateFiles embed.FS
 
 // Duration uses promexporter Duration type
