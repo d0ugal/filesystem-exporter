@@ -15,7 +15,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:embed ../../templates/*.html
+//go:embed templates/*.html
 var templateFiles embed.FS
 
 // Duration uses promexporter Duration type
@@ -405,14 +405,20 @@ func (c *Config) GetDisplayConfig() map[string]interface{} {
 
 // RenderConfigHTML provides custom HTML fragments for specific configuration keys
 func (c *Config) RenderConfigHTML(key string, value interface{}) (string, bool) {
+	fmt.Printf("DEBUG: RenderConfigHTML called for key: %s\n", key)
 	switch key {
 	case "Directories":
 		// Load and render the directories template
-		return c.renderTemplate("directories", value)
+		html, ok := c.renderTemplate("directories", value)
+		fmt.Printf("DEBUG: Directories template rendered: %s\n", html)
+		return html, ok
 	case "Filesystems":
 		// Load and render the filesystems template
-		return c.renderTemplate("filesystems", value)
+		html, ok := c.renderTemplate("filesystems", value)
+		fmt.Printf("DEBUG: Filesystems template rendered: %s\n", html)
+		return html, ok
 	}
+	fmt.Printf("DEBUG: No custom HTML for key: %s\n", key)
 	return "", false
 }
 
