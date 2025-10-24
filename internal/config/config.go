@@ -1,16 +1,22 @@
 package config
 
 import (
+	"embed"
 	"fmt"
+	"html/template"
 	"net"
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	promexporter_config "github.com/d0ugal/promexporter/config"
 	"gopkg.in/yaml.v3"
 )
+
+//go:embed templates/*.html
+var templateFiles embed.FS
 
 // Duration uses promexporter Duration type
 type Duration = promexporter_config.Duration
@@ -412,15 +418,23 @@ func (c *Config) RenderConfigHTML(key string, value interface{}) (string, bool) 
 
 // renderTemplate loads and renders a template with the given data
 func (c *Config) renderTemplate(templateName string, data interface{}) (string, bool) {
-	// This is a simplified version - in practice you'd load from embedded files
-	// For now, we'll return a basic HTML structure
-	switch templateName {
-	case "directories":
-		return c.renderDirectoriesHTML(data), true
-	case "filesystems":
-		return c.renderFilesystemsHTML(data), true
+	tmpl, err := template.ParseFS(templateFiles, "templates/"+templateName+".html")
+	if err != nil {
+		// Fallback to hardcoded HTML if template file doesn't exist
+		switch templateName {
+		case "directories":
+			return c.renderDirectoriesHTML(data), true
+		case "filesystems":
+			return c.renderFilesystemsHTML(data), true
+		}
+		return "", false
 	}
-	return "", false
+
+	var buf strings.Builder
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return "", false
+	}
+	return buf.String(), true
 }
 
 // renderDirectoriesHTML renders the directories configuration as HTML
