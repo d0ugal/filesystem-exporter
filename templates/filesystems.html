@@ -1,0 +1,15 @@
+<div class="array-container">
+{{range $i, $item := .}}
+<div class="array-item">
+    <span class="array-index">[{{$i}}]</span>
+    <div class="object-container">
+        {{range $k, $v := $item}}
+        <div class="object-item">
+            <span class="object-key">{{$k}}:</span>
+            <span class="object-value">{{$v}}</span>
+        </div>
+        {{end}}
+    </div>
+</div>
+{{end}}
+</div>

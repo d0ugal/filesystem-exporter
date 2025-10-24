@@ -356,3 +356,127 @@ func (c *Config) GetDirectoryInterval(group DirectoryGroup) int {
 
 	return c.GetDefaultInterval()
 }
+
+// GetDisplayConfig returns configuration data safe for display
+// Overrides BaseConfig to include filesystem and directory configuration
+func (c *Config) GetDisplayConfig() map[string]interface{} {
+	// Get base configuration
+	config := c.BaseConfig.GetDisplayConfig()
+
+	// Add filesystem configuration
+	if len(c.Filesystems) > 0 {
+		filesystems := make([]map[string]string, len(c.Filesystems))
+		for i, fs := range c.Filesystems {
+			filesystems[i] = map[string]string{
+				"name":        fs.Name,
+				"mount_point": fs.MountPoint,
+				"device":      fs.Device,
+				"interval":    fs.Interval.String(),
+			}
+		}
+		config["Filesystems"] = filesystems
+	} else {
+		config["Filesystems"] = "None configured"
+	}
+
+	// Add directory configuration
+	if len(c.Directories) > 0 {
+		directories := make(map[string]map[string]interface{})
+		for name, dir := range c.Directories {
+			directories[name] = map[string]interface{}{
+				"path":                dir.Path,
+				"subdirectory_levels": dir.SubdirectoryLevels,
+				"interval":            dir.Interval.String(),
+			}
+		}
+		config["Directories"] = directories
+	} else {
+		config["Directories"] = "None configured"
+	}
+
+	return config
+}
+
+// RenderConfigHTML provides custom HTML fragments for specific configuration keys
+func (c *Config) RenderConfigHTML(key string, value interface{}) (string, bool) {
+	switch key {
+	case "Directories":
+		// Load and render the directories template
+		return c.renderTemplate("directories", value)
+	case "Filesystems":
+		// Load and render the filesystems template
+		return c.renderTemplate("filesystems", value)
+	}
+	return "", false
+}
+
+// renderTemplate loads and renders a template with the given data
+func (c *Config) renderTemplate(templateName string, data interface{}) (string, bool) {
+	// This is a simplified version - in practice you'd load from embedded files
+	// For now, we'll return a basic HTML structure
+	switch templateName {
+	case "directories":
+		return c.renderDirectoriesHTML(data)
+	case "filesystems":
+		return c.renderFilesystemsHTML(data)
+	}
+	return "", false
+}
+
+// renderDirectoriesHTML renders the directories configuration as HTML
+func (c *Config) renderDirectoriesHTML(data interface{}) string {
+	directories, ok := data.(map[string]map[string]interface{})
+	if !ok {
+		return ""
+	}
+
+	html := `<div class="nested-map-container">`
+	for name, config := range directories {
+		html += `<div class="nested-map-item">`
+		html += `<span class="nested-map-key">` + name + `:</span>`
+		html += `<div class="object-container">`
+		for k, v := range config {
+			html += `<div class="object-item">`
+			html += `<span class="object-key">` + k + `:</span>`
+			html += `<span class="object-value">` + fmt.Sprintf("%v", v) + `</span>`
+			html += `</div>`
+		}
+		html += `</div></div>`
+	}
+	html += `</div>`
+	return html
+}
+
+// renderFilesystemsHTML renders the filesystems configuration as HTML
+func (c *Config) renderFilesystemsHTML(data interface{}) string {
+	filesystems, ok := data.([]map[string]string)
+	if !ok {
+		return ""
+	}
+
+	html := `<div class="array-container">`
+	for i, item := range filesystems {
+		html += `<div class="array-item">`
+		html += `<span class="array-index">[` + fmt.Sprintf("%d", i) + `]</span>`
+		html += `<div class="object-container">`
+		for k, v := range item {
+			html += `<div class="object-item">`
+			html += `<span class="object-key">` + k + `:</span>`
+			html += `<span class="object-value">` + v + `</span>`
+			html += `</div>`
+		}
+		html += `</div></div>`
+	}
+	html += `</div>`
+	return html
+}
+
+// GetLogging returns the logging configuration
+func (c *Config) GetLogging() *promexporter_config.LoggingConfig {
+	return c.BaseConfig.GetLogging()
+}
+
+// GetServer returns the server configuration
+func (c *Config) GetServer() *promexporter_config.ServerConfig {
+	return c.BaseConfig.GetServer()
+}
