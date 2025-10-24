@@ -74,7 +74,7 @@ jobs:
         go build -v -ldflags="-s -w" -o filesystem-exporter ./cmd/main.go
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: filesystem-exporter
         path: filesystem-exporter
