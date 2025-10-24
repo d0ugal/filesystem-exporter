@@ -416,9 +416,9 @@ func (c *Config) renderTemplate(templateName string, data interface{}) (string, 
 	// For now, we'll return a basic HTML structure
 	switch templateName {
 	case "directories":
-		return c.renderDirectoriesHTML(data)
+		return c.renderDirectoriesHTML(data), true
 	case "filesystems":
-		return c.renderFilesystemsHTML(data)
+		return c.renderFilesystemsHTML(data), true
 	}
 	return "", false
 }
