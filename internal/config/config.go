@@ -380,6 +380,7 @@ func (c *Config) GetDisplayConfig() map[string]interface{} {
 				"interval":    fs.Interval.String(),
 			}
 		}
+
 		config["Filesystems"] = filesystems
 	} else {
 		config["Filesystems"] = "None configured"
@@ -395,6 +396,7 @@ func (c *Config) GetDisplayConfig() map[string]interface{} {
 				"interval":            dir.Interval.String(),
 			}
 		}
+
 		config["Directories"] = directories
 	} else {
 		config["Directories"] = "None configured"
@@ -406,19 +408,24 @@ func (c *Config) GetDisplayConfig() map[string]interface{} {
 // RenderConfigHTML provides custom HTML fragments for specific configuration keys
 func (c *Config) RenderConfigHTML(key string, value interface{}) (string, bool) {
 	fmt.Printf("DEBUG: RenderConfigHTML called for key: %s\n", key)
+
 	switch key {
 	case "Directories":
 		// Load and render the directories template
 		html, ok := c.renderTemplate("directories", value)
 		fmt.Printf("DEBUG: Directories template rendered: %s\n", html)
+
 		return html, ok
 	case "Filesystems":
 		// Load and render the filesystems template
 		html, ok := c.renderTemplate("filesystems", value)
 		fmt.Printf("DEBUG: Filesystems template rendered: %s\n", html)
+
 		return html, ok
 	}
+
 	fmt.Printf("DEBUG: No custom HTML for key: %s\n", key)
+
 	return "", false
 }
 
@@ -433,6 +440,7 @@ func (c *Config) renderTemplate(templateName string, data interface{}) (string, 
 		case "filesystems":
 			return c.renderFilesystemsHTML(data), true
 		}
+
 		return "", false
 	}
 
@@ -440,6 +448,7 @@ func (c *Config) renderTemplate(templateName string, data interface{}) (string, 
 	if err := tmpl.Execute(&buf, data); err != nil {
 		return "", false
 	}
+
 	return buf.String(), true
 }
 
@@ -454,6 +463,7 @@ func (c *Config) renderDirectoriesHTML(data interface{}) string {
 	for name, config := range directories {
 		html += `<div class="nested-map-item">`
 		html += `<span class="nested-map-key">` + name + `:</span>`
+
 		html += `<div class="object-container">`
 		for k, v := range config {
 			html += `<div class="object-item">`
@@ -461,9 +471,12 @@ func (c *Config) renderDirectoriesHTML(data interface{}) string {
 			html += `<span class="object-value">` + fmt.Sprintf("%v", v) + `</span>`
 			html += `</div>`
 		}
+
 		html += `</div></div>`
 	}
+
 	html += `</div>`
+
 	return html
 }
 
@@ -478,6 +491,7 @@ func (c *Config) renderFilesystemsHTML(data interface{}) string {
 	for i, item := range filesystems {
 		html += `<div class="array-item">`
 		html += `<span class="array-index">[` + fmt.Sprintf("%d", i) + `]</span>`
+
 		html += `<div class="object-container">`
 		for k, v := range item {
 			html += `<div class="object-item">`
@@ -485,9 +499,12 @@ func (c *Config) renderFilesystemsHTML(data interface{}) string {
 			html += `<span class="object-value">` + v + `</span>`
 			html += `</div>`
 		}
+
 		html += `</div></div>`
 	}
+
 	html += `</div>`
+
 	return html
 }
 
