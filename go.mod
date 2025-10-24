@@ -5,7 +5,7 @@ go 1.25
 toolchain go1.25.3
 
 require (
-	github.com/d0ugal/promexporter v1.3.2-0.20251024151020-2b3a5afd01ff
+	github.com/d0ugal/promexporter v1.3.2-0.20251024152647-80b7744c64cf
 	github.com/prometheus/client_golang v1.23.2
 	gopkg.in/yaml.v3 v3.0.1
 )
