@@ -14,6 +14,8 @@ github.com/d0ugal/promexporter v1.3.2-0.20251024151020-2b3a5afd01ff h1:IRDwiDrQ+
 github.com/d0ugal/promexporter v1.3.2-0.20251024151020-2b3a5afd01ff/go.mod h1:LFrknRg+kELcF9EIAnLayJ5Yp0f9ZtKQ5xKnQGBr/mo=
 github.com/d0ugal/promexporter v1.3.2-0.20251024152647-80b7744c64cf h1:adjpwfKOMo6aTgInfMy8jLBtdArO6w+4g8MZmYOYQfw=
 github.com/d0ugal/promexporter v1.3.2-0.20251024152647-80b7744c64cf/go.mod h1:LFrknRg+kELcF9EIAnLayJ5Yp0f9ZtKQ5xKnQGBr/mo=
+github.com/d0ugal/promexporter v1.3.2-0.20251024152830-c98ba6eb939b h1:onB+WyNubLqDgt34pnMUxqzqonyTKFCXQ2FAp/dYDFg=
+github.com/d0ugal/promexporter v1.3.2-0.20251024152830-c98ba6eb939b/go.mod h1:LFrknRg+kELcF9EIAnLayJ5Yp0f9ZtKQ5xKnQGBr/mo=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
