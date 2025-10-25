@@ -9,10 +9,11 @@ import (
 	"filesystem-exporter/internal/collectors"
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
+	"filesystem-exporter/internal/version"
+
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/logging"
 	promexporter_metrics "github.com/d0ugal/promexporter/metrics"
-	"github.com/d0ugal/promexporter/version"
 )
 
 func main() {
@@ -27,8 +28,7 @@ func main() {
 
 	// Show version if requested
 	if showVersion {
-		versionInfo := version.Get()
-		slog.Info("filesystem-exporter version", "version", versionInfo.Version, "commit", versionInfo.Commit, "build_date", versionInfo.BuildDate, "go_version", versionInfo.GoVersion)
+		slog.Info("filesystem-exporter version", "version", version.Version, "commit", version.Commit, "build_date", version.BuildDate)
 		os.Exit(0)
 	}
 
@@ -69,6 +69,9 @@ func main() {
 
 	// Initialize metrics registry using promexporter
 	metricsRegistry := promexporter_metrics.NewRegistry("filesystem_exporter_info")
+
+	// Set version info metric with filesystem-exporter version information
+	metricsRegistry.VersionInfo.WithLabelValues(version.Version, version.Commit, version.BuildDate).Set(1)
 
 	// Add custom metrics to the registry
 	filesystemRegistry := metrics.NewFilesystemRegistry(metricsRegistry)
