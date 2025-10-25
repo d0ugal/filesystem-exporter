@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.22.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.21.0...v1.22.0) (2025-10-25)
+
+
+### Features
+
+* implement custom HTML rendering for config display ([6469e65](https://github.com/d0ugal/filesystem-exporter/commit/6469e657aa33a224222dd95142ca49f993afeea8))
+* implement embedded template files ([8117846](https://github.com/d0ugal/filesystem-exporter/commit/81178469872c6da04192e6b3f8de0be55bb3ba42))
+* update promexporter to latest version with custom HTML support ([8ca76fd](https://github.com/d0ugal/filesystem-exporter/commit/8ca76fd0e23b9d7a20cf1852b3c5ac36a4a43d25))
+* update promexporter to v1.4.0 ([67a0614](https://github.com/d0ugal/filesystem-exporter/commit/67a0614c8119921da71fa56bc3a54d9b4571221b))
+
+
+### Bug Fixes
+
+* correct embed path for template files ([e194945](https://github.com/d0ugal/filesystem-exporter/commit/e1949452979b6e7a8443163812164b48dcd70879))
+* correct return values for renderTemplate function ([5181d3c](https://github.com/d0ugal/filesystem-exporter/commit/5181d3c67c65afdfe4ec0feda76178742cc445f3))
+* move template files to internal/config/templates ([425cbd8](https://github.com/d0ugal/filesystem-exporter/commit/425cbd878b898ca7d5b757b3c1dcfacc76da48ab))
+* resolve linting issues ([73338ea](https://github.com/d0ugal/filesystem-exporter/commit/73338ea7f587e7a0919b01464f7d9a1b4c1e06fa))
+* update module github.com/d0ugal/promexporter to v1.1.0 ([aeb62d4](https://github.com/d0ugal/filesystem-exporter/commit/aeb62d474ad710338606fbd2880937999606b678))
+* update module github.com/d0ugal/promexporter to v1.3.1 ([3da58a3](https://github.com/d0ugal/filesystem-exporter/commit/3da58a39d4da634a9a0b080a1e0c570f74ff38f3))
+* update promexporter to latest version with safeHTML fix ([b3c1a11](https://github.com/d0ugal/filesystem-exporter/commit/b3c1a118158dc19fda62651d950fb94cd973a83c))
+* update promexporter with safeHTML function registration ([7096c1f](https://github.com/d0ugal/filesystem-exporter/commit/7096c1f4b188870b0b56428174c43a6f5a4fa7eb))
+* update promexporter with template.HTML fix ([89b923e](https://github.com/d0ugal/filesystem-exporter/commit/89b923ea23df677c6fea5564a3bfde01cfc71dbc))
+
 ## [1.21.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.20.0...v1.21.0) (2025-10-22)
 
 
