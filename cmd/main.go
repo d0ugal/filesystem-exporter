@@ -10,7 +10,6 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/version"
-
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/logging"
 	promexporter_metrics "github.com/d0ugal/promexporter/metrics"
