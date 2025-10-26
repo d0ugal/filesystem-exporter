@@ -70,9 +70,6 @@ func main() {
 	// Initialize metrics registry using promexporter
 	metricsRegistry := promexporter_metrics.NewRegistry("filesystem_exporter_info")
 
-	// Set version info metric with filesystem-exporter version information
-	metricsRegistry.VersionInfo.WithLabelValues(version.Version, version.Commit, version.BuildDate).Set(1)
-
 	// Add custom metrics to the registry
 	filesystemRegistry := metrics.NewFilesystemRegistry(metricsRegistry)
 
@@ -86,6 +83,7 @@ func main() {
 		WithMetrics(metricsRegistry).
 		WithCollector(filesystemCollector).
 		WithCollector(directoryCollector).
+		WithVersionInfo(version.Version, version.Commit, version.BuildDate).
 		Build().
 		Run(); err != nil {
 		log.Fatalf("Failed to run application: %v", err)
