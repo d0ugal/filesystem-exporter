@@ -48,10 +48,8 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@v8
-      with:
-        version: latest
+    - name: Run linting using Makefile
+      run: make lint-only
 
   build:
     name: Build
