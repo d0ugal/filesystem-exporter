@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.22.4](https://github.com/d0ugal/filesystem-exporter/compare/v1.22.3...v1.22.4) (2025-10-27)
+
+
+### Bug Fixes
+
+* add missing prometheus imports ([158b394](https://github.com/d0ugal/filesystem-exporter/commit/158b394663566a8318d8299117430e64ec29466d))
+* **ci:** use Makefile for linting instead of golangci-lint-action ([053c407](https://github.com/d0ugal/filesystem-exporter/commit/053c4071bffb92e66f8d767b857a8c7b1f5af3d1))
+* correct metric label order for collection and volume metrics ([d432e80](https://github.com/d0ugal/filesystem-exporter/commit/d432e809d816bb85e15889f2dd83c98e2ed45d7d))
+
 ## [1.22.3](https://github.com/d0ugal/filesystem-exporter/compare/v1.22.2...v1.22.3) (2025-10-26)
 
 
