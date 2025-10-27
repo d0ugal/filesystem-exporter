@@ -14,7 +14,6 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
-
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -168,6 +167,7 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 			"group":  groupName,
 			"reason": "validation",
 		}).Inc()
+
 		return fmt.Errorf("path validation failed for %s: %w", path, err)
 	}
 
@@ -204,6 +204,7 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 			"group":  groupName,
 			"reason": "du",
 		}).Inc()
+
 		return fmt.Errorf("failed to execute du command for %s: %w", path, err)
 	}
 
@@ -214,6 +215,7 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 			"group":  groupName,
 			"reason": "du",
 		}).Inc()
+
 		return fmt.Errorf("unexpected du output format for %s", path)
 	}
 
@@ -223,6 +225,7 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 			"group":  groupName,
 			"reason": "du",
 		}).Inc()
+
 		return fmt.Errorf("failed to parse directory size for %s: %w", path, err)
 	}
 
@@ -258,6 +261,7 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 			"group":  groupName,
 			"reason": "validation",
 		}).Inc()
+
 		return fmt.Errorf("base path validation failed for %s: %w", group.Path, err)
 	}
 
@@ -327,6 +331,7 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 			"group":  groupName,
 			"reason": "walk",
 		}).Inc()
+
 		return fmt.Errorf("failed to walk directory tree for %s: %w", group.Path, err)
 	}
 
