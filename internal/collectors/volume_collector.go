@@ -93,11 +93,11 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 
 	fc.metrics.CollectionSuccessCounter.WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Inc()
 	// Expose configured interval as a numeric gauge for PromQL arithmetic
-	fc.metrics.CollectionIntervalGauge.WithLabelValues(collectionType, filesystem.Name).Set(float64(interval))
+	fc.metrics.CollectionIntervalGauge.WithLabelValues(filesystem.Name, collectionType).Set(float64(interval))
 
 	duration := time.Since(startTime).Seconds()
-	fc.metrics.CollectionDurationGauge.WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Set(duration)
-	fc.metrics.CollectionTimestampGauge.WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Set(float64(time.Now().Unix()))
+	fc.metrics.CollectionDurationGauge.WithLabelValues(filesystem.Name, strconv.Itoa(interval), collectionType).Set(duration)
+	fc.metrics.CollectionTimestampGauge.WithLabelValues(filesystem.Name, strconv.Itoa(interval), collectionType).Set(float64(time.Now().Unix()))
 
 	slog.Info("Filesystem metrics collection completed", "filesystem", filesystem.Name, "duration", duration)
 }
@@ -256,9 +256,9 @@ func (fc *FilesystemCollector) collectFilesystemUsage(ctx context.Context, files
 	usedRatio := float64(usedBytes) / float64(sizeBytes)
 
 	// Update metrics
-	fc.metrics.VolumeSizeGauge.WithLabelValues(filesystem.Name, filesystem.MountPoint, filesystem.Device).Set(float64(sizeBytes))
-	fc.metrics.VolumeAvailableGauge.WithLabelValues(filesystem.Name, filesystem.MountPoint, filesystem.Device).Set(float64(availableBytes))
-	fc.metrics.VolumeUsedRatioGauge.WithLabelValues(filesystem.Name, filesystem.MountPoint, filesystem.Device).Set(usedRatio)
+	fc.metrics.VolumeSizeGauge.WithLabelValues(filesystem.Device, filesystem.MountPoint, filesystem.Name).Set(float64(sizeBytes))
+	fc.metrics.VolumeAvailableGauge.WithLabelValues(filesystem.Device, filesystem.MountPoint, filesystem.Name).Set(float64(availableBytes))
+	fc.metrics.VolumeUsedRatioGauge.WithLabelValues(filesystem.Device, filesystem.MountPoint, filesystem.Name).Set(usedRatio)
 
 	slog.Debug("Filesystem metrics collected",
 		"filesystem", filesystem.Name,
