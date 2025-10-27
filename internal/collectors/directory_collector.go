@@ -14,6 +14,7 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
+
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -89,12 +90,20 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 	}, 3, 2*time.Second)
 	if err != nil {
 		slog.Error("Failed to collect directory group metrics after retries", "group", groupName, "error", err)
-		dc.metrics.CollectionFailedCounter.WithLabelValues(collectionType, groupName, strconv.Itoa(interval)).Inc()
+		dc.metrics.CollectionFailedCounter.With(prometheus.Labels{
+			"collector": collectionType,
+			"group":     groupName,
+			"interval":  strconv.Itoa(interval),
+		}).Inc()
 
 		return
 	}
 
-	dc.metrics.CollectionSuccessCounter.WithLabelValues(collectionType, groupName, strconv.Itoa(interval)).Inc()
+	dc.metrics.CollectionSuccessCounter.With(prometheus.Labels{
+		"collector": collectionType,
+		"group":     groupName,
+		"interval":  strconv.Itoa(interval),
+	}).Inc()
 	// Expose configured interval as a numeric gauge for PromQL arithmetic
 	dc.metrics.CollectionIntervalGauge.With(prometheus.Labels{
 		"group": groupName,
@@ -103,14 +112,14 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 
 	duration := time.Since(startTime).Seconds()
 	dc.metrics.CollectionDurationGauge.With(prometheus.Labels{
-		"group":           groupName,
+		"group":            groupName,
 		"interval_seconds": strconv.Itoa(interval),
-		"type":            collectionType,
+		"type":             collectionType,
 	}).Set(duration)
 	dc.metrics.CollectionTimestampGauge.With(prometheus.Labels{
-		"group":           groupName,
+		"group":            groupName,
 		"interval_seconds": strconv.Itoa(interval),
-		"type":            collectionType,
+		"type":             collectionType,
 	}).Set(float64(time.Now().Unix()))
 
 	slog.Info("Directory metrics collection completed", "group", groupName, "duration", duration)
@@ -155,7 +164,10 @@ func (dc *DirectoryCollector) collectDirectorySizes(ctx context.Context, groupNa
 func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, groupName, path, collectionType string, subdirectoryLevel int) error {
 	// Validate and sanitize path
 	if err := dc.validatePath(path); err != nil {
-		dc.metrics.DirectoriesFailedCounter.WithLabelValues(groupName, "validation").Inc()
+		dc.metrics.DirectoriesFailedCounter.With(prometheus.Labels{
+			"group":  groupName,
+			"reason": "validation",
+		}).Inc()
 		return fmt.Errorf("path validation failed for %s: %w", path, err)
 	}
 
@@ -173,7 +185,10 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 	defer dc.duMutex.Unlock()
 
 	// Record lock wait duration
-	dc.metrics.DuLockWaitDurationGauge.WithLabelValues(groupName, path).Set(lockWaitDuration.Seconds())
+	dc.metrics.DuLockWaitDurationGauge.With(prometheus.Labels{
+		"group": groupName,
+		"path":  path,
+	}).Set(lockWaitDuration.Seconds())
 
 	slog.Debug("Acquired du mutex lock", "path", path, "group", groupName, "wait_duration_ms", lockWaitDuration.Milliseconds())
 
@@ -185,20 +200,29 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 
 	output, err := cmd.Output()
 	if err != nil {
-		dc.metrics.DirectoriesFailedCounter.WithLabelValues(groupName, "du").Inc()
+		dc.metrics.DirectoriesFailedCounter.With(prometheus.Labels{
+			"group":  groupName,
+			"reason": "du",
+		}).Inc()
 		return fmt.Errorf("failed to execute du command for %s: %w", path, err)
 	}
 
 	// Parse du output: "size\tpath"
 	parts := strings.Fields(string(output))
 	if len(parts) < 2 {
-		dc.metrics.DirectoriesFailedCounter.WithLabelValues(groupName, "du").Inc()
+		dc.metrics.DirectoriesFailedCounter.With(prometheus.Labels{
+			"group":  groupName,
+			"reason": "du",
+		}).Inc()
 		return fmt.Errorf("unexpected du output format for %s", path)
 	}
 
 	sizeKB, err := strconv.ParseInt(parts[0], 10, 64)
 	if err != nil {
-		dc.metrics.DirectoriesFailedCounter.WithLabelValues(groupName, "du").Inc()
+		dc.metrics.DirectoriesFailedCounter.With(prometheus.Labels{
+			"group":  groupName,
+			"reason": "du",
+		}).Inc()
 		return fmt.Errorf("failed to parse directory size for %s: %w", path, err)
 	}
 
@@ -206,8 +230,16 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 	sizeBytes := sizeKB * 1024
 
 	// Update metrics
-	dc.metrics.DirectorySizeGauge.WithLabelValues(groupName, path, "du", fmt.Sprintf("%d", subdirectoryLevel)).Set(float64(sizeBytes))
-	dc.metrics.DirectoriesProcessedCounter.WithLabelValues(groupName, "du").Inc()
+	dc.metrics.DirectorySizeGauge.With(prometheus.Labels{
+		"group":              groupName,
+		"directory":          path,
+		"mode":               "du",
+		"subdirectory_level": fmt.Sprintf("%d", subdirectoryLevel),
+	}).Set(float64(sizeBytes))
+	dc.metrics.DirectoriesProcessedCounter.With(prometheus.Labels{
+		"group":  groupName,
+		"method": "du",
+	}).Inc()
 
 	slog.Debug("Directory size collected",
 		"group", groupName,
@@ -222,7 +254,10 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupName string, group config.DirectoryGroup, collectionType string) error {
 	// Validate and sanitize base path
 	if err := dc.validatePath(group.Path); err != nil {
-		dc.metrics.DirectoriesFailedCounter.WithLabelValues(groupName, "validation").Inc()
+		dc.metrics.DirectoriesFailedCounter.With(prometheus.Labels{
+			"group":  groupName,
+			"reason": "validation",
+		}).Inc()
 		return fmt.Errorf("base path validation failed for %s: %w", group.Path, err)
 	}
 
@@ -288,7 +323,10 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 		return nil
 	})
 	if err != nil {
-		dc.metrics.DirectoriesFailedCounter.WithLabelValues(groupName, "walk").Inc()
+		dc.metrics.DirectoriesFailedCounter.With(prometheus.Labels{
+			"group":  groupName,
+			"reason": "walk",
+		}).Inc()
 		return fmt.Errorf("failed to walk directory tree for %s: %w", group.Path, err)
 	}
 
