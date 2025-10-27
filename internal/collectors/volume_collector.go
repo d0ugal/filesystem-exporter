@@ -13,7 +13,6 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
-
 	"github.com/prometheus/client_golang/prometheus"
 )
 
