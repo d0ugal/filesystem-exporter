@@ -95,11 +95,11 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 
 	dc.metrics.CollectionSuccessCounter.WithLabelValues(collectionType, groupName, strconv.Itoa(interval)).Inc()
 	// Expose configured interval as a numeric gauge for PromQL arithmetic
-	dc.metrics.CollectionIntervalGauge.WithLabelValues(collectionType, groupName).Set(float64(interval))
+	dc.metrics.CollectionIntervalGauge.WithLabelValues(groupName, collectionType).Set(float64(interval))
 
 	duration := time.Since(startTime).Seconds()
-	dc.metrics.CollectionDurationGauge.WithLabelValues(collectionType, groupName, strconv.Itoa(interval)).Set(duration)
-	dc.metrics.CollectionTimestampGauge.WithLabelValues(collectionType, groupName, strconv.Itoa(interval)).Set(float64(time.Now().Unix()))
+	dc.metrics.CollectionDurationGauge.WithLabelValues(groupName, strconv.Itoa(interval), collectionType).Set(duration)
+	dc.metrics.CollectionTimestampGauge.WithLabelValues(groupName, strconv.Itoa(interval), collectionType).Set(float64(time.Now().Unix()))
 
 	slog.Info("Directory metrics collection completed", "group", groupName, "duration", duration)
 }
