@@ -13,6 +13,7 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 type FilesystemCollector struct {
@@ -93,11 +94,22 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 
 	fc.metrics.CollectionSuccessCounter.WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Inc()
 	// Expose configured interval as a numeric gauge for PromQL arithmetic
-	fc.metrics.CollectionIntervalGauge.WithLabelValues(filesystem.Name, collectionType).Set(float64(interval))
+	fc.metrics.CollectionIntervalGauge.With(prometheus.Labels{
+		"group": filesystem.Name,
+		"type":  collectionType,
+	}).Set(float64(interval))
 
 	duration := time.Since(startTime).Seconds()
-	fc.metrics.CollectionDurationGauge.WithLabelValues(filesystem.Name, strconv.Itoa(interval), collectionType).Set(duration)
-	fc.metrics.CollectionTimestampGauge.WithLabelValues(filesystem.Name, strconv.Itoa(interval), collectionType).Set(float64(time.Now().Unix()))
+	fc.metrics.CollectionDurationGauge.With(prometheus.Labels{
+		"group":           filesystem.Name,
+		"interval_seconds": strconv.Itoa(interval),
+		"type":            collectionType,
+	}).Set(duration)
+	fc.metrics.CollectionTimestampGauge.With(prometheus.Labels{
+		"group":           filesystem.Name,
+		"interval_seconds": strconv.Itoa(interval),
+		"type":            collectionType,
+	}).Set(float64(time.Now().Unix()))
 
 	slog.Info("Filesystem metrics collection completed", "filesystem", filesystem.Name, "duration", duration)
 }
@@ -256,9 +268,21 @@ func (fc *FilesystemCollector) collectFilesystemUsage(ctx context.Context, files
 	usedRatio := float64(usedBytes) / float64(sizeBytes)
 
 	// Update metrics
-	fc.metrics.VolumeSizeGauge.WithLabelValues(filesystem.Device, filesystem.MountPoint, filesystem.Name).Set(float64(sizeBytes))
-	fc.metrics.VolumeAvailableGauge.WithLabelValues(filesystem.Device, filesystem.MountPoint, filesystem.Name).Set(float64(availableBytes))
-	fc.metrics.VolumeUsedRatioGauge.WithLabelValues(filesystem.Device, filesystem.MountPoint, filesystem.Name).Set(usedRatio)
+	fc.metrics.VolumeSizeGauge.With(prometheus.Labels{
+		"device":      filesystem.Device,
+		"mount_point": filesystem.MountPoint,
+		"volume":      filesystem.Name,
+	}).Set(float64(sizeBytes))
+	fc.metrics.VolumeAvailableGauge.With(prometheus.Labels{
+		"device":      filesystem.Device,
+		"mount_point": filesystem.MountPoint,
+		"volume":      filesystem.Name,
+	}).Set(float64(availableBytes))
+	fc.metrics.VolumeUsedRatioGauge.With(prometheus.Labels{
+		"device":      filesystem.Device,
+		"mount_point": filesystem.MountPoint,
+		"volume":      filesystem.Name,
+	}).Set(usedRatio)
 
 	slog.Debug("Filesystem metrics collected",
 		"filesystem", filesystem.Name,

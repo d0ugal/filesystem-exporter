@@ -14,6 +14,7 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 type DirectoryCollector struct {
@@ -95,11 +96,22 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 
 	dc.metrics.CollectionSuccessCounter.WithLabelValues(collectionType, groupName, strconv.Itoa(interval)).Inc()
 	// Expose configured interval as a numeric gauge for PromQL arithmetic
-	dc.metrics.CollectionIntervalGauge.WithLabelValues(groupName, collectionType).Set(float64(interval))
+	dc.metrics.CollectionIntervalGauge.With(prometheus.Labels{
+		"group": groupName,
+		"type":  collectionType,
+	}).Set(float64(interval))
 
 	duration := time.Since(startTime).Seconds()
-	dc.metrics.CollectionDurationGauge.WithLabelValues(groupName, strconv.Itoa(interval), collectionType).Set(duration)
-	dc.metrics.CollectionTimestampGauge.WithLabelValues(groupName, strconv.Itoa(interval), collectionType).Set(float64(time.Now().Unix()))
+	dc.metrics.CollectionDurationGauge.With(prometheus.Labels{
+		"group":           groupName,
+		"interval_seconds": strconv.Itoa(interval),
+		"type":            collectionType,
+	}).Set(duration)
+	dc.metrics.CollectionTimestampGauge.With(prometheus.Labels{
+		"group":           groupName,
+		"interval_seconds": strconv.Itoa(interval),
+		"type":            collectionType,
+	}).Set(float64(time.Now().Unix()))
 
 	slog.Info("Directory metrics collection completed", "group", groupName, "duration", duration)
 }
