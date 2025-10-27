@@ -13,6 +13,7 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
+
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -87,12 +88,20 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 	}, 3, 2*time.Second)
 	if err != nil {
 		slog.Error("Failed to collect filesystem metrics after retries", "filesystem", filesystem.Name, "error", err)
-		fc.metrics.CollectionFailedCounter.WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Inc()
+		fc.metrics.CollectionFailedCounter.With(prometheus.Labels{
+			"collector": collectionType,
+			"group":     filesystem.Name,
+			"interval":  strconv.Itoa(interval),
+		}).Inc()
 
 		return
 	}
 
-	fc.metrics.CollectionSuccessCounter.WithLabelValues(collectionType, filesystem.Name, strconv.Itoa(interval)).Inc()
+	fc.metrics.CollectionSuccessCounter.With(prometheus.Labels{
+		"collector": collectionType,
+		"group":     filesystem.Name,
+		"interval":  strconv.Itoa(interval),
+	}).Inc()
 	// Expose configured interval as a numeric gauge for PromQL arithmetic
 	fc.metrics.CollectionIntervalGauge.With(prometheus.Labels{
 		"group": filesystem.Name,
@@ -101,14 +110,14 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 
 	duration := time.Since(startTime).Seconds()
 	fc.metrics.CollectionDurationGauge.With(prometheus.Labels{
-		"group":           filesystem.Name,
+		"group":            filesystem.Name,
 		"interval_seconds": strconv.Itoa(interval),
-		"type":            collectionType,
+		"type":             collectionType,
 	}).Set(duration)
 	fc.metrics.CollectionTimestampGauge.With(prometheus.Labels{
-		"group":           filesystem.Name,
+		"group":            filesystem.Name,
 		"interval_seconds": strconv.Itoa(interval),
-		"type":            collectionType,
+		"type":             collectionType,
 	}).Set(float64(time.Now().Unix()))
 
 	slog.Info("Filesystem metrics collection completed", "filesystem", filesystem.Name, "duration", duration)
