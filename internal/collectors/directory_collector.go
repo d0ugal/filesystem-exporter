@@ -124,10 +124,10 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 		return
 	}
 
-	dc.metrics.CollectionSuccessCounter.With(prometheus.Labels{
-		"collector": collectionType,
-		"group":     groupName,
-		"interval":  strconv.Itoa(interval),
+	dc.metrics.CollectionSuccess.With(prometheus.Labels{
+		"type":             collectionType,
+		"group":            groupName,
+		"interval_seconds": strconv.Itoa(interval),
 	}).Inc()
 	// Expose configured interval as a numeric gauge for PromQL arithmetic
 	dc.metrics.CollectionIntervalGauge.With(prometheus.Labels{
@@ -136,7 +136,7 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 	}).Set(float64(interval))
 
 	duration := time.Since(startTime).Seconds()
-	dc.metrics.CollectionDurationGauge.With(prometheus.Labels{
+	dc.metrics.CollectionDuration.With(prometheus.Labels{
 		"group":            groupName,
 		"interval_seconds": strconv.Itoa(interval),
 		"type":             collectionType,

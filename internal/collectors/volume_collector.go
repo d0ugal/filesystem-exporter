@@ -123,10 +123,10 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 		return
 	}
 
-	fc.metrics.CollectionSuccessCounter.With(prometheus.Labels{
-		"collector": collectionType,
-		"group":     filesystem.Name,
-		"interval":  strconv.Itoa(interval),
+	fc.metrics.CollectionSuccess.With(prometheus.Labels{
+		"type":             collectionType,
+		"group":            filesystem.Name,
+		"interval_seconds": strconv.Itoa(interval),
 	}).Inc()
 	// Expose configured interval as a numeric gauge for PromQL arithmetic
 	fc.metrics.CollectionIntervalGauge.With(prometheus.Labels{
@@ -135,7 +135,7 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 	}).Set(float64(interval))
 
 	duration := time.Since(startTime).Seconds()
-	fc.metrics.CollectionDurationGauge.With(prometheus.Labels{
+	fc.metrics.CollectionDuration.With(prometheus.Labels{
 		"group":            filesystem.Name,
 		"interval_seconds": strconv.Itoa(interval),
 		"type":             collectionType,
