@@ -11,17 +11,17 @@ type FilesystemRegistry struct {
 	*promexporter_metrics.Registry
 
 	// Volume metrics (documented)
-	VolumeSizeGauge             *prometheus.GaugeVec
-	VolumeAvailableGauge        *prometheus.GaugeVec
-	VolumeUsedRatioGauge        *prometheus.GaugeVec
+	VolumeSizeGauge      *prometheus.GaugeVec
+	VolumeAvailableGauge *prometheus.GaugeVec
+	VolumeUsedRatioGauge *prometheus.GaugeVec
 
 	// Directory metrics (documented)
-	DirectorySizeGauge          *prometheus.GaugeVec
+	DirectorySizeGauge *prometheus.GaugeVec
 
 	// Collection metrics (documented)
-	CollectionDuration          *prometheus.GaugeVec
-	CollectionSuccess           *prometheus.CounterVec
-	CollectionFailedCounter     *prometheus.CounterVec
+	CollectionDuration      *prometheus.GaugeVec
+	CollectionSuccess       *prometheus.CounterVec
+	CollectionFailedCounter *prometheus.CounterVec
 
 	// Additional operational metrics (used by collectors but not documented)
 	CollectionIntervalGauge     *prometheus.GaugeVec
