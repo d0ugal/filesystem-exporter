@@ -20,6 +20,7 @@ go.work
 
 # Build artifacts
 filesystem-exporter
+main
 coverage.out
 coverage.html
 

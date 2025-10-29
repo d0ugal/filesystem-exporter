@@ -14,19 +14,25 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
+
+	"github.com/d0ugal/promexporter/app"
+	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type DirectoryCollector struct {
 	config  *config.Config
 	metrics *metrics.FilesystemRegistry
+	app     *app.App
 	duMutex sync.Mutex // Mutex to ensure only one du operation at a time
 }
 
-func NewDirectoryCollector(cfg *config.Config, registry *metrics.FilesystemRegistry) *DirectoryCollector {
+func NewDirectoryCollector(cfg *config.Config, registry *metrics.FilesystemRegistry, app *app.App) *DirectoryCollector {
 	return &DirectoryCollector{
 		config:  cfg,
 		metrics: registry,
+		app:     app,
 	}
 }
 
@@ -83,12 +89,31 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 
 	slog.Info("Starting directory metrics collection", "group", groupName)
 
+	// Create span for collection cycle
+	tracer := dc.app.GetTracer()
+	var collectorSpan *tracing.CollectorSpan
+
+	if tracer != nil && tracer.IsEnabled() {
+		collectorSpan = tracer.NewCollectorSpan(ctx, "directory-collector", "collect-directory")
+		collectorSpan.SetAttributes(
+			attribute.String("directory.group", groupName),
+			attribute.String("directory.path", group.Path),
+			attribute.Int("directory.interval", interval),
+		)
+		defer collectorSpan.End()
+	}
+
 	// Retry with exponential backoff
 	err := dc.retryWithBackoff(func() error {
 		return dc.collectDirectoryGroup(ctx, groupName, group, collectionType)
 	}, 3, 2*time.Second)
 	if err != nil {
 		slog.Error("Failed to collect directory group metrics after retries", "group", groupName, "error", err)
+
+		if collectorSpan != nil {
+			collectorSpan.RecordError(err, attribute.String("directory.group", groupName))
+		}
+
 		dc.metrics.CollectionFailedCounter.With(prometheus.Labels{
 			"collector": collectionType,
 			"group":     groupName,
@@ -120,6 +145,16 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 		"interval_seconds": strconv.Itoa(interval),
 		"type":             collectionType,
 	}).Set(float64(time.Now().Unix()))
+
+	if collectorSpan != nil {
+		collectorSpan.SetAttributes(
+			attribute.Float64("collection.duration_seconds", duration),
+		)
+		collectorSpan.AddEvent("collection_completed",
+			attribute.String("directory.group", groupName),
+			attribute.Float64("duration_seconds", duration),
+		)
+	}
 
 	slog.Info("Directory metrics collection completed", "group", groupName, "duration", duration)
 }
