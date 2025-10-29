@@ -13,18 +13,24 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
+
+	"github.com/d0ugal/promexporter/app"
+	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type FilesystemCollector struct {
 	config  *config.Config
 	metrics *metrics.FilesystemRegistry
+	app     *app.App
 }
 
-func NewFilesystemCollector(cfg *config.Config, registry *metrics.FilesystemRegistry) *FilesystemCollector {
+func NewFilesystemCollector(cfg *config.Config, registry *metrics.FilesystemRegistry, app *app.App) *FilesystemCollector {
 	return &FilesystemCollector{
 		config:  cfg,
 		metrics: registry,
+		app:     app,
 	}
 }
 
@@ -81,12 +87,32 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 
 	slog.Info("Starting filesystem metrics collection", "filesystem", filesystem.Name)
 
+	// Create span for collection cycle
+	tracer := fc.app.GetTracer()
+	var collectorSpan *tracing.CollectorSpan
+
+	if tracer != nil && tracer.IsEnabled() {
+		collectorSpan = tracer.NewCollectorSpan(ctx, "filesystem-collector", "collect-filesystem")
+		collectorSpan.SetAttributes(
+			attribute.String("filesystem.name", filesystem.Name),
+			attribute.String("filesystem.mount_point", filesystem.MountPoint),
+			attribute.String("filesystem.device", filesystem.Device),
+			attribute.Int("filesystem.interval", interval),
+		)
+		defer collectorSpan.End()
+	}
+
 	// Retry with exponential backoff
 	err := fc.retryWithBackoff(func() error {
 		return fc.collectFilesystemUsage(ctx, filesystem)
 	}, 3, 2*time.Second)
 	if err != nil {
 		slog.Error("Failed to collect filesystem metrics after retries", "filesystem", filesystem.Name, "error", err)
+
+		if collectorSpan != nil {
+			collectorSpan.RecordError(err, attribute.String("filesystem.name", filesystem.Name))
+		}
+
 		fc.metrics.CollectionFailedCounter.With(prometheus.Labels{
 			"collector": collectionType,
 			"group":     filesystem.Name,
@@ -118,6 +144,16 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 		"interval_seconds": strconv.Itoa(interval),
 		"type":             collectionType,
 	}).Set(float64(time.Now().Unix()))
+
+	if collectorSpan != nil {
+		collectorSpan.SetAttributes(
+			attribute.Float64("collection.duration_seconds", duration),
+		)
+		collectorSpan.AddEvent("collection_completed",
+			attribute.String("filesystem.name", filesystem.Name),
+			attribute.Float64("duration_seconds", duration),
+		)
+	}
 
 	slog.Info("Filesystem metrics collection completed", "filesystem", filesystem.Name, "duration", duration)
 }

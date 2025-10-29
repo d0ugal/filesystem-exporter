@@ -10,6 +10,7 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/version"
+
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/logging"
 	promexporter_metrics "github.com/d0ugal/promexporter/metrics"
@@ -72,19 +73,21 @@ func main() {
 	// Add custom metrics to the registry
 	filesystemRegistry := metrics.NewFilesystemRegistry(metricsRegistry)
 
-	// Create collectors
-	filesystemCollector := collectors.NewFilesystemCollector(cfg, filesystemRegistry)
-	directoryCollector := collectors.NewDirectoryCollector(cfg, filesystemRegistry)
-
-	// Build and run the application
-	if err := app.New("Filesystem Exporter").
+	// Create and build application using promexporter
+	application := app.New("Filesystem Exporter").
 		WithConfig(cfg).
 		WithMetrics(metricsRegistry).
-		WithCollector(filesystemCollector).
-		WithCollector(directoryCollector).
 		WithVersionInfo(version.Version, version.Commit, version.BuildDate).
-		Build().
-		Run(); err != nil {
+		Build()
+
+	// Create collectors with app reference for tracing
+	filesystemCollector := collectors.NewFilesystemCollector(cfg, filesystemRegistry, application)
+	directoryCollector := collectors.NewDirectoryCollector(cfg, filesystemRegistry, application)
+	application.WithCollector(filesystemCollector)
+	application.WithCollector(directoryCollector)
+
+	// Run the application
+	if err := application.Run(); err != nil {
 		log.Fatalf("Failed to run application: %v", err)
 	}
 }
