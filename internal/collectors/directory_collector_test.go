@@ -10,6 +10,7 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
+	"github.com/d0ugal/promexporter/app"
 	promexporter_config "github.com/d0ugal/promexporter/config"
 	promexporter_metrics "github.com/d0ugal/promexporter/metrics"
 )
@@ -182,8 +183,14 @@ func TestDirectoryCollectorMutex(t *testing.T) {
 	baseRegistry := promexporter_metrics.NewRegistry("test_exporter_info")
 	registry := metrics.NewFilesystemRegistry(baseRegistry)
 
+	// Create a minimal app instance for testing
+	testApp := app.New("Test Exporter").
+		WithConfig(&cfg.BaseConfig).
+		WithMetrics(baseRegistry).
+		Build()
+
 	// Create collector
-	collector := NewDirectoryCollector(cfg, registry)
+	collector := NewDirectoryCollector(cfg, registry, testApp)
 
 	// Test that mutex prevents concurrent du operations
 	var wg sync.WaitGroup
@@ -249,8 +256,14 @@ func TestDirectoryCollectorConcurrency(t *testing.T) {
 	baseRegistry := promexporter_metrics.NewRegistry("test_exporter_info")
 	registry := metrics.NewFilesystemRegistry(baseRegistry)
 
+	// Create a minimal app instance for testing
+	testApp := app.New("Test Exporter").
+		WithConfig(&cfg.BaseConfig).
+		WithMetrics(baseRegistry).
+		Build()
+
 	// Create collector
-	collector := NewDirectoryCollector(cfg, registry)
+	collector := NewDirectoryCollector(cfg, registry, testApp)
 
 	// Test that the collector can handle concurrent requests
 	ctx, cancel := context.WithCancel(context.Background())
@@ -291,8 +304,14 @@ func TestLockWaitDurationMetric(t *testing.T) {
 	baseRegistry := promexporter_metrics.NewRegistry("test_exporter_info")
 	registry := metrics.NewFilesystemRegistry(baseRegistry)
 
+	// Create a minimal app instance for testing
+	testApp := app.New("Test Exporter").
+		WithConfig(&cfg.BaseConfig).
+		WithMetrics(baseRegistry).
+		Build()
+
 	// Create collector
-	collector := NewDirectoryCollector(cfg, registry)
+	collector := NewDirectoryCollector(cfg, registry, testApp)
 
 	// Test that lock wait duration is recorded
 	var wg sync.WaitGroup
