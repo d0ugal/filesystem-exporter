@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.22.4...v1.23.0) (2025-10-29)
+
+
+### Features
+
+* add dev-tag Makefile target ([dcbc72a](https://github.com/d0ugal/filesystem-exporter/commit/dcbc72a472dbae9ed0978bb29cef0951e95315f7))
+* add tracing configuration support ([8da4627](https://github.com/d0ugal/filesystem-exporter/commit/8da462732d36cca14670f3872edafa8056136705))
+* **ci:** add auto-format workflow ([0918747](https://github.com/d0ugal/filesystem-exporter/commit/09187470fe17835798af58436efc2d2e3a2a2694))
+
+
+### Bug Fixes
+
+* update module github.com/bytedance/sonic to v1.14.2 ([4ac475f](https://github.com/d0ugal/filesystem-exporter/commit/4ac475fcef81e99fff4dd156fe998c0fcbce205e))
+* update module github.com/d0ugal/promexporter to v1.6.1 ([afd4950](https://github.com/d0ugal/filesystem-exporter/commit/afd495015844c37025d944aedce28b07f1252851))
+* update module github.com/prometheus/common to v0.67.2 ([dd1c105](https://github.com/d0ugal/filesystem-exporter/commit/dd1c105d9fe42d5cd9cffff396ea0217a9d2f063))
+* update module github.com/ugorji/go/codec to v1.3.1 ([a44e130](https://github.com/d0ugal/filesystem-exporter/commit/a44e130167daf7b52f1fed424d87155fe2c07f85))
+
 ## [1.22.4](https://github.com/d0ugal/filesystem-exporter/compare/v1.22.3...v1.22.4) (2025-10-27)
 
 
