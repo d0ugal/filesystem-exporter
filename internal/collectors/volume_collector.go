@@ -13,7 +13,6 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
-
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -89,10 +88,12 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 
 	// Create span for collection cycle
 	tracer := fc.app.GetTracer()
+
 	var collectorSpan *tracing.CollectorSpan
 
 	if tracer != nil && tracer.IsEnabled() {
 		collectorSpan = tracer.NewCollectorSpan(ctx, "filesystem-collector", "collect-filesystem")
+
 		collectorSpan.SetAttributes(
 			attribute.String("filesystem.name", filesystem.Name),
 			attribute.String("filesystem.mount_point", filesystem.MountPoint),

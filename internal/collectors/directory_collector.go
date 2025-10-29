@@ -14,7 +14,6 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
-
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -91,10 +90,12 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 
 	// Create span for collection cycle
 	tracer := dc.app.GetTracer()
+
 	var collectorSpan *tracing.CollectorSpan
 
 	if tracer != nil && tracer.IsEnabled() {
 		collectorSpan = tracer.NewCollectorSpan(ctx, "directory-collector", "collect-directory")
+
 		collectorSpan.SetAttributes(
 			attribute.String("directory.group", groupName),
 			attribute.String("directory.path", group.Path),
