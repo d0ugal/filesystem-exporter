@@ -74,7 +74,7 @@ func main() {
 
 	// Create and build application using promexporter
 	application := app.New("Filesystem Exporter").
-		WithConfig(cfg).
+		WithConfig(&cfg.BaseConfig).
 		WithMetrics(metricsRegistry).
 		WithVersionInfo(version.Version, version.Commit, version.BuildDate).
 		Build()
