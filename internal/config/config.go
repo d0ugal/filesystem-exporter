@@ -119,6 +119,20 @@ func loadFromEnv() (*Config, error) {
 		baseConfig.Metrics.Collection.DefaultInterval = promexporter_config.Duration{Duration: time.Second * 30}
 	}
 
+	// Tracing configuration
+	if enabledStr := os.Getenv("TRACING_ENABLED"); enabledStr != "" {
+		enabled := enabledStr == "true"
+		baseConfig.Tracing.Enabled = &enabled
+	}
+
+	if serviceName := os.Getenv("TRACING_SERVICE_NAME"); serviceName != "" {
+		baseConfig.Tracing.ServiceName = serviceName
+	}
+
+	if endpoint := os.Getenv("TRACING_ENDPOINT"); endpoint != "" {
+		baseConfig.Tracing.Endpoint = endpoint
+	}
+
 	config.BaseConfig = *baseConfig
 
 	// Load directories from environment variables
