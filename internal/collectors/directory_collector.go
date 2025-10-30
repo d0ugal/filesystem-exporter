@@ -202,7 +202,6 @@ func (dc *DirectoryCollector) collectDirectoryGroup(ctx context.Context, groupNa
 	)
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
-
 		spanCtx = parentSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "collect-directory-group")
 
@@ -229,7 +228,6 @@ func (dc *DirectoryCollector) collectDirectorySizes(ctx context.Context, groupNa
 	)
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
-
 		spanCtx = parentSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "collect-directory-sizes")
 
@@ -615,7 +613,6 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string,
 	)
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
-
 		spanCtx = parentSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "execute-du-command")
 
@@ -725,7 +722,6 @@ func (dc *DirectoryCollector) updateDirectoryMetrics(ctx context.Context, groupN
 	)
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
-
 		spanCtx = parentSpan.Context()
 
 		//nolint:contextcheck
