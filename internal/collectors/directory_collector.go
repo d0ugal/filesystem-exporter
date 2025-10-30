@@ -15,6 +15,7 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
+
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -616,7 +617,13 @@ func (dc *DirectoryCollector) parseDuOutput(ctx context.Context, output []byte, 
 		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "parse-du-output")
 		span.SetAttributes(
 			attribute.Int("output.size_bytes", len(output)),
-			attribute.String("output.preview", func() string { previewLen := 100; if len(output) < previewLen { previewLen = len(output) }; return string(output[:previewLen]) }()),
+			attribute.String("output.preview", func() string {
+				previewLen := 100
+				if len(output) < previewLen {
+					previewLen = len(output)
+				}
+				return string(output[:previewLen])
+			}()),
 		)
 		defer span.End()
 	} else {
@@ -688,4 +695,3 @@ func (dc *DirectoryCollector) updateDirectoryMetrics(ctx context.Context, groupN
 		span.AddEvent("metrics_updated")
 	}
 }
-
