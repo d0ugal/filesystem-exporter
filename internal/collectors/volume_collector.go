@@ -121,7 +121,6 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 		} else {
 			collectCtx = ctx
 		}
-
 		return fc.collectFilesystemUsage(collectCtx, filesystem, collectorSpan)
 	}, 3, 2*time.Second)
 	if err != nil {
@@ -183,16 +182,12 @@ func (fc *FilesystemCollector) retryWithBackoff(ctx context.Context, operation f
 
 func (fc *FilesystemCollector) collectFilesystemUsage(ctx context.Context, filesystem config.FilesystemConfig, collectorSpan *tracing.CollectorSpan) error {
 	tracer := fc.app.GetTracer()
-
-	var (
-		span    *tracing.CollectorSpan
-		spanCtx context.Context
-	)
+	var span *tracing.CollectorSpan
+	var spanCtx context.Context
 
 	if tracer != nil && tracer.IsEnabled() && collectorSpan != nil {
 		spanCtx = collectorSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "filesystem-collector", "collect-filesystem-usage")
-
 		span.SetAttributes(
 			attribute.String("filesystem.name", filesystem.Name),
 			attribute.String("filesystem.mount_point", filesystem.MountPoint),
@@ -207,7 +202,6 @@ func (fc *FilesystemCollector) collectFilesystemUsage(ctx context.Context, files
 		if span != nil {
 			span.RecordError(err, attribute.String("operation", "validate_mount_point"))
 		}
-
 		return fmt.Errorf("mount point validation failed for %s: %w", filesystem.MountPoint, err)
 	}
 
@@ -220,7 +214,6 @@ func (fc *FilesystemCollector) collectFilesystemUsage(ctx context.Context, files
 		if span != nil {
 			span.RecordError(err, attribute.String("operation", "df_command"))
 		}
-
 		return fmt.Errorf("failed to execute df command: %w", err)
 	}
 
@@ -230,7 +223,6 @@ func (fc *FilesystemCollector) collectFilesystemUsage(ctx context.Context, files
 		if span != nil {
 			span.RecordError(err, attribute.String("operation", "parse_df_output"))
 		}
-
 		return err
 	}
 
@@ -270,16 +262,12 @@ func (fc *FilesystemCollector) collectFilesystemUsage(ctx context.Context, files
 // validateMountPoint ensures the mount point is safe to use with df command
 func (fc *FilesystemCollector) validateMountPoint(ctx context.Context, mountPoint string, parentSpan *tracing.CollectorSpan) error {
 	tracer := fc.app.GetTracer()
-
-	var (
-		span    *tracing.CollectorSpan
-		spanCtx context.Context
-	)
+	var span *tracing.CollectorSpan
+	var spanCtx context.Context
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
 		spanCtx = parentSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "filesystem-collector", "validate-mount-point")
-
 		span.SetAttributes(attribute.String("mount_point", mountPoint))
 		defer span.End()
 	} else {
@@ -288,15 +276,12 @@ func (fc *FilesystemCollector) validateMountPoint(ctx context.Context, mountPoin
 
 	// Check if mount point exists
 	statStart := time.Now()
-
 	if _, err := os.Stat(mountPoint); err != nil {
 		if span != nil {
 			span.RecordError(err, attribute.String("check", "exists"))
 		}
-
 		return fmt.Errorf("mount point does not exist: %s", mountPoint)
 	}
-
 	if span != nil {
 		span.SetAttributes(
 			attribute.Float64("validation.stat_duration_seconds", time.Since(statStart).Seconds()),
@@ -310,10 +295,8 @@ func (fc *FilesystemCollector) validateMountPoint(ctx context.Context, mountPoin
 			span.SetAttributes(attribute.Bool("validation.is_absolute", false))
 			span.RecordError(fmt.Errorf("mount point must be absolute"), attribute.String("check", "absolute"))
 		}
-
 		return fmt.Errorf("mount point must be absolute: %s", mountPoint)
 	}
-
 	if span != nil {
 		span.SetAttributes(attribute.Bool("validation.is_absolute", true))
 	}
@@ -329,7 +312,6 @@ func (fc *FilesystemCollector) validateMountPoint(ctx context.Context, mountPoin
 				)
 				span.RecordError(fmt.Errorf("dangerous pattern found"), attribute.String("pattern", pattern))
 			}
-
 			return fmt.Errorf("mount point contains dangerous pattern '%s': %s", pattern, mountPoint)
 		}
 	}
@@ -345,16 +327,12 @@ func (fc *FilesystemCollector) validateMountPoint(ctx context.Context, mountPoin
 // executeDfCommand executes the df command with tracing
 func (fc *FilesystemCollector) executeDfCommand(ctx context.Context, mountPoint string, parentSpan *tracing.CollectorSpan) ([]byte, error) {
 	tracer := fc.app.GetTracer()
-
-	var (
-		span    *tracing.CollectorSpan
-		spanCtx context.Context
-	)
+	var span *tracing.CollectorSpan
+	var spanCtx context.Context
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
 		spanCtx = parentSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "filesystem-collector", "execute-df-command")
-
 		span.SetAttributes(attribute.String("command.mount_point", mountPoint))
 		defer span.End()
 	} else {
@@ -379,7 +357,6 @@ func (fc *FilesystemCollector) executeDfCommand(ctx context.Context, mountPoint 
 			attribute.Float64("command.duration_seconds", execDuration.Seconds()),
 			attribute.Int("command.output_size_bytes", len(output)),
 		)
-
 		if err != nil {
 			span.RecordError(err)
 		} else {
@@ -393,15 +370,11 @@ func (fc *FilesystemCollector) executeDfCommand(ctx context.Context, mountPoint 
 // updateFilesystemMetrics updates Prometheus metrics with tracing
 func (fc *FilesystemCollector) updateFilesystemMetrics(ctx context.Context, filesystem config.FilesystemConfig, sizeBytes, availableBytes int64, usedRatio float64, parentSpan *tracing.CollectorSpan) {
 	tracer := fc.app.GetTracer()
-
-	var (
-		span    *tracing.CollectorSpan
-		spanCtx context.Context
-	)
+	var span *tracing.CollectorSpan
+	var spanCtx context.Context
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
 		spanCtx = parentSpan.Context()
-
 		span = tracer.NewCollectorSpan(spanCtx, "filesystem-collector", "update-metrics")
 		defer span.End()
 	} else {
@@ -438,25 +411,15 @@ func (fc *FilesystemCollector) updateFilesystemMetrics(ctx context.Context, file
 // parseDfOutput parses the df command output with tracing
 func (fc *FilesystemCollector) parseDfOutput(ctx context.Context, output []byte, parentSpan *tracing.CollectorSpan) (sizeKB, availableKB int64, err error) {
 	tracer := fc.app.GetTracer()
-
-	var (
-		span    *tracing.CollectorSpan
-		spanCtx context.Context
-	)
+	var span *tracing.CollectorSpan
+	var spanCtx context.Context
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
 		spanCtx = parentSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "filesystem-collector", "parse-df-output")
-
 		span.SetAttributes(
 			attribute.Int("output.size_bytes", len(output)),
-			attribute.String("output.preview", func() string {
-				previewLen := 100
-				if len(output) < previewLen {
-					previewLen = len(output)
-				}
-				return string(output[:previewLen])
-			}()),
+			attribute.String("output.preview", func() string { previewLen := 100; if len(output) < previewLen { previewLen = len(output) }; return string(output[:previewLen]) }()),
 		)
 		defer span.End()
 	} else {
@@ -464,13 +427,11 @@ func (fc *FilesystemCollector) parseDfOutput(ctx context.Context, output []byte,
 	}
 
 	parseStart := time.Now()
-
 	lines := strings.Split(string(output), "\n")
 	if len(lines) < 2 {
 		if span != nil {
 			span.RecordError(fmt.Errorf("unexpected df output format"), attribute.Int("lines_count", len(lines)))
 		}
-
 		return 0, 0, fmt.Errorf("unexpected df output format")
 	}
 
@@ -490,7 +451,6 @@ func (fc *FilesystemCollector) parseDfOutput(ctx context.Context, output []byte,
 	// OR:     /dev/sdb1          239313084  27770148 211424152  12% /mnt/backup
 	// The filesystem name might be on a separate line, so we need to find the line with the stats
 	var statsLine string
-
 	format := "unknown"
 
 	for i := 1; i < len(lines); i++ {
@@ -505,7 +465,6 @@ func (fc *FilesystemCollector) parseDfOutput(ctx context.Context, output []byte,
 			if _, err := strconv.ParseInt(parts[0], 10, 64); err == nil {
 				statsLine = line
 				format = "multi-line"
-
 				break
 			}
 		}
@@ -526,7 +485,6 @@ func (fc *FilesystemCollector) parseDfOutput(ctx context.Context, output []byte,
 						if _, err := strconv.ParseInt(parts[1], 10, 64); err == nil {
 							statsLine = line
 							format = "single-line"
-
 							break
 						}
 					}
@@ -539,7 +497,6 @@ func (fc *FilesystemCollector) parseDfOutput(ctx context.Context, output []byte,
 		if span != nil {
 			span.RecordError(fmt.Errorf("could not find stats line"), attribute.Int("lines_searched", len(lines)-1))
 		}
-
 		return 0, 0, fmt.Errorf("could not find stats line in df output")
 	}
 
@@ -555,7 +512,6 @@ func (fc *FilesystemCollector) parseDfOutput(ctx context.Context, output []byte,
 		if span != nil {
 			span.RecordError(fmt.Errorf("unexpected df output format"), attribute.Int("parts_count", len(parts)))
 		}
-
 		return 0, 0, fmt.Errorf("unexpected df output format")
 	}
 
@@ -594,7 +550,6 @@ func (fc *FilesystemCollector) parseDfOutput(ctx context.Context, output []byte,
 		if span != nil {
 			span.RecordError(parseErr, attribute.String("parse.format", format))
 		}
-
 		return 0, 0, parseErr
 	}
 
@@ -616,3 +571,4 @@ func (fc *FilesystemCollector) sanitizePath(path string) string {
 	// In a more robust implementation, you might want to do additional sanitization
 	return path
 }
+
