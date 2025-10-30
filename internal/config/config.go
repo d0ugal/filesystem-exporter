@@ -57,6 +57,9 @@ func LoadConfig(path string, configFromEnv bool) (*Config, error) {
 		return nil, fmt.Errorf("failed to parse config file: %w", err)
 	}
 
+	// Apply tracing configuration from environment variables (can override config file)
+	applyTracingFromEnv(&config)
+
 	// Set defaults
 	setDefaults(&config)
 
@@ -147,6 +150,23 @@ func loadFromEnv() (*Config, error) {
 	}
 
 	return config, nil
+}
+
+// applyTracingFromEnv applies tracing configuration from environment variables to an existing config
+func applyTracingFromEnv(config *Config) {
+	// Tracing configuration
+	if enabledStr := os.Getenv("TRACING_ENABLED"); enabledStr != "" {
+		enabled := enabledStr == "true"
+		config.Tracing.Enabled = &enabled
+	}
+
+	if serviceName := os.Getenv("TRACING_SERVICE_NAME"); serviceName != "" {
+		config.Tracing.ServiceName = serviceName
+	}
+
+	if endpoint := os.Getenv("TRACING_ENDPOINT"); endpoint != "" {
+		config.Tracing.Endpoint = endpoint
+	}
 }
 
 // loadDirectoriesFromEnv loads directory configuration from environment variables
