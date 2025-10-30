@@ -15,12 +15,20 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
-
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
 	"go.opentelemetry.io/otel/attribute"
 )
+
+// getSpanContext returns the context from parentSpan if it exists, otherwise returns ctx
+func getSpanContext(ctx context.Context, parentSpan *tracing.CollectorSpan) context.Context {
+	if parentSpan != nil {
+		return parentSpan.Context()
+	}
+
+	return ctx
+}
 
 type DirectoryCollector struct {
 	config  *config.Config
@@ -107,6 +115,7 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 	}
 
 	// Get span context for retry if tracing is enabled
+	//nolint:contextcheck
 	var retryCtx context.Context
 	if collectorSpan != nil {
 		retryCtx = collectorSpan.Context()
@@ -117,12 +126,14 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 	// Retry with exponential backoff
 	err := dc.retryWithBackoff(retryCtx, func() error {
 		// Pass the span context through to collection
+		//nolint:contextcheck
 		var collectCtx context.Context
 		if collectorSpan != nil {
 			collectCtx = collectorSpan.Context()
 		} else {
 			collectCtx = ctx
 		}
+
 		return dc.collectDirectoryGroup(collectCtx, groupName, group, collectionType, collectorSpan)
 	}, 3, 2*time.Second)
 	if err != nil {
@@ -184,12 +195,17 @@ func (dc *DirectoryCollector) retryWithBackoff(ctx context.Context, operation fu
 
 func (dc *DirectoryCollector) collectDirectoryGroup(ctx context.Context, groupName string, group config.DirectoryGroup, collectionType string, parentSpan *tracing.CollectorSpan) error {
 	tracer := dc.app.GetTracer()
-	var span *tracing.CollectorSpan
-	var spanCtx context.Context
+
+	var (
+		span    *tracing.CollectorSpan
+		spanCtx context.Context //nolint:contextcheck
+	)
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
+
 		spanCtx = parentSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "collect-directory-group")
+
 		span.SetAttributes(
 			attribute.String("directory.group", groupName),
 			attribute.String("directory.path", group.Path),
@@ -205,12 +221,18 @@ func (dc *DirectoryCollector) collectDirectoryGroup(ctx context.Context, groupNa
 
 func (dc *DirectoryCollector) collectDirectorySizes(ctx context.Context, groupName string, group config.DirectoryGroup, collectionType string, parentSpan *tracing.CollectorSpan) error {
 	tracer := dc.app.GetTracer()
-	var span *tracing.CollectorSpan
-	var spanCtx context.Context
+
+	//nolint:contextcheck
+	var (
+		span    *tracing.CollectorSpan
+		spanCtx context.Context
+	)
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
+
 		spanCtx = parentSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "collect-directory-sizes")
+
 		span.SetAttributes(
 			attribute.String("directory.group", groupName),
 			attribute.Int("directory.subdirectory_levels", group.SubdirectoryLevels),
@@ -229,26 +251,30 @@ func (dc *DirectoryCollector) collectDirectorySizes(ctx context.Context, groupNa
 	return dc.collectSubdirectories(spanCtx, groupName, group, collectionType, span)
 }
 
+//nolint:contextcheck
 func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, groupName, path, collectionType string, subdirectoryLevel int, parentSpan *tracing.CollectorSpan) error {
 	tracer := dc.app.GetTracer()
+
 	var span *tracing.CollectorSpan
-	var spanCtx context.Context
+
+	if parentSpan != nil {
+		//nolint:contextcheck
+		ctx = parentSpan.Context()
+	}
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
-		spanCtx = parentSpan.Context()
-		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "collect-single-directory")
+		span = tracer.NewCollectorSpan(ctx, "directory-collector", "collect-single-directory")
+
 		span.SetAttributes(
 			attribute.String("directory.group", groupName),
 			attribute.String("directory.path", path),
 			attribute.Int("directory.subdirectory_level", subdirectoryLevel),
 		)
 		defer span.End()
-	} else {
-		spanCtx = ctx
 	}
 
 	// Validate and sanitize path
-	if err := dc.validatePath(spanCtx, path, span); err != nil {
+	if err := dc.validatePath(ctx, path, span); err != nil {
 		dc.metrics.DirectoriesFailedCounter.With(prometheus.Labels{
 			"group":  groupName,
 			"reason": "validation",
@@ -257,11 +283,12 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 		if span != nil {
 			span.RecordError(err, attribute.String("operation", "validate_path"))
 		}
+
 		return fmt.Errorf("path validation failed for %s: %w", path, err)
 	}
 
 	// Acquire lock with tracing
-	lockWaitDuration, err := dc.acquireDuLock(spanCtx, span)
+	lockWaitDuration, err := dc.acquireDuLock(ctx, span)
 	if err != nil {
 		return err
 	}
@@ -282,7 +309,7 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 	slog.Debug("Acquired du mutex lock", "path", path, "group", groupName, "wait_duration_ms", lockWaitDuration.Milliseconds())
 
 	// Execute du command with tracing
-	output, err := dc.executeDuCommand(spanCtx, path, span)
+	output, err := dc.executeDuCommand(ctx, path, span)
 	if err != nil {
 		dc.metrics.DirectoriesFailedCounter.With(prometheus.Labels{
 			"group":  groupName,
@@ -292,11 +319,12 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 		if span != nil {
 			span.RecordError(err, attribute.String("operation", "du_command"))
 		}
+
 		return fmt.Errorf("failed to execute du command for %s: %w", path, err)
 	}
 
 	// Parse du output with tracing
-	sizeKB, err := dc.parseDuOutput(spanCtx, output, span)
+	sizeKB, err := dc.parseDuOutput(ctx, output, span)
 	if err != nil {
 		dc.metrics.DirectoriesFailedCounter.With(prometheus.Labels{
 			"group":  groupName,
@@ -306,6 +334,7 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 		if span != nil {
 			span.RecordError(err, attribute.String("operation", "parse_du_output"))
 		}
+
 		return fmt.Errorf("failed to parse directory size for %s: %w", path, err)
 	}
 
@@ -313,7 +342,7 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 	sizeBytes := sizeKB * 1024
 
 	// Update metrics with tracing
-	dc.updateDirectoryMetrics(spanCtx, groupName, path, sizeBytes, subdirectoryLevel, span)
+	dc.updateDirectoryMetrics(ctx, groupName, path, sizeBytes, subdirectoryLevel, span)
 
 	if span != nil {
 		span.SetAttributes(
@@ -338,12 +367,17 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 
 func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupName string, group config.DirectoryGroup, collectionType string, parentSpan *tracing.CollectorSpan) error {
 	tracer := dc.app.GetTracer()
-	var span *tracing.CollectorSpan
-	var spanCtx context.Context
+
+	var (
+		span    *tracing.CollectorSpan
+		spanCtx context.Context
+	)
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
+		//nolint:contextcheck
 		spanCtx = parentSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "collect-subdirectories")
+
 		span.SetAttributes(
 			attribute.String("directory.group", groupName),
 			attribute.String("directory.base_path", group.Path),
@@ -364,12 +398,14 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 		if span != nil {
 			span.RecordError(err, attribute.String("operation", "validate_base_path"))
 		}
+
 		return fmt.Errorf("base path validation failed for %s: %w", group.Path, err)
 	}
 
 	// First, collect the base directory (level 0)
 	if err := dc.collectSingleDirectoryFile(spanCtx, groupName, group.Path, collectionType, 0, span); err != nil {
 		slog.Warn("Failed to collect base directory", "path", group.Path, "error", err)
+
 		if span != nil {
 			span.RecordError(err, attribute.String("operation", "collect_base_directory"))
 		}
@@ -378,7 +414,9 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 
 	// Walk the directory tree up to the specified level
 	walkStart := time.Now()
+
 	var directoriesWalked, directoriesCollected, directoriesSkipped int
+
 	err := filepath.WalkDir(group.Path, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			slog.Warn("Error accessing path during walk", "path", path, "error", err)
@@ -426,6 +464,7 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 			// Collect directory size
 			if err := dc.collectSingleDirectoryFile(spanCtx, groupName, path, collectionType, depth, span); err != nil {
 				slog.Warn("Failed to collect subdirectory", "path", path, "error", err)
+
 				if span != nil {
 					span.RecordError(err, attribute.String("subdirectory.path", path), attribute.Int("subdirectory.depth", depth))
 				}
@@ -452,6 +491,7 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 		if span != nil {
 			span.RecordError(err, attribute.String("operation", "walk_directory_tree"))
 		}
+
 		return fmt.Errorf("failed to walk directory tree for %s: %w", group.Path, err)
 	}
 
@@ -471,26 +511,27 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 // validatePath ensures the path is safe to use with du command
 func (dc *DirectoryCollector) validatePath(ctx context.Context, path string, parentSpan *tracing.CollectorSpan) error {
 	tracer := dc.app.GetTracer()
-	var span *tracing.CollectorSpan
-	var spanCtx context.Context
+	spanCtx := getSpanContext(ctx, parentSpan)
 
+	var span *tracing.CollectorSpan
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
-		spanCtx = parentSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "validate-path")
+
 		span.SetAttributes(attribute.String("path", path))
 		defer span.End()
-	} else {
-		spanCtx = ctx
 	}
 
 	// Check if path exists
 	statStart := time.Now()
+
 	if _, err := os.Stat(path); err != nil {
 		if span != nil {
 			span.RecordError(err, attribute.String("check", "exists"))
 		}
+
 		return fmt.Errorf("path does not exist: %s", path)
 	}
+
 	if span != nil {
 		span.SetAttributes(
 			attribute.Float64("validation.stat_duration_seconds", time.Since(statStart).Seconds()),
@@ -504,8 +545,10 @@ func (dc *DirectoryCollector) validatePath(ctx context.Context, path string, par
 			span.SetAttributes(attribute.Bool("validation.is_absolute", false))
 			span.RecordError(fmt.Errorf("path must be absolute"), attribute.String("check", "absolute"))
 		}
+
 		return fmt.Errorf("path must be absolute: %s", path)
 	}
+
 	if span != nil {
 		span.SetAttributes(attribute.Bool("validation.is_absolute", true))
 	}
@@ -521,6 +564,7 @@ func (dc *DirectoryCollector) validatePath(ctx context.Context, path string, par
 				)
 				span.RecordError(fmt.Errorf("dangerous pattern found"), attribute.String("pattern", pattern))
 			}
+
 			return fmt.Errorf("path contains dangerous pattern '%s': %s", pattern, path)
 		}
 	}
@@ -536,19 +580,18 @@ func (dc *DirectoryCollector) validatePath(ctx context.Context, path string, par
 // acquireDuLock acquires the du mutex lock with tracing
 func (dc *DirectoryCollector) acquireDuLock(ctx context.Context, parentSpan *tracing.CollectorSpan) (time.Duration, error) {
 	tracer := dc.app.GetTracer()
-	var span *tracing.CollectorSpan
-	var spanCtx context.Context
+	spanCtx := getSpanContext(ctx, parentSpan)
 
+	var span *tracing.CollectorSpan
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
-		spanCtx = parentSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "acquire-du-lock")
 		defer span.End()
-	} else {
-		spanCtx = ctx
 	}
 
 	lockWaitStart := time.Now()
+
 	dc.duMutex.Lock()
+
 	lockWaitDuration := time.Since(lockWaitStart)
 
 	if span != nil {
@@ -564,16 +607,20 @@ func (dc *DirectoryCollector) acquireDuLock(ctx context.Context, parentSpan *tra
 // executeDuCommand executes the du command with tracing
 func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string, parentSpan *tracing.CollectorSpan) ([]byte, error) {
 	tracer := dc.app.GetTracer()
-	var span *tracing.CollectorSpan
-	var spanCtx context.Context
+
+	//nolint:contextcheck
+	var (
+		span    *tracing.CollectorSpan
+		spanCtx = ctx // Initialize to ctx, override if tracing is enabled
+	)
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
+
 		spanCtx = parentSpan.Context()
 		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "execute-du-command")
+
 		span.SetAttributes(attribute.String("command.path", path))
 		defer span.End()
-	} else {
-		spanCtx = ctx
 	}
 
 	// Create context with timeout (6 minutes max) - use span context if available
@@ -596,6 +643,7 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string,
 			attribute.Float64("command.duration_seconds", execDuration.Seconds()),
 			attribute.Int("command.output_size_bytes", len(output)),
 		)
+
 		if err != nil {
 			span.RecordError(err)
 		} else {
@@ -609,12 +657,17 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string,
 // parseDuOutput parses the du command output with tracing
 func (dc *DirectoryCollector) parseDuOutput(ctx context.Context, output []byte, parentSpan *tracing.CollectorSpan) (int64, error) {
 	tracer := dc.app.GetTracer()
-	var span *tracing.CollectorSpan
-	var spanCtx context.Context
+
+	var (
+		span    *tracing.CollectorSpan
+		spanCtx context.Context
+	)
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
 		spanCtx = parentSpan.Context()
+		//nolint:contextcheck
 		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "parse-du-output")
+
 		span.SetAttributes(
 			attribute.Int("output.size_bytes", len(output)),
 			attribute.String("output.preview", func() string {
@@ -622,13 +675,13 @@ func (dc *DirectoryCollector) parseDuOutput(ctx context.Context, output []byte, 
 				if len(output) < previewLen {
 					previewLen = len(output)
 				}
+
 				return string(output[:previewLen])
 			}()),
 		)
 		defer span.End()
-	} else {
-		spanCtx = ctx
 	}
+	// Note: spanCtx is only used when tracing is enabled
 
 	parseStart := time.Now()
 
@@ -638,6 +691,7 @@ func (dc *DirectoryCollector) parseDuOutput(ctx context.Context, output []byte, 
 		if span != nil {
 			span.RecordError(fmt.Errorf("unexpected du output format"), attribute.Int("parts_count", len(parts)))
 		}
+
 		return 0, fmt.Errorf("unexpected du output format")
 	}
 
@@ -646,6 +700,7 @@ func (dc *DirectoryCollector) parseDuOutput(ctx context.Context, output []byte, 
 		if span != nil {
 			span.RecordError(err, attribute.String("field", "size_kb"), attribute.String("value", parts[0]))
 		}
+
 		return 0, fmt.Errorf("failed to parse directory size: %w", err)
 	}
 
@@ -663,16 +718,21 @@ func (dc *DirectoryCollector) parseDuOutput(ctx context.Context, output []byte, 
 // updateDirectoryMetrics updates Prometheus metrics with tracing
 func (dc *DirectoryCollector) updateDirectoryMetrics(ctx context.Context, groupName, path string, sizeBytes int64, subdirectoryLevel int, parentSpan *tracing.CollectorSpan) {
 	tracer := dc.app.GetTracer()
-	var span *tracing.CollectorSpan
-	var spanCtx context.Context
+
+	var (
+		span    *tracing.CollectorSpan
+		spanCtx context.Context
+	)
 
 	if tracer != nil && tracer.IsEnabled() && parentSpan != nil {
+
 		spanCtx = parentSpan.Context()
+
+		//nolint:contextcheck
 		span = tracer.NewCollectorSpan(spanCtx, "directory-collector", "update-metrics")
 		defer span.End()
-	} else {
-		spanCtx = ctx
 	}
+	// Note: spanCtx is only used when tracing is enabled
 
 	updateStart := time.Now()
 
