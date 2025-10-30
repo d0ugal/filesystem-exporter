@@ -14,6 +14,7 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
+	"filesystem-exporter/internal/utils"
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -105,7 +106,7 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 	}
 
 	// Retry with exponential backoff
-	err := dc.retryWithBackoff(func() error {
+	err := dc.retryWithBackoff(ctx, func() error {
 		return dc.collectDirectoryGroup(ctx, groupName, group, collectionType)
 	}, 3, 2*time.Second)
 	if err != nil {
@@ -161,25 +162,8 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 }
 
 // retryWithBackoff implements exponential backoff retry logic
-func (dc *DirectoryCollector) retryWithBackoff(operation func() error, maxRetries int, initialDelay time.Duration) error {
-	var lastErr error
-
-	delay := initialDelay
-
-	for attempt := 0; attempt <= maxRetries; attempt++ {
-		if err := operation(); err == nil {
-			return nil
-		} else {
-			lastErr = err
-			if attempt < maxRetries {
-				slog.Warn("Operation failed, retrying", "attempt", attempt+1, "max_retries", maxRetries, "delay", delay, "error", err)
-				time.Sleep(delay)
-				delay *= 2 // Exponential backoff
-			}
-		}
-	}
-
-	return fmt.Errorf("operation failed after %d attempts: %w", maxRetries+1, lastErr)
+func (dc *DirectoryCollector) retryWithBackoff(ctx context.Context, operation func() error, maxRetries int, initialDelay time.Duration) error {
+	return utils.RetryWithBackoff(ctx, operation, maxRetries, initialDelay)
 }
 
 func (dc *DirectoryCollector) collectDirectoryGroup(ctx context.Context, groupName string, group config.DirectoryGroup, collectionType string) error {
