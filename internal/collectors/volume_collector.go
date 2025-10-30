@@ -13,6 +13,7 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
+	"filesystem-exporter/internal/utils"
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -104,7 +105,7 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 	}
 
 	// Retry with exponential backoff
-	err := fc.retryWithBackoff(func() error {
+	err := fc.retryWithBackoff(ctx, func() error {
 		return fc.collectFilesystemUsage(ctx, filesystem)
 	}, 3, 2*time.Second)
 	if err != nil {
@@ -160,25 +161,8 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 }
 
 // retryWithBackoff implements exponential backoff retry logic
-func (fc *FilesystemCollector) retryWithBackoff(operation func() error, maxRetries int, initialDelay time.Duration) error {
-	var lastErr error
-
-	delay := initialDelay
-
-	for attempt := 0; attempt <= maxRetries; attempt++ {
-		if err := operation(); err == nil {
-			return nil
-		} else {
-			lastErr = err
-			if attempt < maxRetries {
-				slog.Warn("Operation failed, retrying", "attempt", attempt+1, "max_retries", maxRetries, "delay", delay, "error", err)
-				time.Sleep(delay)
-				delay *= 2 // Exponential backoff
-			}
-		}
-	}
-
-	return fmt.Errorf("operation failed after %d attempts: %w", maxRetries+1, lastErr)
+func (fc *FilesystemCollector) retryWithBackoff(ctx context.Context, operation func() error, maxRetries int, initialDelay time.Duration) error {
+	return utils.RetryWithBackoff(ctx, operation, maxRetries, initialDelay)
 }
 
 func (fc *FilesystemCollector) collectFilesystemUsage(ctx context.Context, filesystem config.FilesystemConfig) error {
