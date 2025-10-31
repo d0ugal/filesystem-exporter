@@ -15,6 +15,7 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
+
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -144,9 +145,9 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 		}
 
 		dc.metrics.CollectionFailedCounter.With(prometheus.Labels{
-			"collector": collectionType,
-			"group":     groupName,
-			"interval":  strconv.Itoa(interval),
+			"type":             collectionType,
+			"group":            groupName,
+			"interval_seconds": strconv.Itoa(interval),
 		}).Inc()
 
 		return

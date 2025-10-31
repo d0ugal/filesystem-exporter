@@ -14,6 +14,7 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
+
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -124,9 +125,9 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 		}
 
 		fc.metrics.CollectionFailedCounter.With(prometheus.Labels{
-			"collector": collectionType,
-			"group":     filesystem.Name,
-			"interval":  strconv.Itoa(interval),
+			"type":             collectionType,
+			"group":            filesystem.Name,
+			"interval_seconds": strconv.Itoa(interval),
 		}).Inc()
 
 		return
