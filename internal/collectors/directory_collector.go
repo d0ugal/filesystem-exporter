@@ -17,7 +17,6 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
-
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -621,6 +620,7 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, groupName, p
 	// Create context with configurable timeout - use span context if available
 	// Timeout is configurable per directory, defaulting to 5 minutes for large directories
 	timeout := dc.config.GetDirectoryTimeout(group)
+
 	timeoutCtx, cancel := context.WithTimeout(spanCtx, timeout)
 	defer cancel()
 
@@ -632,11 +632,14 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, groupName, p
 
 	execStart := time.Now()
 
-	var output []byte
-	var err error
+	var (
+		output []byte
+		err    error
+	)
 
 	// If using native I/O priority (not ionice wrapper), we need to start the process
 	// and set I/O priority on the child PID immediately
+
 	if usingIOPriority && runtime.GOOS == "linux" && len(cmd.Args) > 0 && cmd.Args[0] == "du" {
 		// Capture stdout for reading output
 		stdoutPipe, pipeErr := cmd.StdoutPipe()
@@ -658,6 +661,7 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, groupName, p
 
 		// Read output from stdout
 		var readErr error
+
 		output, readErr = io.ReadAll(stdoutPipe)
 
 		// Wait for the process to complete
@@ -678,6 +682,7 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, groupName, p
 
 	if span != nil {
 		cmdArgs := fmt.Sprintf("-s -x %s", path)
+
 		if usingIOPriority {
 			if len(cmd.Args) > 0 && cmd.Args[0] == "ionice" {
 				cmdArgs = fmt.Sprintf("ionice -c 3 du -s -x %s", path)
@@ -685,6 +690,7 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, groupName, p
 				cmdArgs = fmt.Sprintf("du -s -x %s (with native I/O priority)", path)
 			}
 		}
+
 		span.SetAttributes(
 			attribute.String("command.name", "du"),
 			attribute.String("command.args", cmdArgs),
@@ -703,6 +709,7 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, groupName, p
 				span.SetAttributes(attribute.String("command.error_type", "context_canceled"))
 				slog.Debug("du command canceled", "path", path, "duration", execDuration)
 			}
+
 			span.RecordError(err)
 		} else {
 			span.AddEvent("command_completed", attribute.Int("output_size_bytes", len(output)))
@@ -742,6 +749,7 @@ func (dc *DirectoryCollector) buildDuCommand(ctx context.Context, path string) (
 
 	// No I/O priority control available
 	slog.Debug("I/O priority control not available, using regular du command", "path", path)
+
 	return cmd, false
 }
 
