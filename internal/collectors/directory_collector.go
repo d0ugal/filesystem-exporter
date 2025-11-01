@@ -607,7 +607,7 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 	}
 
 	// Create context with timeout (6 minutes max) - use span context if available
-	timeoutCtx, cancel := context.WithTimeout(spanCtx, 6*time.Minute)
+	timeoutCtx, cancel := context.WithTimeout(spanCtx, 6*time.Minute) //nolint:contextcheck // spanCtx is extracted from span for timeout operations
 	defer cancel()
 
 	// Use du with performance optimizations for large directories
