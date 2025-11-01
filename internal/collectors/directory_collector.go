@@ -605,6 +605,8 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 
 		span.SetAttributes(attribute.String("command.path", path))
 		defer span.End()
+	} else {
+		spanCtx = ctx
 	}
 
 	// Create context with timeout (6 minutes max) - use span context if available
