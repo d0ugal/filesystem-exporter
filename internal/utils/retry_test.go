@@ -17,7 +17,6 @@ func TestRetryWithBackoff_Success(t *testing.T) {
 		attempts++
 		return nil // Success on first attempt
 	}, 3, 100*time.Millisecond)
-
 	if err != nil {
 		t.Errorf("Expected no error, got: %v", err)
 	}
@@ -36,9 +35,9 @@ func TestRetryWithBackoff_RetryableError(t *testing.T) {
 		if attempts < 3 {
 			return errors.New("temporary error")
 		}
+
 		return nil // Success on third attempt
 	}, 3, 10*time.Millisecond)
-
 	if err != nil {
 		t.Errorf("Expected no error after retries, got: %v", err)
 	}
@@ -59,7 +58,6 @@ func TestRetryWithBackoff_NonRetryableError_SignalKilled(t *testing.T) {
 		attempts++
 		return killedErr
 	}, 3, 10*time.Millisecond)
-
 	if err == nil {
 		t.Error("Expected error, got nil")
 	}
@@ -105,7 +103,6 @@ func TestRetryWithBackoff_MaxRetries(t *testing.T) {
 		attempts++
 		return errors.New("persistent error")
 	}, 2, 10*time.Millisecond)
-
 	if err == nil {
 		t.Error("Expected error after max retries, got nil")
 	}
@@ -204,4 +201,3 @@ func TestGetNonRetryableReason(t *testing.T) {
 		})
 	}
 }
-

@@ -1,5 +1,4 @@
 //go:build linux
-// +build linux
 
 package utils
 
@@ -56,7 +55,7 @@ func TestSetIOIdlePriority(t *testing.T) {
 	// Try to set I/O priority - this may fail if we don't have permissions
 	// but we should at least test that the function doesn't crash
 	err := SetIOIdlePriority()
-	
+
 	// On systems without permissions, we'll get an error, which is expected
 	// We just want to ensure the function doesn't panic
 	if err != nil {
@@ -95,8 +94,8 @@ func TestSetupCommandWithIOPriority(t *testing.T) {
 	}
 
 	cmd := exec.Command("echo", "test")
-	err := SetupCommandWithIOPriority(cmd)
 
+	err := SetupCommandWithIOPriority(cmd)
 	if err != nil {
 		t.Errorf("SetupCommandWithIOPriority returned error: %v", err)
 	}
@@ -119,4 +118,3 @@ func TestSetIOIdlePriority_NonLinux(t *testing.T) {
 		}
 	}
 }
-

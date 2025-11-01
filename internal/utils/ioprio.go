@@ -1,5 +1,4 @@
 //go:build linux
-// +build linux
 
 package utils
 
@@ -45,9 +44,11 @@ func SetIOIdlePriority() error {
 	// in all versions of golang.org/x/sys/unix
 	// 251 is the syscall number for ioprio_set on linux/amd64 and linux/arm64
 	const sysIoprioSet = 251
+
 	sysno := uintptr(sysIoprioSet)
 
 	_, _, errno := unix.Syscall(sysno, IOPRIO_WHO_PROCESS, 0, uintptr(ioprio))
+
 	var err error
 	if errno != 0 {
 		err = errno
@@ -58,6 +59,7 @@ func SetIOIdlePriority() error {
 	}
 
 	slog.Debug("Set I/O priority to idle class using syscall")
+
 	return nil
 }
 
@@ -73,9 +75,11 @@ func SetIOIdlePriorityForProcess(pid int) error {
 
 	// Use the same syscall number as SetIOIdlePriority
 	const sysIoprioSet = 251
+
 	sysno := uintptr(sysIoprioSet)
 
 	_, _, errno := unix.Syscall(sysno, IOPRIO_WHO_PROCESS, uintptr(pid), uintptr(ioprio))
+
 	var err error
 	if errno != 0 {
 		err = errno
@@ -86,6 +90,7 @@ func SetIOIdlePriorityForProcess(pid int) error {
 	}
 
 	slog.Debug("Set I/O priority to idle class", "pid", pid)
+
 	return nil
 }
 
