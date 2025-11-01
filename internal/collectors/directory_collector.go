@@ -15,6 +15,7 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
+
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -201,7 +202,7 @@ func (dc *DirectoryCollector) collectDirectoryGroup(ctx context.Context, groupNa
 			attribute.Int("directory.subdirectory_levels", group.SubdirectoryLevels),
 		)
 
-		spanCtx = span.Context() //nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span
+		spanCtx = span.Context()
 		defer span.End()
 	} else {
 		spanCtx = ctx
@@ -222,7 +223,7 @@ func (dc *DirectoryCollector) collectDirectorySizes(ctx context.Context, groupNa
 	if tracer != nil && tracer.IsEnabled() {
 		span = tracer.NewCollectorSpan(ctx, "directory-collector", "collect-directory-sizes")
 
-		spanCtx = span.Context() //nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span
+		spanCtx = span.Context()
 
 		span.SetAttributes(
 			attribute.String("directory.group", groupName),
@@ -368,7 +369,7 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 			attribute.Int("directory.subdirectory_levels", group.SubdirectoryLevels),
 		)
 
-		spanCtx = span.Context() //nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span
+		spanCtx = span.Context()
 		defer span.End()
 	} else {
 		spanCtx = ctx
@@ -600,7 +601,7 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 	if tracer != nil && tracer.IsEnabled() {
 		span = tracer.NewCollectorSpan(ctx, "directory-collector", "execute-du-command")
 
-		spanCtx = span.Context() //nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span
+		spanCtx = span.Context()
 
 		span.SetAttributes(attribute.String("command.path", path))
 		defer span.End()
@@ -609,7 +610,6 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 	}
 
 	// Create context with timeout (6 minutes max) - use span context if available
-	//nolint:contextcheck // spanCtx is extracted from span for timeout operations
 	timeoutCtx, cancel := context.WithTimeout(spanCtx, 6*time.Minute)
 	defer cancel()
 
