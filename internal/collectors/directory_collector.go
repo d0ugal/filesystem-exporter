@@ -3,10 +3,12 @@ package collectors
 import (
 	"context"
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -616,22 +618,68 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 	// Use du with performance optimizations for large directories
 	// -s: summarize only
 	// -x: don't cross filesystem boundaries (faster)
-	// Wrap with ionice to reduce I/O priority (idle class) to minimize I/O wait impact
-	cmd, usingIonice := dc.buildDuCommand(timeoutCtx, path)
+	// Use native Go syscalls for I/O priority control when available
+	cmd, usingIOPriority := dc.buildDuCommand(timeoutCtx, path)
 
 	execStart := time.Now()
-	output, err := cmd.Output()
+	
+	var output []byte
+	var err error
+	
+	// If using native I/O priority (not ionice wrapper), we need to start the process
+	// and set I/O priority on the child PID immediately
+	if usingIOPriority && runtime.GOOS == "linux" && len(cmd.Args) > 0 && cmd.Args[0] == "du" {
+		// Capture stdout for reading output
+		stdoutPipe, pipeErr := cmd.StdoutPipe()
+		if pipeErr != nil {
+			return nil, fmt.Errorf("failed to create stdout pipe: %w", pipeErr)
+		}
+		
+		// Start the process
+		if err := cmd.Start(); err != nil {
+			return nil, err
+		}
+		
+		// Set I/O priority on the child process immediately after it starts
+		if pid := cmd.Process.Pid; pid > 0 {
+			if ioprioErr := utils.SetIOIdlePriorityForProcess(pid); ioprioErr != nil {
+				slog.Debug("Failed to set I/O priority via syscall, continuing anyway", "error", ioprioErr)
+			}
+		}
+		
+		// Read output from stdout
+		var readErr error
+		output, readErr = io.ReadAll(stdoutPipe)
+		
+		// Wait for the process to complete
+		waitErr := cmd.Wait()
+		
+		// Return the first error encountered
+		if waitErr != nil {
+			err = waitErr
+		} else if readErr != nil {
+			err = readErr
+		}
+	} else {
+		// Use standard Output() method (works for ionice wrapper or no I/O priority)
+		output, err = cmd.Output()
+	}
+	
 	execDuration := time.Since(execStart)
 
 	if span != nil {
 		cmdArgs := fmt.Sprintf("-s -x %s", path)
-		if usingIonice {
-			cmdArgs = fmt.Sprintf("ionice -c 3 du -s -x %s", path)
+		if usingIOPriority {
+			if len(cmd.Args) > 0 && cmd.Args[0] == "ionice" {
+				cmdArgs = fmt.Sprintf("ionice -c 3 du -s -x %s", path)
+			} else {
+				cmdArgs = fmt.Sprintf("du -s -x %s (with native I/O priority)", path)
+			}
 		}
 		span.SetAttributes(
 			attribute.String("command.name", "du"),
 			attribute.String("command.args", cmdArgs),
-			attribute.Bool("command.ionice", usingIonice),
+			attribute.Bool("command.io_priority", usingIOPriority),
 			attribute.Float64("command.duration_seconds", execDuration.Seconds()),
 			attribute.Int("command.output_size_bytes", len(output)),
 		)
@@ -655,22 +703,37 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 	return output, err
 }
 
-// buildDuCommand builds the du command with ionice for I/O priority if available
-// Returns the command and a boolean indicating if ionice is being used
+// buildDuCommand builds the du command with I/O priority control
+// Uses Go-native syscalls when available, falls back to ionice if needed
+// Returns the command and a boolean indicating if I/O priority control is being used
 func (dc *DirectoryCollector) buildDuCommand(ctx context.Context, path string) (*exec.Cmd, bool) {
-	// Check if ionice is available
-	if _, err := exec.LookPath("ionice"); err == nil {
-		// Use ionice with idle class (class 3) to reduce I/O priority
-		// This prevents du from blocking other I/O operations
-		// ionice -c 3 = idle class (only uses I/O when system is idle)
-		slog.Debug("Using ionice for reduced I/O priority", "path", path)
-		cmd := exec.CommandContext(ctx, "ionice", "-c", "3", "du", "-s", "-x", path)
+	cmd := exec.CommandContext(ctx, "du", "-s", "-x", path)
+
+	// Try to set I/O priority using Go-native syscalls
+	// This sets up the command to use idle I/O priority
+	err := utils.SetupCommandWithIOPriority(cmd)
+	if err == nil && runtime.GOOS == "linux" {
+		// Use native syscall approach - we'll set it after the process starts
+		// by hooking into the process after it's spawned
+		slog.Debug("Configured du command for native I/O priority control", "path", path)
+		
+		// We need to set I/O priority after the process starts but before it does I/O
+		// Unfortunately, Go's exec.Cmd doesn't provide a hook for this.
+		// The workaround is to use a wrapper approach, but for now, we'll use
+		// the syscall on the child process PID after start (requires modification to execution)
+		// For simplicity, we'll fall back to checking if we can set it directly
 		return cmd, true
 	}
 
-	// Fallback to regular du if ionice is not available
-	slog.Debug("ionice not available, using regular du command", "path", path)
-	return exec.CommandContext(ctx, "du", "-s", "-x", path), false
+	// Fallback: check if ionice is available as a backup
+	if _, err := exec.LookPath("ionice"); err == nil {
+		slog.Debug("Using ionice as fallback for I/O priority", "path", path)
+		return exec.CommandContext(ctx, "ionice", "-c", "3", "du", "-s", "-x", path), true
+	}
+
+	// No I/O priority control available
+	slog.Debug("I/O priority control not available, using regular du command", "path", path)
+	return cmd, false
 }
 
 // parseDuOutput parses the du command output with tracing
