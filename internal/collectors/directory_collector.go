@@ -202,7 +202,7 @@ func (dc *DirectoryCollector) collectDirectoryGroup(ctx context.Context, groupNa
 			attribute.Int("directory.subdirectory_levels", group.SubdirectoryLevels),
 		)
 
-		spanCtx = span.Context()
+		spanCtx = span.Context() //nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span
 		defer span.End()
 	} else {
 		spanCtx = ctx
@@ -369,7 +369,7 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 			attribute.Int("directory.subdirectory_levels", group.SubdirectoryLevels),
 		)
 
-		spanCtx = span.Context()
+		spanCtx = span.Context() //nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span
 		defer span.End()
 	} else {
 		spanCtx = ctx
