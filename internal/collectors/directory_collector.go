@@ -616,16 +616,22 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 	// Use du with performance optimizations for large directories
 	// -s: summarize only
 	// -x: don't cross filesystem boundaries (faster)
-	cmd := exec.CommandContext(timeoutCtx, "du", "-s", "-x", path)
+	// Wrap with ionice to reduce I/O priority (idle class) to minimize I/O wait impact
+	cmd, usingIonice := dc.buildDuCommand(timeoutCtx, path)
 
 	execStart := time.Now()
 	output, err := cmd.Output()
 	execDuration := time.Since(execStart)
 
 	if span != nil {
+		cmdArgs := fmt.Sprintf("-s -x %s", path)
+		if usingIonice {
+			cmdArgs = fmt.Sprintf("ionice -c 3 du -s -x %s", path)
+		}
 		span.SetAttributes(
 			attribute.String("command.name", "du"),
-			attribute.String("command.args", fmt.Sprintf("-s -x %s", path)),
+			attribute.String("command.args", cmdArgs),
+			attribute.Bool("command.ionice", usingIonice),
 			attribute.Float64("command.duration_seconds", execDuration.Seconds()),
 			attribute.Int("command.output_size_bytes", len(output)),
 		)
@@ -647,6 +653,24 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 	}
 
 	return output, err
+}
+
+// buildDuCommand builds the du command with ionice for I/O priority if available
+// Returns the command and a boolean indicating if ionice is being used
+func (dc *DirectoryCollector) buildDuCommand(ctx context.Context, path string) (*exec.Cmd, bool) {
+	// Check if ionice is available
+	if _, err := exec.LookPath("ionice"); err == nil {
+		// Use ionice with idle class (class 3) to reduce I/O priority
+		// This prevents du from blocking other I/O operations
+		// ionice -c 3 = idle class (only uses I/O when system is idle)
+		slog.Debug("Using ionice for reduced I/O priority", "path", path)
+		cmd := exec.CommandContext(ctx, "ionice", "-c", "3", "du", "-s", "-x", path)
+		return cmd, true
+	}
+
+	// Fallback to regular du if ionice is not available
+	slog.Debug("ionice not available, using regular du command", "path", path)
+	return exec.CommandContext(ctx, "du", "-s", "-x", path), false
 }
 
 // parseDuOutput parses the du command output with tracing
