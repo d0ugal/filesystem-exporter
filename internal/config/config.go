@@ -39,6 +39,7 @@ type DirectoryGroup struct {
 	Path               string   `yaml:"path"`
 	SubdirectoryLevels int      `yaml:"subdirectory_levels"`
 	Interval           Duration `yaml:"interval"`
+	Timeout            Duration `yaml:"timeout"` // Timeout for du command execution (default: 5m)
 }
 
 // LoadConfig loads configuration from a YAML file
@@ -395,6 +396,17 @@ func (c *Config) GetDirectoryInterval(group DirectoryGroup) int {
 	}
 
 	return c.GetDefaultInterval()
+}
+
+// GetDirectoryTimeout returns the timeout for du command execution for a directory group
+// Defaults to 5 minutes if not specified
+func (c *Config) GetDirectoryTimeout(group DirectoryGroup) time.Duration {
+	if group.Timeout.Duration > 0 {
+		return group.Timeout.Duration
+	}
+
+	// Default timeout of 5 minutes for large directories
+	return 5 * time.Minute
 }
 
 // GetDisplayConfig returns configuration data safe for display

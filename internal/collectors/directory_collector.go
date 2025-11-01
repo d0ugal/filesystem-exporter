@@ -17,6 +17,7 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
+
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -297,7 +298,7 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 	slog.Debug("Acquired du mutex lock", "path", path, "group", groupName, "wait_duration_ms", lockWaitDuration.Milliseconds())
 
 	// Execute du command with tracing
-	output, err := dc.executeDuCommand(ctx, path)
+	output, err := dc.executeDuCommand(ctx, groupName, path)
 	if err != nil {
 		dc.metrics.DirectoriesFailedCounter.With(prometheus.Labels{
 			"group":  groupName,
@@ -591,7 +592,7 @@ func (dc *DirectoryCollector) acquireDuLock(ctx context.Context) (time.Duration,
 }
 
 // executeDuCommand executes the du command with tracing
-func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string) ([]byte, error) {
+func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, groupName, path string) ([]byte, error) {
 	tracer := dc.app.GetTracer()
 
 	var (
@@ -610,9 +611,17 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 		spanCtx = ctx
 	}
 
-	// Create context with timeout (2 minutes max) - use span context if available
-	// Reduced from 6 minutes to prevent long-running du commands that can be killed by OOM
-	timeoutCtx, cancel := context.WithTimeout(spanCtx, 2*time.Minute)
+	// Get the directory group to access timeout configuration
+	group, exists := dc.config.Directories[groupName]
+	if !exists {
+		// Default to 5 minutes if group not found
+		group = config.DirectoryGroup{}
+	}
+
+	// Create context with configurable timeout - use span context if available
+	// Timeout is configurable per directory, defaulting to 5 minutes for large directories
+	timeout := dc.config.GetDirectoryTimeout(group)
+	timeoutCtx, cancel := context.WithTimeout(spanCtx, timeout)
 	defer cancel()
 
 	// Use du with performance optimizations for large directories
@@ -623,14 +632,11 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 
 	execStart := time.Now()
 
-	var (
-		output []byte
-		err    error
-	)
+	var output []byte
+	var err error
 
 	// If using native I/O priority (not ionice wrapper), we need to start the process
 	// and set I/O priority on the child PID immediately
-
 	if usingIOPriority && runtime.GOOS == "linux" && len(cmd.Args) > 0 && cmd.Args[0] == "du" {
 		// Capture stdout for reading output
 		stdoutPipe, pipeErr := cmd.StdoutPipe()
@@ -652,7 +658,6 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 
 		// Read output from stdout
 		var readErr error
-
 		output, readErr = io.ReadAll(stdoutPipe)
 
 		// Wait for the process to complete
@@ -673,7 +678,6 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 
 	if span != nil {
 		cmdArgs := fmt.Sprintf("-s -x %s", path)
-
 		if usingIOPriority {
 			if len(cmd.Args) > 0 && cmd.Args[0] == "ionice" {
 				cmdArgs = fmt.Sprintf("ionice -c 3 du -s -x %s", path)
@@ -681,7 +685,6 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 				cmdArgs = fmt.Sprintf("du -s -x %s (with native I/O priority)", path)
 			}
 		}
-
 		span.SetAttributes(
 			attribute.String("command.name", "du"),
 			attribute.String("command.args", cmdArgs),
@@ -700,7 +703,6 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 				span.SetAttributes(attribute.String("command.error_type", "context_canceled"))
 				slog.Debug("du command canceled", "path", path, "duration", execDuration)
 			}
-
 			span.RecordError(err)
 		} else {
 			span.AddEvent("command_completed", attribute.Int("output_size_bytes", len(output)))
@@ -740,7 +742,6 @@ func (dc *DirectoryCollector) buildDuCommand(ctx context.Context, path string) (
 
 	// No I/O priority control available
 	slog.Debug("I/O priority control not available, using regular du command", "path", path)
-
 	return cmd, false
 }
 
