@@ -15,7 +15,6 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
-
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -202,7 +201,7 @@ func (dc *DirectoryCollector) collectDirectoryGroup(ctx context.Context, groupNa
 			attribute.Int("directory.subdirectory_levels", group.SubdirectoryLevels),
 		)
 
-		spanCtx = span.Context() //nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span
+		spanCtx = span.Context()
 		defer span.End()
 	} else {
 		spanCtx = ctx
@@ -357,7 +356,7 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 
 	var (
 		span    *tracing.CollectorSpan
-		spanCtx context.Context //nolint:contextcheck // Extracting context from span for child operations
+		spanCtx context.Context
 	)
 
 	if tracer != nil && tracer.IsEnabled() {
