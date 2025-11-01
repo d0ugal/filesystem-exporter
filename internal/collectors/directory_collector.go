@@ -15,6 +15,7 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
+
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -607,7 +608,8 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 	}
 
 	// Create context with timeout (6 minutes max) - use span context if available
-	timeoutCtx, cancel := context.WithTimeout(spanCtx, 6*time.Minute) //nolint:contextcheck // spanCtx is extracted from span for timeout operations
+	//nolint:contextcheck // spanCtx is extracted from span for timeout operations
+	timeoutCtx, cancel := context.WithTimeout(spanCtx, 6*time.Minute)
 	defer cancel()
 
 	// Use du with performance optimizations for large directories
