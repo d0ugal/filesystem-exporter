@@ -60,6 +60,7 @@ func RetryWithBackoff(ctx context.Context, operation func() error, maxRetries in
 					attribute.Bool("retry.non_retryable", true),
 					attribute.String("retry.non_retryable_reason", getNonRetryableReason(err)),
 				)
+
 				break
 			}
 
@@ -112,11 +113,10 @@ func isNonRetryableError(err error) bool {
 	var exitErr *exec.ExitError
 	if errors.As(err, &exitErr) {
 		// Exit status 1 from du might indicate a persistent issue (permission, path doesn't exist, etc.)
-		// We'll still retry exit status errors once, but if it happens again, it's likely a real problem
-		if strings.Contains(errStr, "exit status 1") {
-			// This will be retried once, but subsequent failures might indicate a real issue
-			// We'll let it retry once, then check in the caller
-		}
+		// We'll still retry exit status errors, but if it happens repeatedly, it's likely a real problem
+		// Currently, we retry all exec.ExitError cases to handle transient issues
+		// Future enhancement: could track retry counts per error type to skip persistent failures
+		_ = exitErr // Suppress unused variable warning - we may use this in the future
 	}
 
 	return false
