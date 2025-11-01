@@ -17,6 +17,7 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
+
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -622,10 +623,10 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 	cmd, usingIOPriority := dc.buildDuCommand(timeoutCtx, path)
 
 	execStart := time.Now()
-	
+
 	var output []byte
 	var err error
-	
+
 	// If using native I/O priority (not ionice wrapper), we need to start the process
 	// and set I/O priority on the child PID immediately
 	if usingIOPriority && runtime.GOOS == "linux" && len(cmd.Args) > 0 && cmd.Args[0] == "du" {
@@ -634,26 +635,26 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 		if pipeErr != nil {
 			return nil, fmt.Errorf("failed to create stdout pipe: %w", pipeErr)
 		}
-		
+
 		// Start the process
 		if err := cmd.Start(); err != nil {
 			return nil, err
 		}
-		
+
 		// Set I/O priority on the child process immediately after it starts
 		if pid := cmd.Process.Pid; pid > 0 {
 			if ioprioErr := utils.SetIOIdlePriorityForProcess(pid); ioprioErr != nil {
 				slog.Debug("Failed to set I/O priority via syscall, continuing anyway", "error", ioprioErr)
 			}
 		}
-		
+
 		// Read output from stdout
 		var readErr error
 		output, readErr = io.ReadAll(stdoutPipe)
-		
+
 		// Wait for the process to complete
 		waitErr := cmd.Wait()
-		
+
 		// Return the first error encountered
 		if waitErr != nil {
 			err = waitErr
@@ -664,7 +665,7 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 		// Use standard Output() method (works for ionice wrapper or no I/O priority)
 		output, err = cmd.Output()
 	}
-	
+
 	execDuration := time.Since(execStart)
 
 	if span != nil {
@@ -716,7 +717,7 @@ func (dc *DirectoryCollector) buildDuCommand(ctx context.Context, path string) (
 		// Use native syscall approach - we'll set it after the process starts
 		// by hooking into the process after it's spawned
 		slog.Debug("Configured du command for native I/O priority control", "path", path)
-		
+
 		// We need to set I/O priority after the process starts but before it does I/O
 		// Unfortunately, Go's exec.Cmd doesn't provide a hook for this.
 		// The workaround is to use a wrapper approach, but for now, we'll use
