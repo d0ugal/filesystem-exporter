@@ -40,19 +40,17 @@ func SetIOIdlePriority() error {
 	ioprio := IOPRIO_PRIO_VALUE(IOPRIO_CLASS_IDLE, 0)
 
 	// Use raw syscall since golang.org/x/sys/unix doesn't expose IoprioSet directly
-	// sys_ioprio_set syscall number (251 on x86_64, varies by arch)
-	// We'll use unix.SYS_IOPRIO_SET if available, otherwise fall back to syscall
+	// sys_ioprio_set syscall number (251 on x86_64/arm64, may vary by arch)
+	// Note: We use the hardcoded value since SYS_IOPRIO_SET may not be available
+	// in all versions of golang.org/x/sys/unix
+	// 251 is the syscall number for ioprio_set on linux/amd64 and linux/arm64
+	const sysIoprioSet = 251
+	sysno := uintptr(sysIoprioSet)
+
+	_, _, errno := unix.Syscall(sysno, IOPRIO_WHO_PROCESS, 0, uintptr(ioprio))
 	var err error
-	sysno := unix.SYS_IOPRIO_SET
-	if sysno > 0 {
-		_, _, errno := unix.Syscall(uintptr(sysno), IOPRIO_WHO_PROCESS, 0, uintptr(ioprio))
-		if errno != 0 {
-			err = errno
-		}
-	} else {
-		// Fallback: try to call syscall directly (may not work on all architectures)
-		// This is a best-effort approach
-		return fmt.Errorf("ioprio_set syscall not available on this architecture")
+	if errno != 0 {
+		err = errno
 	}
 
 	if err != nil {
@@ -73,15 +71,14 @@ func SetIOIdlePriorityForProcess(pid int) error {
 
 	ioprio := IOPRIO_PRIO_VALUE(IOPRIO_CLASS_IDLE, 0)
 
+	// Use the same syscall number as SetIOIdlePriority
+	const sysIoprioSet = 251
+	sysno := uintptr(sysIoprioSet)
+
+	_, _, errno := unix.Syscall(sysno, IOPRIO_WHO_PROCESS, uintptr(pid), uintptr(ioprio))
 	var err error
-	sysno := unix.SYS_IOPRIO_SET
-	if sysno > 0 {
-		_, _, errno := unix.Syscall(uintptr(sysno), IOPRIO_WHO_PROCESS, uintptr(pid), uintptr(ioprio))
-		if errno != 0 {
-			err = errno
-		}
-	} else {
-		return fmt.Errorf("ioprio_set syscall not available on this architecture")
+	if errno != 0 {
+		err = errno
 	}
 
 	if err != nil {
@@ -117,5 +114,3 @@ func SetupCommandWithIOPriority(cmd *exec.Cmd) error {
 	// after the command starts, but before it does significant I/O.
 	return nil
 }
-
-
