@@ -15,7 +15,6 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
-
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -244,7 +243,6 @@ func (dc *DirectoryCollector) collectDirectorySizes(ctx context.Context, groupNa
 	return dc.collectSubdirectories(spanCtx, groupName, group, collectionType)
 }
 
-//nolint:contextcheck
 func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, groupName, path, collectionType string, subdirectoryLevel int) error {
 	tracer := dc.app.GetTracer()
 
@@ -594,7 +592,6 @@ func (dc *DirectoryCollector) acquireDuLock(ctx context.Context) (time.Duration,
 func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string) ([]byte, error) {
 	tracer := dc.app.GetTracer()
 
-	//nolint:contextcheck
 	var (
 		span    *tracing.CollectorSpan
 		spanCtx context.Context
