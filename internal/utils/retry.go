@@ -2,8 +2,11 @@ package utils
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
+	"os/exec"
+	"strings"
 	"time"
 
 	"go.opentelemetry.io/otel"
@@ -50,6 +53,16 @@ func RetryWithBackoff(ctx context.Context, operation func() error, maxRetries in
 			)
 			attemptSpan.End()
 
+			// Check if this error is non-retryable
+			if isNonRetryableError(err) {
+				slog.Warn("Operation failed with non-retryable error, skipping retries", "error", err)
+				span.SetAttributes(
+					attribute.Bool("retry.non_retryable", true),
+					attribute.String("retry.non_retryable_reason", getNonRetryableReason(err)),
+				)
+				break
+			}
+
 			if attempt < maxRetries {
 				slog.Warn("Operation failed, retrying", "attempt", attempt+1, "max_retries", maxRetries, "delay", delay, "error", err)
 
@@ -75,4 +88,55 @@ func RetryWithBackoff(ctx context.Context, operation func() error, maxRetries in
 	)
 
 	return fmt.Errorf("operation failed after %d attempts: %w", maxRetries+1, lastErr)
+}
+
+// isNonRetryableError checks if an error should not be retried
+func isNonRetryableError(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	errStr := err.Error()
+
+	// Context canceled errors should not be retried
+	if errors.Is(err, context.Canceled) || strings.Contains(errStr, "context canceled") {
+		return true
+	}
+
+	// Signal killed errors should not be retried (usually OOM or timeout)
+	if strings.Contains(errStr, "signal: killed") {
+		return true
+	}
+
+	// Check for exec.ExitError with specific exit codes that shouldn't be retried
+	var exitErr *exec.ExitError
+	if errors.As(err, &exitErr) {
+		// Exit status 1 from du might indicate a persistent issue (permission, path doesn't exist, etc.)
+		// We'll still retry exit status errors once, but if it happens again, it's likely a real problem
+		if strings.Contains(errStr, "exit status 1") {
+			// This will be retried once, but subsequent failures might indicate a real issue
+			// We'll let it retry once, then check in the caller
+		}
+	}
+
+	return false
+}
+
+// getNonRetryableReason returns a human-readable reason why an error is non-retryable
+func getNonRetryableReason(err error) string {
+	if err == nil {
+		return ""
+	}
+
+	errStr := err.Error()
+
+	if errors.Is(err, context.Canceled) || strings.Contains(errStr, "context canceled") {
+		return "context_canceled"
+	}
+
+	if strings.Contains(errStr, "signal: killed") {
+		return "signal_killed"
+	}
+
+	return "unknown"
 }

@@ -608,8 +608,9 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 		spanCtx = ctx
 	}
 
-	// Create context with timeout (6 minutes max) - use span context if available
-	timeoutCtx, cancel := context.WithTimeout(spanCtx, 6*time.Minute)
+	// Create context with timeout (2 minutes max) - use span context if available
+	// Reduced from 6 minutes to prevent long-running du commands that can be killed by OOM
+	timeoutCtx, cancel := context.WithTimeout(spanCtx, 2*time.Minute)
 	defer cancel()
 
 	// Use du with performance optimizations for large directories
@@ -630,6 +631,15 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 		)
 
 		if err != nil {
+			// Check for specific error types and add attributes
+			errStr := err.Error()
+			if strings.Contains(errStr, "signal: killed") {
+				span.SetAttributes(attribute.String("command.error_type", "signal_killed"))
+				slog.Warn("du command was killed, likely due to timeout or OOM", "path", path, "duration", execDuration)
+			} else if strings.Contains(errStr, "context canceled") {
+				span.SetAttributes(attribute.String("command.error_type", "context_canceled"))
+				slog.Debug("du command canceled", "path", path, "duration", execDuration)
+			}
 			span.RecordError(err)
 		} else {
 			span.AddEvent("command_completed", attribute.Int("output_size_bytes", len(output)))
