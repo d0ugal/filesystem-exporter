@@ -15,7 +15,6 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
-
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -595,7 +594,7 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 
 	var (
 		span    *tracing.CollectorSpan
-		spanCtx context.Context
+		spanCtx context.Context //nolint:contextcheck // Extracting context from span for child operations
 	)
 
 	if tracer != nil && tracer.IsEnabled() {
