@@ -201,7 +201,7 @@ func (dc *DirectoryCollector) collectDirectoryGroup(ctx context.Context, groupNa
 			attribute.Int("directory.subdirectory_levels", group.SubdirectoryLevels),
 		)
 
-		spanCtx = span.Context()
+		spanCtx = span.Context() //nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span
 		defer span.End()
 	} else {
 		spanCtx = ctx
@@ -222,7 +222,7 @@ func (dc *DirectoryCollector) collectDirectorySizes(ctx context.Context, groupNa
 	if tracer != nil && tracer.IsEnabled() {
 		span = tracer.NewCollectorSpan(ctx, "directory-collector", "collect-directory-sizes")
 
-		spanCtx = span.Context()
+		spanCtx = span.Context() //nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span
 
 		span.SetAttributes(
 			attribute.String("directory.group", groupName),
@@ -368,7 +368,7 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 			attribute.Int("directory.subdirectory_levels", group.SubdirectoryLevels),
 		)
 
-		spanCtx = span.Context()
+		spanCtx = span.Context() //nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span
 		defer span.End()
 	} else {
 		spanCtx = ctx
@@ -600,7 +600,7 @@ func (dc *DirectoryCollector) executeDuCommand(ctx context.Context, path string)
 	if tracer != nil && tracer.IsEnabled() {
 		span = tracer.NewCollectorSpan(ctx, "directory-collector", "execute-du-command")
 
-		spanCtx = span.Context()
+		spanCtx = span.Context() //nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span
 
 		span.SetAttributes(attribute.String("command.path", path))
 		defer span.End()
