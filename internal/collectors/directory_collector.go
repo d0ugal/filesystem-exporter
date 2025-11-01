@@ -357,7 +357,7 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 
 	var (
 		span    *tracing.CollectorSpan
-		spanCtx context.Context
+		spanCtx context.Context //nolint:contextcheck // Extracting context from span for child operations
 	)
 
 	if tracer != nil && tracer.IsEnabled() {
