@@ -54,18 +54,33 @@ func (dc *DirectoryCollector) Start(ctx context.Context) {
 	// Use sync.Once to ensure Start() can only start the collector once
 	// This prevents goroutine leaks if Start() is accidentally called multiple times
 	dc.started.Do(func() {
+		slog.Info("DirectoryCollector.Start() called - starting collector",
+			"collector_instance", fmt.Sprintf("%p", dc),
+			"num_directories", len(dc.config.Directories),
+			"context", fmt.Sprintf("%p", ctx))
 		go dc.run(ctx)
 	})
 }
 
 func (dc *DirectoryCollector) run(ctx context.Context) {
+	slog.Info("DirectoryCollector.run() started",
+		"collector_instance", fmt.Sprintf("%p", dc),
+		"num_directories", len(dc.config.Directories),
+		"context", fmt.Sprintf("%p", ctx))
+
 	// Create individual tickers for each directory
 	tickers := make(map[string]*time.Ticker)
 
 	defer func() {
-		for _, ticker := range tickers {
+		slog.Info("DirectoryCollector.run() cleaning up tickers",
+			"collector_instance", fmt.Sprintf("%p", dc),
+			"num_tickers", len(tickers))
+		for name, ticker := range tickers {
+			slog.Debug("Stopping ticker", "directory", name, "ticker", fmt.Sprintf("%p", ticker))
 			ticker.Stop()
 		}
+		slog.Info("DirectoryCollector.run() exiting",
+			"collector_instance", fmt.Sprintf("%p", dc))
 	}()
 
 	// Start individual tickers for each directory
@@ -74,25 +89,78 @@ func (dc *DirectoryCollector) run(ctx context.Context) {
 		ticker := time.NewTicker(time.Duration(interval) * time.Second)
 		tickers[groupName] = ticker
 
+		slog.Info("Created ticker for directory",
+			"directory", groupName,
+			"path", group.Path,
+			"interval_seconds", interval,
+			"ticker", fmt.Sprintf("%p", ticker),
+			"collector_instance", fmt.Sprintf("%p", dc))
+
 		// Initial collection for this directory
+		slog.Debug("Starting initial collection", "directory", groupName)
 		dc.collectSingleDirectory(ctx, groupName, group)
 
 		// Start goroutine for this directory
-		go func(name string, dir config.DirectoryGroup) {
+		slog.Info("Spawning goroutine for directory ticker",
+			"directory", groupName,
+			"goroutine_num", len(tickers))
+
+		go func(name string, dir config.DirectoryGroup, tickerPtr *time.Ticker) {
+			slog.Info("Directory ticker goroutine started",
+				"directory", name,
+				"ticker", fmt.Sprintf("%p", tickerPtr),
+				"collector_instance", fmt.Sprintf("%p", dc))
+
+			tickCount := 0
+			defer func() {
+				slog.Info("Directory ticker goroutine exiting",
+					"directory", name,
+					"total_ticks_processed", tickCount,
+					"ticker", fmt.Sprintf("%p", tickerPtr))
+			}()
+
 			for {
 				select {
 				case <-ctx.Done():
+					slog.Info("Directory ticker goroutine received context cancellation",
+						"directory", name,
+						"tick_count", tickCount)
 					return
-				case <-ticker.C:
+				case <-tickerPtr.C:
+					tickCount++
+					slog.Debug("Directory ticker fired, starting collection",
+						"directory", name,
+						"tick_number", tickCount,
+						"ticker", fmt.Sprintf("%p", tickerPtr),
+						"goroutine_id", getGoroutineID())
 					dc.collectSingleDirectory(ctx, name, dir)
+					slog.Debug("Directory ticker collection completed",
+						"directory", name,
+						"tick_number", tickCount)
 				}
 			}
-		}(groupName, group)
+		}(groupName, group, ticker)
 	}
+
+	slog.Info("DirectoryCollector.run() waiting for context cancellation",
+		"collector_instance", fmt.Sprintf("%p", dc),
+		"num_tickers_created", len(tickers),
+		"context", fmt.Sprintf("%p", ctx))
 
 	// Wait for context cancellation
 	<-ctx.Done()
+	slog.Info("DirectoryCollector.run() received context cancellation",
+		"collector_instance", fmt.Sprintf("%p", dc))
 	slog.Info("Directory collector stopped")
+}
+
+// getGoroutineID gets the current goroutine ID for debugging
+// Note: This is for debugging only and may not work in all Go versions
+func getGoroutineID() string {
+	buf := make([]byte, 64)
+	n := runtime.Stack(buf, false)
+	idField := strings.Fields(strings.TrimPrefix(string(buf[:n]), "goroutine "))[0]
+	return idField
 }
 
 func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupName string, group config.DirectoryGroup) {
@@ -100,7 +168,12 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 	collectionType := "directory"
 	interval := dc.config.GetDirectoryInterval(group)
 
-	slog.Info("Starting directory metrics collection", "group", groupName)
+	slog.Debug("Starting directory metrics collection",
+		"group", groupName,
+		"path", group.Path,
+		"interval_seconds", interval,
+		"collector_instance", fmt.Sprintf("%p", dc),
+		"goroutine_id", getGoroutineID())
 
 	// Create span for collection cycle
 	tracer := dc.app.GetTracer()
@@ -189,7 +262,10 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 		)
 	}
 
-	slog.Info("Directory metrics collection completed", "group", groupName, "duration", duration)
+	slog.Debug("Directory metrics collection completed",
+		"group", groupName,
+		"duration", duration,
+		"collector_instance", fmt.Sprintf("%p", dc))
 }
 
 // retryWithBackoff implements exponential backoff retry logic

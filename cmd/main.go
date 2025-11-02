@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
@@ -74,8 +75,18 @@ func main() {
 
 	// Create collectors first (without app reference - will be set after build)
 	// This allows us to register them with the builder before Build()
+	slog.Info("Creating collectors",
+		"num_directories", len(cfg.Directories),
+		"num_filesystems", len(cfg.Filesystems))
+
 	filesystemCollector := collectors.NewFilesystemCollector(cfg, filesystemRegistry, nil)
 	directoryCollector := collectors.NewDirectoryCollector(cfg, filesystemRegistry, nil)
+
+	slog.Info("Collectors created, registering with app builder",
+		"filesystem_collector", fmt.Sprintf("%p", filesystemCollector),
+		"directory_collector", fmt.Sprintf("%p", directoryCollector),
+		"num_directories", len(cfg.Directories),
+		"num_filesystems", len(cfg.Filesystems))
 
 	// Build application with collectors registered BEFORE Build()
 	application := app.New("Filesystem Exporter").
@@ -86,10 +97,18 @@ func main() {
 		WithCollector(directoryCollector).
 		Build()
 
+	slog.Info("Application built, setting app references on collectors",
+		"filesystem_collector", fmt.Sprintf("%p", filesystemCollector),
+		"directory_collector", fmt.Sprintf("%p", directoryCollector))
+
 	// Set app reference on collectors for tracing support (after build)
 	// This is safe because Start() hasn't been called yet
 	filesystemCollector.SetApp(application)
 	directoryCollector.SetApp(application)
+
+	slog.Info("Starting application.Run()",
+		"filesystem_collector", fmt.Sprintf("%p", filesystemCollector),
+		"directory_collector", fmt.Sprintf("%p", directoryCollector))
 
 	// Run the application
 	if err := application.Run(); err != nil {
