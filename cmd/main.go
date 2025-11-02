@@ -79,10 +79,13 @@ func main() {
 
 	// Use sync.Once to ensure initialization only happens once per process
 	// This prevents duplicate collector creation if main() is somehow called multiple times
-	var filesystemCollector *collectors.FilesystemCollector
-	var directoryCollector *collectors.DirectoryCollector
-	var application *app.App
-	var initErr error
+	var (
+		filesystemCollector *collectors.FilesystemCollector
+		directoryCollector  *collectors.DirectoryCollector
+
+		application *app.App
+		initErr     error
+	)
 
 	initOnce.Do(func() {
 		slog.Info("Initializing filesystem-exporter (first time only)",
@@ -92,14 +95,19 @@ func main() {
 
 		// Check for duplicate initialization
 		collectorsMutex.Lock()
+
 		if collectorsCreated {
 			slog.Error("CRITICAL: Collectors already created! Duplicate initialization detected",
 				"pid", os.Getpid())
 			collectorsMutex.Unlock()
+
 			initErr = fmt.Errorf("collectors already created - duplicate initialization")
+
 			return
 		}
+
 		collectorsCreated = true
+
 		collectorsMutex.Unlock()
 
 		// Initialize metrics registry using promexporter
