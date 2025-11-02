@@ -56,7 +56,6 @@ func (fc *FilesystemCollector) Start(ctx context.Context) {
 			"collector_instance", fmt.Sprintf("%p", fc),
 			"num_filesystems", len(fc.config.Filesystems),
 			"context", fmt.Sprintf("%p", ctx))
-
 		go fc.run(ctx)
 	})
 }

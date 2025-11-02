@@ -58,7 +58,6 @@ func (dc *DirectoryCollector) Start(ctx context.Context) {
 			"collector_instance", fmt.Sprintf("%p", dc),
 			"num_directories", len(dc.config.Directories),
 			"context", fmt.Sprintf("%p", ctx))
-
 		go dc.run(ctx)
 	})
 }
