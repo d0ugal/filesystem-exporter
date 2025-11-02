@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"filesystem-exporter/internal/config"
@@ -25,6 +26,7 @@ type FilesystemCollector struct {
 	config  *config.Config
 	metrics *metrics.FilesystemRegistry
 	app     *app.App
+	started sync.Once // Ensures Start() can only be called once
 }
 
 func NewFilesystemCollector(cfg *config.Config, registry *metrics.FilesystemRegistry, app *app.App) *FilesystemCollector {
@@ -47,7 +49,11 @@ func (fc *FilesystemCollector) SetApp(app *app.App) {
 }
 
 func (fc *FilesystemCollector) Start(ctx context.Context) {
-	go fc.run(ctx)
+	// Use sync.Once to ensure Start() can only start the collector once
+	// This prevents goroutine leaks if Start() is accidentally called multiple times
+	fc.started.Do(func() {
+		go fc.run(ctx)
+	})
 }
 
 func (fc *FilesystemCollector) run(ctx context.Context) {
