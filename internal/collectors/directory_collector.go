@@ -28,6 +28,7 @@ type DirectoryCollector struct {
 	metrics *metrics.FilesystemRegistry
 	app     *app.App
 	duMutex sync.Mutex // Mutex to ensure only one du operation at a time
+	started sync.Once  // Ensures Start() can only be called once
 }
 
 func NewDirectoryCollector(cfg *config.Config, registry *metrics.FilesystemRegistry, app *app.App) *DirectoryCollector {
@@ -50,7 +51,11 @@ func (dc *DirectoryCollector) SetApp(app *app.App) {
 }
 
 func (dc *DirectoryCollector) Start(ctx context.Context) {
-	go dc.run(ctx)
+	// Use sync.Once to ensure Start() can only start the collector once
+	// This prevents goroutine leaks if Start() is accidentally called multiple times
+	dc.started.Do(func() {
+		go dc.run(ctx)
+	})
 }
 
 func (dc *DirectoryCollector) run(ctx context.Context) {
