@@ -72,18 +72,24 @@ func main() {
 	// Add custom metrics to the registry
 	filesystemRegistry := metrics.NewFilesystemRegistry(metricsRegistry)
 
-	// Create and build application using promexporter
+	// Create collectors first (without app reference - will be set after build)
+	// This allows us to register them with the builder before Build()
+	filesystemCollector := collectors.NewFilesystemCollector(cfg, filesystemRegistry, nil)
+	directoryCollector := collectors.NewDirectoryCollector(cfg, filesystemRegistry, nil)
+
+	// Build application with collectors registered BEFORE Build()
 	application := app.New("Filesystem Exporter").
 		WithConfig(&cfg.BaseConfig).
 		WithMetrics(metricsRegistry).
 		WithVersionInfo(version.Version, version.Commit, version.BuildDate).
+		WithCollector(filesystemCollector).
+		WithCollector(directoryCollector).
 		Build()
 
-	// Create collectors with app reference for tracing
-	filesystemCollector := collectors.NewFilesystemCollector(cfg, filesystemRegistry, application)
-	directoryCollector := collectors.NewDirectoryCollector(cfg, filesystemRegistry, application)
-	application.WithCollector(filesystemCollector)
-	application.WithCollector(directoryCollector)
+	// Set app reference on collectors for tracing support (after build)
+	// This is safe because Start() hasn't been called yet
+	filesystemCollector.SetApp(application)
+	directoryCollector.SetApp(application)
 
 	// Run the application
 	if err := application.Run(); err != nil {
