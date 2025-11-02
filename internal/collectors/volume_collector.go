@@ -52,18 +52,33 @@ func (fc *FilesystemCollector) Start(ctx context.Context) {
 	// Use sync.Once to ensure Start() can only start the collector once
 	// This prevents goroutine leaks if Start() is accidentally called multiple times
 	fc.started.Do(func() {
+		slog.Info("FilesystemCollector.Start() called - starting collector",
+			"collector_instance", fmt.Sprintf("%p", fc),
+			"num_filesystems", len(fc.config.Filesystems),
+			"context", fmt.Sprintf("%p", ctx))
 		go fc.run(ctx)
 	})
 }
 
 func (fc *FilesystemCollector) run(ctx context.Context) {
+	slog.Info("FilesystemCollector.run() started",
+		"collector_instance", fmt.Sprintf("%p", fc),
+		"num_filesystems", len(fc.config.Filesystems),
+		"context", fmt.Sprintf("%p", ctx))
+
 	// Create individual tickers for each filesystem
 	tickers := make(map[string]*time.Ticker)
 
 	defer func() {
-		for _, ticker := range tickers {
+		slog.Info("FilesystemCollector.run() cleaning up tickers",
+			"collector_instance", fmt.Sprintf("%p", fc),
+			"num_tickers", len(tickers))
+		for name, ticker := range tickers {
+			slog.Debug("Stopping ticker", "filesystem", name, "ticker", fmt.Sprintf("%p", ticker))
 			ticker.Stop()
 		}
+		slog.Info("FilesystemCollector.run() exiting",
+			"collector_instance", fmt.Sprintf("%p", fc))
 	}()
 
 	// Start individual tickers for each filesystem
@@ -72,24 +87,68 @@ func (fc *FilesystemCollector) run(ctx context.Context) {
 		ticker := time.NewTicker(time.Duration(interval) * time.Second)
 		tickers[filesystem.Name] = ticker
 
+		slog.Info("Created ticker for filesystem",
+			"filesystem", filesystem.Name,
+			"mount_point", filesystem.MountPoint,
+			"interval_seconds", interval,
+			"ticker", fmt.Sprintf("%p", ticker),
+			"collector_instance", fmt.Sprintf("%p", fc))
+
 		// Initial collection for this filesystem
+		slog.Debug("Starting initial collection", "filesystem", filesystem.Name)
 		fc.collectSingleFilesystem(ctx, filesystem)
 
 		// Start goroutine for this filesystem
-		go func(fs config.FilesystemConfig) {
+		slog.Info("Spawning goroutine for filesystem ticker",
+			"filesystem", filesystem.Name,
+			"goroutine_num", len(tickers))
+
+		go func(fs config.FilesystemConfig, tickerPtr *time.Ticker) {
+			slog.Info("Filesystem ticker goroutine started",
+				"filesystem", fs.Name,
+				"ticker", fmt.Sprintf("%p", tickerPtr),
+				"collector_instance", fmt.Sprintf("%p", fc))
+
+			tickCount := 0
+			defer func() {
+				slog.Info("Filesystem ticker goroutine exiting",
+					"filesystem", fs.Name,
+					"total_ticks_processed", tickCount,
+					"ticker", fmt.Sprintf("%p", tickerPtr))
+			}()
+
 			for {
 				select {
 				case <-ctx.Done():
+					slog.Info("Filesystem ticker goroutine received context cancellation",
+						"filesystem", fs.Name,
+						"tick_count", tickCount)
 					return
-				case <-ticker.C:
+				case <-tickerPtr.C:
+					tickCount++
+					slog.Debug("Filesystem ticker fired, starting collection",
+						"filesystem", fs.Name,
+						"tick_number", tickCount,
+						"ticker", fmt.Sprintf("%p", tickerPtr),
+						"goroutine_id", getGoroutineID())
 					fc.collectSingleFilesystem(ctx, fs)
+					slog.Debug("Filesystem ticker collection completed",
+						"filesystem", fs.Name,
+						"tick_number", tickCount)
 				}
 			}
-		}(filesystem)
+		}(filesystem, ticker)
 	}
+
+	slog.Info("FilesystemCollector.run() waiting for context cancellation",
+		"collector_instance", fmt.Sprintf("%p", fc),
+		"num_tickers_created", len(tickers),
+		"context", fmt.Sprintf("%p", ctx))
 
 	// Wait for context cancellation
 	<-ctx.Done()
+	slog.Info("FilesystemCollector.run() received context cancellation",
+		"collector_instance", fmt.Sprintf("%p", fc))
 	slog.Info("Filesystem collector stopped")
 }
 
@@ -98,7 +157,12 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 	collectionType := "filesystem"
 	interval := fc.config.GetFilesystemInterval(filesystem)
 
-	slog.Info("Starting filesystem metrics collection", "filesystem", filesystem.Name)
+	slog.Debug("Starting filesystem metrics collection",
+		"filesystem", filesystem.Name,
+		"mount_point", filesystem.MountPoint,
+		"interval_seconds", interval,
+		"collector_instance", fmt.Sprintf("%p", fc),
+		"goroutine_id", getGoroutineID())
 
 	// Create span for collection cycle
 	tracer := fc.app.GetTracer()
@@ -177,7 +241,10 @@ func (fc *FilesystemCollector) collectSingleFilesystem(ctx context.Context, file
 		)
 	}
 
-	slog.Info("Filesystem metrics collection completed", "filesystem", filesystem.Name, "duration", duration)
+	slog.Debug("Filesystem metrics collection completed",
+		"filesystem", filesystem.Name,
+		"duration", duration,
+		"collector_instance", fmt.Sprintf("%p", fc))
 }
 
 // retryWithBackoff implements exponential backoff retry logic
