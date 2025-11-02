@@ -40,6 +40,12 @@ func (fc *FilesystemCollector) Stop() {
 	// No cleanup needed for this collector
 }
 
+// SetApp sets the app reference for tracing support
+// This allows the app to be set after collector creation but before Start() is called
+func (fc *FilesystemCollector) SetApp(app *app.App) {
+	fc.app = app
+}
+
 func (fc *FilesystemCollector) Start(ctx context.Context) {
 	go fc.run(ctx)
 }

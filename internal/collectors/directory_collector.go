@@ -43,6 +43,12 @@ func (dc *DirectoryCollector) Stop() {
 	// No cleanup needed for this collector
 }
 
+// SetApp sets the app reference for tracing support
+// This allows the app to be set after collector creation but before Start() is called
+func (dc *DirectoryCollector) SetApp(app *app.App) {
+	dc.app = app
+}
+
 func (dc *DirectoryCollector) Start(ctx context.Context) {
 	go dc.run(ctx)
 }
