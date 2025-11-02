@@ -5,6 +5,59 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.22.4...v1.23.0) (2025-11-02)
+
+
+### Features
+
+* add configurable timeout per directory for du commands ([eb9469c](https://github.com/d0ugal/filesystem-exporter/commit/eb9469c129d689c85984e6987938bdb8f062c06d))
+* add dev-tag Makefile target ([dcbc72a](https://github.com/d0ugal/filesystem-exporter/commit/dcbc72a472dbae9ed0978bb29cef0951e95315f7))
+* add duplication linter (dupl) to golangci configuration ([0d8bee0](https://github.com/d0ugal/filesystem-exporter/commit/0d8bee019cff40ad51222c4055204a0c4529df2c))
+* add tracing configuration support ([8da4627](https://github.com/d0ugal/filesystem-exporter/commit/8da462732d36cca14670f3872edafa8056136705))
+* **ci:** add auto-format workflow ([0918747](https://github.com/d0ugal/filesystem-exporter/commit/09187470fe17835798af58436efc2d2e3a2a2694))
+* integrate OpenTelemetry tracing into collectors ([8a88edc](https://github.com/d0ugal/filesystem-exporter/commit/8a88edc7c378fe30f85f8e55609720cff8aedd2c))
+* **tracing:** add comprehensive tracing throughout filesystem-exporter ([ee0e576](https://github.com/d0ugal/filesystem-exporter/commit/ee0e576d693432945561add5691de5491f5aa894))
+* trigger CI after auto-format workflow completes ([14bae61](https://github.com/d0ugal/filesystem-exporter/commit/14bae614a542f0ac85bb8a97fa714e849093424f))
+
+
+### Bug Fixes
+
+* add nolint comment for contextcheck and fix import ordering ([eae68bc](https://github.com/d0ugal/filesystem-exporter/commit/eae68bc02884937ecba1993c913ab87ee9743a27))
+* add nolint comment for contextcheck on span context extraction ([e593073](https://github.com/d0ugal/filesystem-exporter/commit/e593073bca1cdbe3553a4ff35997ce94a3bfe433))
+* add nolint comment for contextcheck on spanCtx variable declaration ([3577c73](https://github.com/d0ugal/filesystem-exporter/commit/3577c7323c8cbc7ef7e060159739cbdfc23d769a))
+* add nolint comment for contextcheck on WithTimeout call ([2a91838](https://github.com/d0ugal/filesystem-exporter/commit/2a9183861bedf84fdce64d51b4bc8887bad25fde))
+* add nolint comment to span.Context() assignments ([23415bb](https://github.com/d0ugal/filesystem-exporter/commit/23415bbbbd53a21127caf41bebbeb028b2425488))
+* add sync.Once guards to prevent multiple Start() calls ([d96e3cf](https://github.com/d0ugal/filesystem-exporter/commit/d96e3cf0cef0e6a0d44b993d7019870e2697f009))
+* add whitespace to satisfy wsl_v5 linter ([b358c5c](https://github.com/d0ugal/filesystem-exporter/commit/b358c5ceff28590385ba806497d898d6bc158f67))
+* **config:** apply tracing env vars when loading from config file ([216fde0](https://github.com/d0ugal/filesystem-exporter/commit/216fde0546a86c5d85084d7d87bc609c1e1914fb))
+* ensure spanCtx is set to ctx when tracer is disabled ([cb85044](https://github.com/d0ugal/filesystem-exporter/commit/cb8504446bd80cf84044af63b3eb726c0002110c))
+* **lint:** remove empty branch to fix staticcheck SA9003 warning ([6133b63](https://github.com/d0ugal/filesystem-exporter/commit/6133b63ddd13869b1a23426066b9e255ec352e0a))
+* **lint:** resolve contextcheck and typecheck by context-only tracing\n\n- Refactor volume collector to use context-only spans (no parent span arg)\n- Add minimal nolint contextcheck where required in directory collector\n- Remove duplicate retryCtx and unused vars\n- Add helper in directory collector to restore previous behavior\n\nAll linters pass. ([0aa8ea8](https://github.com/d0ugal/filesystem-exporter/commit/0aa8ea8a30105544a7154499f49bbb8f82382dd5))
+* **metrics:** correct CollectionFailedCounter label names ([bbe0db5](https://github.com/d0ugal/filesystem-exporter/commit/bbe0db50b1b7b8df9bf6a34b1c5b3b1a3f098e0c))
+* move nolint comment above WithTimeout call ([1fa9470](https://github.com/d0ugal/filesystem-exporter/commit/1fa9470baf3689d70483e647e6de658e76b606f3))
+* pass BaseConfig to app for tracing initialization ([6faa161](https://github.com/d0ugal/filesystem-exporter/commit/6faa161d205714da2dbcc0839692044acdedfa51))
+* prevent duplicate collector creation with sync.Once guard ([cade8b6](https://github.com/d0ugal/filesystem-exporter/commit/cade8b66dd5227a1a121c6e0bf6d6848a1d87994))
+* remove unused nolint comments from assignments ([db8a020](https://github.com/d0ugal/filesystem-exporter/commit/db8a02071c65c7a8ab2bd0ce40d75b8637d68804))
+* restore correct collector registration order to fix CPU regression ([22825f0](https://github.com/d0ugal/filesystem-exporter/commit/22825f09753bf1a42aa21aca8770dc2458d2974e))
+* skip retries for non-retryable errors (signal: killed, context canceled) ([157d1e2](https://github.com/d0ugal/filesystem-exporter/commit/157d1e2bd717a1677a4086b84da866e0d6507356))
+* update google.golang.org/genproto/googleapis/api digest to ab9386a ([b87a9f5](https://github.com/d0ugal/filesystem-exporter/commit/b87a9f5993d8fed85f70acbd27705458c2ca076a))
+* update google.golang.org/genproto/googleapis/rpc digest to ab9386a ([4293cf1](https://github.com/d0ugal/filesystem-exporter/commit/4293cf1d5d835e5f2c6a17ebb49f9ec61576bfe6))
+* update module github.com/bytedance/sonic to v1.14.2 ([4ac475f](https://github.com/d0ugal/filesystem-exporter/commit/4ac475fcef81e99fff4dd156fe998c0fcbce205e))
+* update module github.com/d0ugal/promexporter to v1.6.1 ([afd4950](https://github.com/d0ugal/filesystem-exporter/commit/afd495015844c37025d944aedce28b07f1252851))
+* update module github.com/d0ugal/promexporter to v1.7.0 ([57795db](https://github.com/d0ugal/filesystem-exporter/commit/57795db9614c60bc0085f7ce4e658e01112fddae))
+* update module github.com/d0ugal/promexporter to v1.7.1 ([67ab936](https://github.com/d0ugal/filesystem-exporter/commit/67ab9365471c589e97a10bb3daee51476bdee596))
+* update module github.com/d0ugal/promexporter to v1.8.0 ([bc2faed](https://github.com/d0ugal/filesystem-exporter/commit/bc2faed9c339078fe5cbf0c23a13a9f3f31cee52))
+* update module github.com/gabriel-vasile/mimetype to v1.4.11 ([3395dac](https://github.com/d0ugal/filesystem-exporter/commit/3395dac93129a12194a7dd44c54bde1879dfa9cd))
+* update module github.com/prometheus/common to v0.67.2 ([dd1c105](https://github.com/d0ugal/filesystem-exporter/commit/dd1c105d9fe42d5cd9cffff396ea0217a9d2f063))
+* update module github.com/ugorji/go/codec to v1.3.1 ([a44e130](https://github.com/d0ugal/filesystem-exporter/commit/a44e130167daf7b52f1fed424d87155fe2c07f85))
+* update test calls to match updated function signature ([6f53919](https://github.com/d0ugal/filesystem-exporter/commit/6f539193aa9b792de528ede5e26730313f6a46ee))
+* use correct collection metrics to match documentation ([05937cd](https://github.com/d0ugal/filesystem-exporter/commit/05937cd90f669ed763e18ec7be9d4c8c4b87d3f9))
+
+
+### Performance Improvements
+
+* add ionice support to reduce I/O wait for du commands ([0d3388c](https://github.com/d0ugal/filesystem-exporter/commit/0d3388c5b23758d7b24b14e4473c55e1eb8cf97d))
+
 ## [1.22.4](https://github.com/d0ugal/filesystem-exporter/compare/v1.22.3...v1.22.4) (2025-10-27)
 
 
