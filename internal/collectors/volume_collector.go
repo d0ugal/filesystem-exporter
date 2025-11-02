@@ -56,6 +56,7 @@ func (fc *FilesystemCollector) Start(ctx context.Context) {
 			"collector_instance", fmt.Sprintf("%p", fc),
 			"num_filesystems", len(fc.config.Filesystems),
 			"context", fmt.Sprintf("%p", ctx))
+
 		go fc.run(ctx)
 	})
 }
@@ -73,10 +74,12 @@ func (fc *FilesystemCollector) run(ctx context.Context) {
 		slog.Info("FilesystemCollector.run() cleaning up tickers",
 			"collector_instance", fmt.Sprintf("%p", fc),
 			"num_tickers", len(tickers))
+
 		for name, ticker := range tickers {
 			slog.Debug("Stopping ticker", "filesystem", name, "ticker", fmt.Sprintf("%p", ticker))
 			ticker.Stop()
 		}
+
 		slog.Info("FilesystemCollector.run() exiting",
 			"collector_instance", fmt.Sprintf("%p", fc))
 	}()
@@ -110,6 +113,7 @@ func (fc *FilesystemCollector) run(ctx context.Context) {
 				"collector_instance", fmt.Sprintf("%p", fc))
 
 			tickCount := 0
+
 			defer func() {
 				slog.Info("Filesystem ticker goroutine exiting",
 					"filesystem", fs.Name,
@@ -123,6 +127,7 @@ func (fc *FilesystemCollector) run(ctx context.Context) {
 					slog.Info("Filesystem ticker goroutine received context cancellation",
 						"filesystem", fs.Name,
 						"tick_count", tickCount)
+
 					return
 				case <-tickerPtr.C:
 					tickCount++

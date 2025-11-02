@@ -58,6 +58,7 @@ func (dc *DirectoryCollector) Start(ctx context.Context) {
 			"collector_instance", fmt.Sprintf("%p", dc),
 			"num_directories", len(dc.config.Directories),
 			"context", fmt.Sprintf("%p", ctx))
+
 		go dc.run(ctx)
 	})
 }
@@ -75,10 +76,12 @@ func (dc *DirectoryCollector) run(ctx context.Context) {
 		slog.Info("DirectoryCollector.run() cleaning up tickers",
 			"collector_instance", fmt.Sprintf("%p", dc),
 			"num_tickers", len(tickers))
+
 		for name, ticker := range tickers {
 			slog.Debug("Stopping ticker", "directory", name, "ticker", fmt.Sprintf("%p", ticker))
 			ticker.Stop()
 		}
+
 		slog.Info("DirectoryCollector.run() exiting",
 			"collector_instance", fmt.Sprintf("%p", dc))
 	}()
@@ -112,6 +115,7 @@ func (dc *DirectoryCollector) run(ctx context.Context) {
 				"collector_instance", fmt.Sprintf("%p", dc))
 
 			tickCount := 0
+
 			defer func() {
 				slog.Info("Directory ticker goroutine exiting",
 					"directory", name,
@@ -125,6 +129,7 @@ func (dc *DirectoryCollector) run(ctx context.Context) {
 					slog.Info("Directory ticker goroutine received context cancellation",
 						"directory", name,
 						"tick_count", tickCount)
+
 					return
 				case <-tickerPtr.C:
 					tickCount++
@@ -160,6 +165,7 @@ func getGoroutineID() string {
 	buf := make([]byte, 64)
 	n := runtime.Stack(buf, false)
 	idField := strings.Fields(strings.TrimPrefix(string(buf[:n]), "goroutine "))[0]
+
 	return idField
 }
 
