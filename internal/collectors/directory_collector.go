@@ -18,7 +18,6 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
-
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -457,10 +456,10 @@ func (dc *DirectoryCollector) collectSingleDirectoryFile(ctx context.Context, gr
 func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupName string, group config.DirectoryGroup, collectionType string) error {
 	tracer := dc.app.GetTracer()
 
-	var (
-		span    *tracing.CollectorSpan
-		spanCtx context.Context
-	)
+	var span *tracing.CollectorSpan
+
+	//nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span for child operations
+	var spanCtx = ctx
 
 	if tracer != nil && tracer.IsEnabled() {
 		span = tracer.NewCollectorSpan(ctx, "directory-collector", "collect-subdirectories")
@@ -471,10 +470,8 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 			attribute.Int("directory.subdirectory_levels", group.SubdirectoryLevels),
 		)
 
-		spanCtx = span.Context() //nolint:contextcheck // Standard OpenTelemetry pattern: extract context from span
+		spanCtx = span.Context()
 		defer span.End()
-	} else {
-		spanCtx = ctx
 	}
 
 	// Validate and sanitize base path
@@ -510,86 +507,11 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 	basePathLen := len(group.Path)
 	sep := byte(filepath.Separator) // Convert to byte for efficient comparison
 
-	err := filepath.WalkDir(group.Path, func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			slog.Warn("Error accessing path during walk", "path", path, "error", err)
-			return nil // Continue walking, don't fail the entire collection
-		}
-
-		// Skip the root directory itself (we already collected it above)
-		if path == group.Path {
-			return nil
-		}
-
-		// Optimized system directory check: check last component without allocating
-		// Find the last separator position
-		lastSepIdx := strings.LastIndexByte(path, byte(sep))
-		if lastSepIdx >= 0 {
-			dirName := path[lastSepIdx+1:]
-			if dirName == "#recycle" || dirName == "@eaDir" || dirName == ".DS_Store" {
-				return nil
-			}
-		}
-
-		// Optimized depth calculation: count separators instead of splitting strings
-		// This avoids creating a slice of path components (which was a major allocation hotspot)
-		var depth int
-		if len(path) > basePathLen && strings.HasPrefix(path, group.Path) {
-			// Path is under or equal to base directory
-			if len(path) == basePathLen {
-				// Path equals base - already handled above, but safety check
-				depth = 0
-			} else {
-				// Path is under base directory - count separators in the relative part
-				// Skip the base path and any leading separator
-				relStart := basePathLen
-				if relStart < len(path) && path[relStart] == sep {
-					relStart++
-				}
-				if relStart < len(path) {
-					relPart := path[relStart:]
-					// Count separator occurrences to determine depth
-					for i := 0; i < len(relPart); i++ {
-						if relPart[i] == sep {
-							depth++
-						}
-					}
-					// Depth is number of separators + 1 (for the directory/file itself)
-					// If we have "base/subdir", depth should be 1 (one level down)
-					if len(relPart) > 0 {
-						depth++
-					}
-				}
-			}
-		}
-
-		if !d.IsDir() {
-			depth++ // Files are at depth + 1
-		}
-
-		directoriesWalked++
-
-		// Collect directories up to the specified level (inclusive)
-		if depth <= group.SubdirectoryLevels && d.IsDir() {
-			// Collect directory size
-			if err := dc.collectSingleDirectoryFile(spanCtx, groupName, path, collectionType, depth); err != nil {
-				slog.Warn("Failed to collect subdirectory", "path", path, "error", err)
-
-				if span != nil {
-					span.RecordError(err, attribute.String("subdirectory.path", path), attribute.Int("subdirectory.depth", depth))
-				}
-				// Continue with other directories, don't fail the entire collection
-			} else {
-				directoriesCollected++
-			}
-		} else if depth > group.SubdirectoryLevels {
-			// Skip deeper directories
-			directoriesSkipped++
-			return filepath.SkipDir
-		}
-
-		return nil
-	})
+	err := filepath.WalkDir(group.Path, dc.makeWalkDirCallback(
+		groupName, group, collectionType, spanCtx, span,
+		basePathLen, sep, group.Path, group.SubdirectoryLevels,
+		&directoriesWalked, &directoriesCollected, &directoriesSkipped,
+	))
 	walkDuration := time.Since(walkStart)
 
 	if err != nil {
@@ -616,6 +538,122 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 	}
 
 	return nil
+}
+
+// makeWalkDirCallback creates a WalkDir callback function for collecting subdirectories.
+// This is extracted to reduce cyclomatic complexity of collectSubdirectories.
+func (dc *DirectoryCollector) makeWalkDirCallback(
+	groupName string,
+	group config.DirectoryGroup,
+	collectionType string,
+	spanCtx context.Context,
+	span *tracing.CollectorSpan,
+	basePathLen int,
+	sep byte,
+	basePath string,
+	maxDepth int,
+	directoriesWalked *int,
+	directoriesCollected *int,
+	directoriesSkipped *int,
+) func(string, os.DirEntry, error) error {
+	return func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			slog.Warn("Error accessing path during walk", "path", path, "error", err)
+			return nil // Continue walking, don't fail the entire collection
+		}
+
+		// Skip the root directory itself (we already collected it above)
+		if path == basePath {
+			return nil
+		}
+
+		// Check if this is a system directory that should be skipped
+		if dc.shouldSkipSystemDirectory(path, sep) {
+			return nil
+		}
+
+		// Calculate depth using optimized separator counting
+		depth := dc.calculatePathDepth(path, basePath, basePathLen, sep)
+		if !d.IsDir() {
+			depth++ // Files are at depth + 1
+		}
+
+		(*directoriesWalked)++
+
+		// Collect directories up to the specified level (inclusive)
+		if depth <= maxDepth && d.IsDir() {
+			if err := dc.collectSingleDirectoryFile(spanCtx, groupName, path, collectionType, depth); err != nil {
+				slog.Warn("Failed to collect subdirectory", "path", path, "error", err)
+
+				if span != nil {
+					span.RecordError(err, attribute.String("subdirectory.path", path), attribute.Int("subdirectory.depth", depth))
+				}
+				// Continue with other directories, don't fail the entire collection
+			} else {
+				(*directoriesCollected)++
+			}
+		} else if depth > maxDepth {
+			// Skip deeper directories
+			(*directoriesSkipped)++
+			return filepath.SkipDir
+		}
+
+		return nil
+	}
+}
+
+// shouldSkipSystemDirectory checks if a directory should be skipped based on its name.
+func (dc *DirectoryCollector) shouldSkipSystemDirectory(path string, sep byte) bool {
+	lastSepIdx := strings.LastIndexByte(path, sep)
+	if lastSepIdx < 0 {
+		return false
+	}
+
+	dirName := path[lastSepIdx+1:]
+
+	return dirName == "#recycle" || dirName == "@eaDir" || dirName == ".DS_Store"
+}
+
+// calculatePathDepth calculates the depth of a path relative to the base path.
+// Uses optimized separator counting instead of splitting strings.
+func (dc *DirectoryCollector) calculatePathDepth(path, basePath string, basePathLen int, sep byte) int {
+	if len(path) <= basePathLen || !strings.HasPrefix(path, basePath) {
+		return 0
+	}
+
+	if len(path) == basePathLen {
+		// Path equals base - already handled above, but safety check
+		return 0
+	}
+
+	// Path is under base directory - count separators in the relative part
+	// Skip the base path and any leading separator
+	relStart := basePathLen
+	if relStart < len(path) && path[relStart] == sep {
+		relStart++
+	}
+
+	if relStart >= len(path) {
+		return 0
+	}
+
+	relPart := path[relStart:]
+	depth := 0
+
+	// Count separator occurrences to determine depth
+	for i := 0; i < len(relPart); i++ {
+		if relPart[i] == sep {
+			depth++
+		}
+	}
+
+	// Depth is number of separators + 1 (for the directory/file itself)
+	// If we have "base/subdir", depth should be 1 (one level down)
+	if len(relPart) > 0 {
+		depth++
+	}
+
+	return depth
 }
 
 // validatePath ensures the path is safe to use with du command
