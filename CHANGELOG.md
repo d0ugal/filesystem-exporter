@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.24.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.23.0...v1.24.0) (2025-11-03)
+
+
+### Features
+
+* add Pyroscope continuous profiling support ([d3cdd14](https://github.com/d0ugal/filesystem-exporter/commit/d3cdd1499379c42638861ae84cb6816eea4f7838))
+
+
+### Bug Fixes
+
+* update module github.com/klauspost/compress to v1.18.1 ([24d81f7](https://github.com/d0ugal/filesystem-exporter/commit/24d81f7807149c5cff516e8e8bfaa0aec3e055af))
+
 ## [1.23.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.22.4...v1.23.0) (2025-11-02)
 
 
