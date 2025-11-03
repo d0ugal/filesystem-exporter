@@ -68,14 +68,14 @@ func initProfiling() {
 		},
 		Tags: map[string]string{
 			"version": version.Version,
-			"commit":   version.Commit,
+			"commit":  version.Commit,
 		},
 	})
-
 	if err != nil {
 		slog.Warn("Failed to initialize continuous profiling, continuing without profiling",
 			"error", err,
 			"server_address", serverAddress)
+
 		return
 	}
 
