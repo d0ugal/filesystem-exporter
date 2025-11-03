@@ -15,6 +15,7 @@ import (
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/logging"
 	promexporter_metrics "github.com/d0ugal/promexporter/metrics"
+	"github.com/grafana/pyroscope-go"
 )
 
 var (
@@ -25,6 +26,63 @@ var (
 	collectorsCreated bool
 	collectorsMutex   sync.Mutex
 )
+
+// initProfiling initializes Pyroscope continuous profiling if enabled via environment variables.
+// Following the same pattern as tracing, profiling can be enabled with:
+// - PROFILING_ENABLED=true
+// - PROFILING_SERVICE_NAME=filesystem-exporter (optional, defaults to "filesystem-exporter")
+// - PROFILING_SERVER_ADDRESS=http://pyroscope-server:4040 (optional, defaults to http://10.10.10.2:4040)
+func initProfiling() {
+	profilingEnabled := os.Getenv("PROFILING_ENABLED") == "true"
+	if !profilingEnabled {
+		slog.Debug("Continuous profiling disabled (PROFILING_ENABLED not set or false)")
+		return
+	}
+
+	serviceName := os.Getenv("PROFILING_SERVICE_NAME")
+	if serviceName == "" {
+		serviceName = "filesystem-exporter"
+	}
+
+	serverAddress := os.Getenv("PROFILING_SERVER_ADDRESS")
+	if serverAddress == "" {
+		// Default to Pyroscope server on lgtm network (10.10.10.2)
+		serverAddress = "http://10.10.10.2:4040"
+	}
+
+	slog.Info("Initializing continuous profiling",
+		"service_name", serviceName,
+		"server_address", serverAddress)
+
+	// Initialize Pyroscope with CPU and memory profiling
+	_, err := pyroscope.Start(pyroscope.Config{
+		ApplicationName: serviceName,
+		ServerAddress:   serverAddress,
+		Logger:          pyroscope.StandardLogger,
+		ProfileTypes: []pyroscope.ProfileType{
+			pyroscope.ProfileCPU,
+			pyroscope.ProfileAllocObjects,
+			pyroscope.ProfileAllocSpace,
+			pyroscope.ProfileInuseObjects,
+			pyroscope.ProfileInuseSpace,
+		},
+		Tags: map[string]string{
+			"version": version.Version,
+			"commit":   version.Commit,
+		},
+	})
+
+	if err != nil {
+		slog.Warn("Failed to initialize continuous profiling, continuing without profiling",
+			"error", err,
+			"server_address", serverAddress)
+		return
+	}
+
+	slog.Info("Continuous profiling initialized successfully",
+		"service_name", serviceName,
+		"server_address", serverAddress)
+}
 
 func main() {
 	// Parse command line flags
@@ -76,6 +134,9 @@ func main() {
 		Level:  cfg.Logging.Level,
 		Format: cfg.Logging.Format,
 	})
+
+	// Initialize continuous profiling with Pyroscope if enabled
+	initProfiling()
 
 	// Use sync.Once to ensure initialization only happens once per process
 	// This prevents duplicate collector creation if main() is somehow called multiple times
