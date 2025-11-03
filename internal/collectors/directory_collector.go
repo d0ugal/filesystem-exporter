@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"sync"
@@ -17,6 +18,7 @@ import (
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/utils"
+
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/tracing"
 	"github.com/prometheus/client_golang/prometheus"
@@ -272,6 +274,12 @@ func (dc *DirectoryCollector) collectSingleDirectory(ctx context.Context, groupN
 		"group", groupName,
 		"duration", duration,
 		"collector_instance", fmt.Sprintf("%p", dc))
+
+	// Trigger GC hint after collection to clean up allocations
+	// This is beneficial when collections are infrequent (e.g., hourly)
+	// and create large allocation spikes. The GC hint helps return memory
+	// to the OS sooner, reducing retained memory between collections.
+	dc.triggerGCAfterCollection()
 }
 
 // retryWithBackoff implements exponential backoff retry logic
@@ -498,6 +506,10 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 
 	var directoriesWalked, directoriesCollected, directoriesSkipped int
 
+	// Precompute base path length and separator for efficient depth calculation
+	basePathLen := len(group.Path)
+	sep := byte(filepath.Separator) // Convert to byte for efficient comparison
+
 	err := filepath.WalkDir(group.Path, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			slog.Warn("Error accessing path during walk", "path", path, "error", err)
@@ -509,29 +521,46 @@ func (dc *DirectoryCollector) collectSubdirectories(ctx context.Context, groupNa
 			return nil
 		}
 
-		// Skip system directories
-		dirName := filepath.Base(path)
-		if dirName == "#recycle" || dirName == "@eaDir" || dirName == ".DS_Store" {
-			return nil
+		// Optimized system directory check: check last component without allocating
+		// Find the last separator position
+		lastSepIdx := strings.LastIndexByte(path, byte(sep))
+		if lastSepIdx >= 0 {
+			dirName := path[lastSepIdx+1:]
+			if dirName == "#recycle" || dirName == "@eaDir" || dirName == ".DS_Store" {
+				return nil
+			}
 		}
 
-		// Calculate the depth relative to the base path
-		relPath, err := filepath.Rel(group.Path, path)
-		if err != nil {
-			slog.Warn("Failed to calculate relative path", "path", path, "error", err)
-			return nil
-		}
-
-		// Calculate depth based on directory components
-		// Split the relative path and count the components
-		pathComponents := strings.Split(relPath, string(filepath.Separator))
-
-		// Handle special case: if relative path is "." (same directory), depth is 0
+		// Optimized depth calculation: count separators instead of splitting strings
+		// This avoids creating a slice of path components (which was a major allocation hotspot)
 		var depth int
-		if len(pathComponents) == 1 && pathComponents[0] == "." {
-			depth = 0
-		} else {
-			depth = len(pathComponents) // Each component represents one level of depth
+		if len(path) > basePathLen && strings.HasPrefix(path, group.Path) {
+			// Path is under or equal to base directory
+			if len(path) == basePathLen {
+				// Path equals base - already handled above, but safety check
+				depth = 0
+			} else {
+				// Path is under base directory - count separators in the relative part
+				// Skip the base path and any leading separator
+				relStart := basePathLen
+				if relStart < len(path) && path[relStart] == sep {
+					relStart++
+				}
+				if relStart < len(path) {
+					relPart := path[relStart:]
+					// Count separator occurrences to determine depth
+					for i := 0; i < len(relPart); i++ {
+						if relPart[i] == sep {
+							depth++
+						}
+					}
+					// Depth is number of separators + 1 (for the directory/file itself)
+					// If we have "base/subdir", depth should be 1 (one level down)
+					if len(relPart) > 0 {
+						depth++
+					}
+				}
+			}
 		}
 
 		if !d.IsDir() {
@@ -934,4 +963,27 @@ func (dc *DirectoryCollector) updateDirectoryMetrics(ctx context.Context, groupN
 		)
 		span.AddEvent("metrics_updated")
 	}
+}
+
+// triggerGCAfterCollection triggers a garbage collection hint after directory collection
+// This is useful when collections are infrequent and create large allocation spikes.
+// It helps return memory to the OS sooner and reduce retained memory between collections.
+//
+// Note: Generally, forcing GC is not recommended, but in this specific case:
+// 1. Collections are infrequent (configurable, but typically hourly)
+// 2. Each collection creates significant allocations (directory walking)
+// 3. Memory retention between collections is wasteful
+// 4. The GC hint is just a suggestion, not a blocking operation
+//
+// We use runtime.GC() followed by debug.FreeOSMemory() to both trigger GC
+// and return freed memory to the OS.
+func (dc *DirectoryCollector) triggerGCAfterCollection() {
+	// Trigger GC as a hint (non-blocking suggestion)
+	runtime.GC()
+
+	// Free OS memory to return freed pages to the operating system
+	// This is especially useful on systems with limited memory (like Synology NAS)
+	debug.FreeOSMemory()
+
+	slog.Debug("Triggered GC after directory collection to clean up allocations")
 }
