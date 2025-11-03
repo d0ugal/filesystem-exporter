@@ -15,7 +15,6 @@ import (
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/logging"
 	promexporter_metrics "github.com/d0ugal/promexporter/metrics"
-	"github.com/grafana/pyroscope-go"
 )
 
 var (
@@ -27,6 +26,7 @@ var (
 	collectorsMutex   sync.Mutex
 )
 
+<<<<<<< HEAD
 // initProfiling initializes Pyroscope continuous profiling if enabled via environment variables.
 // Following the same pattern as tracing, profiling can be enabled with:
 // - PROFILING_ENABLED=true
@@ -84,6 +84,8 @@ func initProfiling() {
 		"server_address", serverAddress)
 }
 
+=======
+>>>>>>> 2d772c2 (refactor: remove profiling implementation, now provided by promexporter)
 func main() {
 	// Parse command line flags
 	var showVersion bool
@@ -134,9 +136,6 @@ func main() {
 		Level:  cfg.Logging.Level,
 		Format: cfg.Logging.Format,
 	})
-
-	// Initialize continuous profiling with Pyroscope if enabled
-	initProfiling()
 
 	// Use sync.Once to ensure initialization only happens once per process
 	// This prevents duplicate collector creation if main() is somehow called multiple times
