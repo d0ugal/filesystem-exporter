@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.24.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.23.0...v1.24.0) (2025-11-04)
+
+
+### Features
+
+* add Pyroscope continuous profiling support ([d3cdd14](https://github.com/d0ugal/filesystem-exporter/commit/d3cdd1499379c42638861ae84cb6816eea4f7838))
+
+
+### Bug Fixes
+
+* apply generic env vars when loading from config file ([6f92a17](https://github.com/d0ugal/filesystem-exporter/commit/6f92a172da36cefcbfd703483f2ab59250d6c8af))
+* resolve merge conflicts from profiling refactor ([c1dddcf](https://github.com/d0ugal/filesystem-exporter/commit/c1dddcfe50fcabb361e96b67730815738df02755))
+* restore blank line for linting compliance ([a750023](https://github.com/d0ugal/filesystem-exporter/commit/a7500231487a97e1ab58767894befba184152068))
+* update google.golang.org/genproto/googleapis/api digest to f26f940 ([48835d3](https://github.com/d0ugal/filesystem-exporter/commit/48835d357ec40c3b0e18c9d6bc6186c50c3817e0))
+* update google.golang.org/genproto/googleapis/rpc digest to f26f940 ([61e527f](https://github.com/d0ugal/filesystem-exporter/commit/61e527fe92f3cc95609a7e96c51fdfc5f985e881))
+* update module github.com/d0ugal/promexporter to v1.9.0 ([5b0c971](https://github.com/d0ugal/filesystem-exporter/commit/5b0c9713b292714f920405f3e81570560e62e744))
+* update module github.com/klauspost/compress to v1.18.1 ([24d81f7](https://github.com/d0ugal/filesystem-exporter/commit/24d81f7807149c5cff516e8e8bfaa0aec3e055af))
+* update module go.opentelemetry.io/proto/otlp to v1.9.0 ([c5776e8](https://github.com/d0ugal/filesystem-exporter/commit/c5776e8afb965330d4c1e411b6435ab73e8fe0a5))
+
+
+### Performance Improvements
+
+* optimize directory walking to reduce allocations and trigger GC after collection ([9d2e3c7](https://github.com/d0ugal/filesystem-exporter/commit/9d2e3c730200cf78cc3aeb3f9fddc8070e148e93))
+
 ## [1.23.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.22.4...v1.23.0) (2025-11-02)
 
 
