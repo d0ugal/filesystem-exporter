@@ -156,7 +156,6 @@ func loadFromEnv() (*Config, error) {
 	return config, nil
 }
 
-
 // loadDirectoriesFromEnv loads directory configuration from environment variables
 func (c *Config) loadDirectoriesFromEnv() {
 	// Initialize the map if it's nil
