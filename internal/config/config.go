@@ -240,13 +240,8 @@ func setDefaults(config *Config) {
 		}
 	}
 
-	// Set defaults for directories
-	for name, group := range config.Directories {
-		if group.Interval.Duration == 0 {
-			group.Interval = Duration{Duration: time.Minute * 5}
-			config.Directories[name] = group
-		}
-	}
+	// Do NOT set defaults for directories - intervals must be explicitly specified
+	// This prevents silent failures where directories might use wrong intervals
 }
 
 // Validate performs comprehensive validation of the configuration
@@ -353,6 +348,17 @@ func (c *Config) validateDirectoriesConfig() error {
 			return fmt.Errorf("directory path must be absolute: %s", group.Path)
 		}
 
+		// If no explicit interval is set, it will use default_interval from metrics.collection.default_interval
+		// This is allowed, but we validate that the default_interval is set and valid
+		if group.Interval.Duration == 0 {
+			// Check that default_interval is configured
+			if c.Metrics.Collection.DefaultInterval.Duration == 0 {
+				return fmt.Errorf("directory '%s' has no interval specified and no default_interval is configured in metrics.collection.default_interval", name)
+			}
+			// Use the default, validation will pass
+			continue
+		}
+
 		if group.Interval.Seconds() < 1 {
 			return fmt.Errorf("directory interval must be at least 1 second, got %d", group.Interval.Seconds())
 		}
@@ -376,9 +382,23 @@ func (c *Config) GetFilesystemInterval(fs FilesystemConfig) int {
 }
 
 // GetDirectoryInterval returns the interval for a directory group
+// If the group doesn't have an explicit interval, it falls back to the configured default_interval
 func (c *Config) GetDirectoryInterval(group DirectoryGroup) int {
 	if group.Interval.Duration > 0 {
 		return group.Interval.Seconds()
+	}
+
+	// Use the configured default_interval from metrics.collection.default_interval
+	return c.GetDefaultInterval()
+}
+
+// GetDirectoryIntervalByName returns the interval for a directory group by name
+// This ensures we always get the interval from the config map, not a stale copy
+func (c *Config) GetDirectoryIntervalByName(groupName string) int {
+	if group, exists := c.Directories[groupName]; exists {
+		if group.Interval.Duration > 0 {
+			return group.Interval.Seconds()
+		}
 	}
 
 	return c.GetDefaultInterval()
