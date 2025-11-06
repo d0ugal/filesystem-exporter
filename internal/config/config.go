@@ -33,6 +33,7 @@ type FilesystemConfig struct {
 	MountPoint string   `yaml:"mount_point"`
 	Device     string   `yaml:"device"`
 	Interval   Duration `yaml:"interval"`
+	Timeout    Duration `yaml:"timeout"` // Timeout for df command execution (default: 10% of interval)
 }
 
 type DirectoryGroup struct {
@@ -194,10 +195,10 @@ func (c *Config) loadDirectoriesFromEnv() {
 		}
 
 		c.Directories[name] = directory
-		fmt.Printf("Loaded directory from env: name=%s, path=%s, levels=%d\n", name, path, levels)
+		// Directory loaded via environment variables - logging handled by promexporter
 	}
 
-	fmt.Printf("Total directories loaded: %d\n", len(c.Directories))
+	// Total directories loaded - logging handled by promexporter
 }
 
 // setDefaults sets default values for configuration
@@ -222,26 +223,9 @@ func setDefaults(config *Config) {
 		config.Metrics.Collection.DefaultInterval = promexporter_config.Duration{Duration: time.Second * 30}
 	}
 
-	if len(config.Filesystems) == 0 {
-		config.Filesystems = []FilesystemConfig{
-			{
-				Name:       "root",
-				MountPoint: "/",
-				Device:     "root",
-				Interval:   Duration{Duration: time.Minute * 5},
-			},
-		}
-	}
-
-	// Set defaults for filesystems
-	for i := range config.Filesystems {
-		if config.Filesystems[i].Interval.Duration == 0 {
-			config.Filesystems[i].Interval = Duration{Duration: time.Minute * 5}
-		}
-	}
-
-	// Do NOT set defaults for directories - intervals must be explicitly specified
-	// This prevents silent failures where directories might use wrong intervals
+	// No hardcoded defaults - if no filesystems are configured, that's fine
+	// Filesystems are optional
+	// Intervals must be explicitly specified - no defaults
 }
 
 // Validate performs comprehensive validation of the configuration
@@ -269,6 +253,11 @@ func (c *Config) Validate() error {
 	// Validate directory configuration
 	if err := c.validateDirectoriesConfig(); err != nil {
 		return fmt.Errorf("directories config: %w", err)
+	}
+
+	// Require at least one filesystem or directory to be configured
+	if len(c.Filesystems) == 0 && len(c.Directories) == 0 {
+		return fmt.Errorf("at least one filesystem or directory must be configured")
 	}
 
 	return nil
@@ -317,8 +306,9 @@ func (c *Config) validateMetricsConfig() error {
 }
 
 func (c *Config) validateFilesystemsConfig() error {
+	// Filesystems are optional - if none are configured, that's fine
 	if len(c.Filesystems) == 0 {
-		return fmt.Errorf("at least one filesystem must be specified")
+		return nil
 	}
 
 	for _, fs := range c.Filesystems {
@@ -328,6 +318,10 @@ func (c *Config) validateFilesystemsConfig() error {
 
 		if !filepath.IsAbs(fs.MountPoint) {
 			return fmt.Errorf("filesystem mount point must be absolute: %s", fs.MountPoint)
+		}
+
+		if fs.Interval.Duration == 0 {
+			return fmt.Errorf("filesystem '%s' must have an interval specified", fs.Name)
 		}
 
 		if fs.Interval.Seconds() < 1 {
@@ -348,15 +342,9 @@ func (c *Config) validateDirectoriesConfig() error {
 			return fmt.Errorf("directory path must be absolute: %s", group.Path)
 		}
 
-		// If no explicit interval is set, it will use default_interval from metrics.collection.default_interval
-		// This is allowed, but we validate that the default_interval is set and valid
+		// Intervals must be explicitly specified - no defaults
 		if group.Interval.Duration == 0 {
-			// Check that default_interval is configured
-			if c.Metrics.Collection.DefaultInterval.Duration == 0 {
-				return fmt.Errorf("directory '%s' has no interval specified and no default_interval is configured in metrics.collection.default_interval", name)
-			}
-			// Use the default, validation will pass
-			continue
+			return fmt.Errorf("directory '%s' must have an interval specified", name)
 		}
 
 		if group.Interval.Seconds() < 1 {
@@ -374,45 +362,66 @@ func (c *Config) GetDefaultInterval() int {
 
 // GetFilesystemInterval returns the interval for a filesystem
 func (c *Config) GetFilesystemInterval(fs FilesystemConfig) int {
-	if fs.Interval.Duration > 0 {
-		return fs.Interval.Seconds()
+	if fs.Interval.Duration == 0 {
+		// This should not happen if validation passed, but handle gracefully
+		return 0
 	}
 
-	return c.GetDefaultInterval()
+	return fs.Interval.Seconds()
 }
 
 // GetDirectoryInterval returns the interval for a directory group
-// If the group doesn't have an explicit interval, it falls back to the configured default_interval
 func (c *Config) GetDirectoryInterval(group DirectoryGroup) int {
-	if group.Interval.Duration > 0 {
-		return group.Interval.Seconds()
+	if group.Interval.Duration == 0 {
+		// This should not happen if validation passed, but handle gracefully
+		return 0
 	}
 
-	// Use the configured default_interval from metrics.collection.default_interval
-	return c.GetDefaultInterval()
+	return group.Interval.Seconds()
 }
 
 // GetDirectoryIntervalByName returns the interval for a directory group by name
 // This ensures we always get the interval from the config map, not a stale copy
 func (c *Config) GetDirectoryIntervalByName(groupName string) int {
 	if group, exists := c.Directories[groupName]; exists {
-		if group.Interval.Duration > 0 {
-			return group.Interval.Seconds()
+		if group.Interval.Duration == 0 {
+			// This should not happen if validation passed, but handle gracefully
+			return 0
 		}
+
+		return group.Interval.Seconds()
 	}
 
-	return c.GetDefaultInterval()
+	// Directory doesn't exist
+	return 0
 }
 
 // GetDirectoryTimeout returns the timeout for du command execution for a directory group
-// Defaults to 5 minutes if not specified
+// Defaults to 10% of interval if not specified
 func (c *Config) GetDirectoryTimeout(group DirectoryGroup) time.Duration {
 	if group.Timeout.Duration > 0 {
 		return group.Timeout.Duration
 	}
 
-	// Default timeout of 5 minutes for large directories
-	return 5 * time.Minute
+	// Default timeout is 10% of interval (since 100% would mean constant operation)
+	interval := c.GetDirectoryInterval(group)
+	intervalDuration := time.Duration(interval) * time.Second
+
+	return intervalDuration / 10
+}
+
+// GetFilesystemTimeout returns the timeout for df command execution for a filesystem
+// Defaults to 10% of interval if not specified
+func (c *Config) GetFilesystemTimeout(fs FilesystemConfig) time.Duration {
+	if fs.Timeout.Duration > 0 {
+		return fs.Timeout.Duration
+	}
+
+	// Default timeout is 10% of interval (since 100% would mean constant operation)
+	interval := c.GetFilesystemInterval(fs)
+	intervalDuration := time.Duration(interval) * time.Second
+
+	return intervalDuration / 10
 }
 
 // GetDisplayConfig returns configuration data safe for display
@@ -459,24 +468,16 @@ func (c *Config) GetDisplayConfig() map[string]interface{} {
 
 // RenderConfigHTML provides custom HTML fragments for specific configuration keys
 func (c *Config) RenderConfigHTML(key string, value interface{}) (string, bool) {
-	fmt.Printf("DEBUG: RenderConfigHTML called for key: %s\n", key)
-
 	switch key {
 	case "Directories":
 		// Load and render the directories template
 		html, ok := c.renderTemplate("directories", value)
-		fmt.Printf("DEBUG: Directories template rendered: %s\n", html)
-
 		return html, ok
 	case "Filesystems":
 		// Load and render the filesystems template
 		html, ok := c.renderTemplate("filesystems", value)
-		fmt.Printf("DEBUG: Filesystems template rendered: %s\n", html)
-
 		return html, ok
 	}
-
-	fmt.Printf("DEBUG: No custom HTML for key: %s\n", key)
 
 	return "", false
 }
