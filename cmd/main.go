@@ -1,29 +1,19 @@
 package main
 
 import (
+	"context"
 	"flag"
-	"fmt"
 	"log"
 	"log/slog"
 	"os"
-	"sync"
 
-	"filesystem-exporter/internal/collectors"
 	"filesystem-exporter/internal/config"
+	"filesystem-exporter/internal/coordinator"
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/version"
 	"github.com/d0ugal/promexporter/app"
 	"github.com/d0ugal/promexporter/logging"
 	promexporter_metrics "github.com/d0ugal/promexporter/metrics"
-)
-
-var (
-	// initOnce ensures main initialization only happens once
-	// This prevents duplicate collector creation if main() is called multiple times
-	initOnce sync.Once
-	// collectorsCreated tracks if collectors have been created to detect duplication
-	collectorsCreated bool
-	collectorsMutex   sync.Mutex
 )
 
 func main() {
@@ -77,100 +67,37 @@ func main() {
 		Format: cfg.Logging.Format,
 	})
 
-	// Use sync.Once to ensure initialization only happens once per process
-	// This prevents duplicate collector creation if main() is somehow called multiple times
-	var (
-		filesystemCollector *collectors.FilesystemCollector
-		directoryCollector  *collectors.DirectoryCollector
+	// Validation already checks that at least one filesystem or directory is configured
+	slog.Info("Initializing filesystem-exporter",
+		"pid", os.Getpid(),
+		"num_directories", len(cfg.Directories),
+		"num_filesystems", len(cfg.Filesystems))
 
-		application *app.App
-		initErr     error
-	)
+	// Initialize metrics registry using promexporter
+	metricsRegistry := promexporter_metrics.NewRegistry("filesystem_exporter_info")
 
-	initOnce.Do(func() {
-		slog.Info("Initializing filesystem-exporter (first time only)",
-			"pid", os.Getpid(),
-			"num_directories", len(cfg.Directories),
-			"num_filesystems", len(cfg.Filesystems))
+	// Add custom metrics to the registry
+	filesystemRegistry := metrics.NewFilesystemRegistry(metricsRegistry)
 
-		// Check for duplicate initialization
-		collectorsMutex.Lock()
+	// Build application with promexporter
+	application := app.New("Filesystem Exporter").
+		WithConfig(&cfg.BaseConfig).
+		WithMetrics(metricsRegistry).
+		WithVersionInfo(version.Version, version.Commit, version.BuildDate).
+		Build()
 
-		if collectorsCreated {
-			slog.Error("CRITICAL: Collectors already created! Duplicate initialization detected",
-				"pid", os.Getpid())
-			collectorsMutex.Unlock()
+	// Get tracer for OTEL tracing
+	tracer := application.GetTracer()
 
-			initErr = fmt.Errorf("collectors already created - duplicate initialization")
+	// Create coordinator
+	coord := coordinator.NewCoordinator(cfg, filesystemRegistry, tracer)
 
-			return
-		}
-
-		collectorsCreated = true
-
-		collectorsMutex.Unlock()
-
-		// Initialize metrics registry using promexporter
-		metricsRegistry := promexporter_metrics.NewRegistry("filesystem_exporter_info")
-
-		// Add custom metrics to the registry
-		filesystemRegistry := metrics.NewFilesystemRegistry(metricsRegistry)
-
-		// Create collectors first (without app reference - will be set after build)
-		// This allows us to register them with the builder before Build()
-		slog.Info("Creating collectors",
-			"num_directories", len(cfg.Directories),
-			"num_filesystems", len(cfg.Filesystems))
-
-		filesystemCollector = collectors.NewFilesystemCollector(cfg, filesystemRegistry, nil)
-		directoryCollector = collectors.NewDirectoryCollector(cfg, filesystemRegistry, nil)
-
-		slog.Info("Collectors created, registering with app builder",
-			"filesystem_collector", fmt.Sprintf("%p", filesystemCollector),
-			"directory_collector", fmt.Sprintf("%p", directoryCollector),
-			"num_directories", len(cfg.Directories),
-			"num_filesystems", len(cfg.Filesystems))
-
-		// Build application with collectors registered BEFORE Build()
-		// Profiling is automatically initialized by promexporter if enabled via environment variables:
-		// - PROFILING_ENABLED=true
-		// - PROFILING_SERVICE_NAME=filesystem-exporter (optional)
-		// - PROFILING_SERVER_ADDRESS=http://10.10.10.2:4040 (optional)
-		// No code changes needed - profiling is handled by promexporter's Build() method
-		application = app.New("Filesystem Exporter").
-			WithConfig(&cfg.BaseConfig). // BaseConfig includes ProfilingConfig which promexporter uses
-			WithMetrics(metricsRegistry).
-			WithVersionInfo(version.Version, version.Commit, version.BuildDate).
-			WithCollector(filesystemCollector).
-			WithCollector(directoryCollector).
-			Build() // Build() automatically initializes profiling if PROFILING_ENABLED=true
-
-		slog.Info("Application built, setting app references on collectors",
-			"filesystem_collector", fmt.Sprintf("%p", filesystemCollector),
-			"directory_collector", fmt.Sprintf("%p", directoryCollector))
-
-		// Set app reference on collectors for tracing support (after build)
-		// This is safe because Start() hasn't been called yet
-		filesystemCollector.SetApp(application)
-		directoryCollector.SetApp(application)
-	})
-
-	if initErr != nil {
-		log.Fatalf("Failed to initialize: %v", initErr)
-	}
-
-	// Check if initialization was successful
-	if filesystemCollector == nil || directoryCollector == nil || application == nil {
-		slog.Error("CRITICAL: Initialization failed or was skipped - collectors are nil",
-			"filesystem_collector_nil", filesystemCollector == nil,
-			"directory_collector_nil", directoryCollector == nil,
-			"application_nil", application == nil)
-		log.Fatal("Failed to initialize collectors - initialization may have been called multiple times")
-	}
+	// Start coordinator (will be started when app.Run() is called)
+	// We need to pass a context - use context.Background() for now
+	// The app will manage its own context
+	coord.Start(context.Background())
 
 	slog.Info("Initialization complete, starting application.Run()",
-		"filesystem_collector", fmt.Sprintf("%p", filesystemCollector),
-		"directory_collector", fmt.Sprintf("%p", directoryCollector),
 		"pid", os.Getpid())
 
 	// Run the application

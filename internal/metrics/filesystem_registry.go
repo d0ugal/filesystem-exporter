@@ -29,6 +29,30 @@ type FilesystemRegistry struct {
 	DirectoriesFailedCounter    *prometheus.CounterVec
 	DuLockWaitDurationGauge     *prometheus.GaugeVec
 	DirectoriesProcessedCounter *prometheus.CounterVec
+
+	// Operational metrics
+	QueueDepthGauge          *prometheus.GaugeVec
+	QueueWaitSecondsGauge    *prometheus.GaugeVec
+	CollectionActiveGauge    *prometheus.GaugeVec
+	CollectionSkippedCounter *prometheus.CounterVec
+	GoroutineCountGauge      prometheus.Gauge
+
+	// Per-job resource metrics (self-measurement)
+	JobCPUUserSeconds       *prometheus.GaugeVec
+	JobCPUSystemSeconds     *prometheus.GaugeVec
+	JobMemoryAllocatedBytes *prometheus.GaugeVec
+	JobMemoryPeakBytes      *prometheus.GaugeVec
+	JobIOWaitSeconds        *prometheus.GaugeVec
+
+	// Process-level resource metrics (self-measurement)
+	ProcessCPUUserSecondsTotal   prometheus.Counter
+	ProcessCPUSystemSecondsTotal prometheus.Counter
+	ProcessMemoryAllocBytes      prometheus.Gauge
+	ProcessMemorySysBytes        prometheus.Gauge
+	ProcessNumGCTotal            prometheus.Gauge
+
+	// Timeout metrics
+	CollectionTimeoutSeconds *prometheus.GaugeVec
 }
 
 // NewFilesystemRegistry creates a new filesystem metrics registry
@@ -126,6 +150,120 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 				Help: "Total number of directories processed",
 			},
 			[]string{"group", "method"},
+		),
+
+		// Operational metrics
+		QueueDepthGauge: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_queue_depth",
+				Help: "Current queue depth",
+			},
+			[]string{"queue_type"},
+		),
+		QueueWaitSecondsGauge: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_queue_wait_seconds",
+				Help: "Time jobs wait in queue",
+			},
+			[]string{"queue_type"},
+		),
+		CollectionActiveGauge: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_collection_active",
+				Help: "Currently running collection (1 if active, 0 if idle)",
+			},
+			[]string{"queue_type"},
+		),
+		CollectionSkippedCounter: promauto.With(baseRegistry.GetRegistry()).NewCounterVec(
+			prometheus.CounterOpts{
+				Name: "filesystem_exporter_collection_skipped_total",
+				Help: "Total number of skipped collections",
+			},
+			[]string{"queue_type", "item_name", "reason"},
+		),
+		GoroutineCountGauge: promauto.With(baseRegistry.GetRegistry()).NewGauge(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_goroutine_count",
+				Help: "Number of goroutines (for debugging)",
+			},
+		),
+
+		// Per-job resource metrics
+		JobCPUUserSeconds: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_job_cpu_user_seconds",
+				Help: "User CPU time per job",
+			},
+			[]string{"job_type", "job_name"},
+		),
+		JobCPUSystemSeconds: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_job_cpu_system_seconds",
+				Help: "System CPU time per job",
+			},
+			[]string{"job_type", "job_name"},
+		),
+		JobMemoryAllocatedBytes: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_job_memory_allocated_bytes",
+				Help: "Memory allocated during job",
+			},
+			[]string{"job_type", "job_name"},
+		),
+		JobMemoryPeakBytes: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_job_memory_peak_bytes",
+				Help: "Peak memory usage during job",
+			},
+			[]string{"job_type", "job_name"},
+		),
+		JobIOWaitSeconds: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_job_iowait_seconds",
+				Help: "I/O wait time per job (if available)",
+			},
+			[]string{"job_type", "job_name"},
+		),
+
+		// Process-level resource metrics
+		ProcessCPUUserSecondsTotal: promauto.With(baseRegistry.GetRegistry()).NewCounter(
+			prometheus.CounterOpts{
+				Name: "filesystem_exporter_process_cpu_user_seconds_total",
+				Help: "Total user CPU time",
+			},
+		),
+		ProcessCPUSystemSecondsTotal: promauto.With(baseRegistry.GetRegistry()).NewCounter(
+			prometheus.CounterOpts{
+				Name: "filesystem_exporter_process_cpu_system_seconds_total",
+				Help: "Total system CPU time",
+			},
+		),
+		ProcessMemoryAllocBytes: promauto.With(baseRegistry.GetRegistry()).NewGauge(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_process_memory_alloc_bytes",
+				Help: "Current memory allocated",
+			},
+		),
+		ProcessMemorySysBytes: promauto.With(baseRegistry.GetRegistry()).NewGauge(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_process_memory_sys_bytes",
+				Help: "Memory obtained from OS",
+			},
+		),
+		ProcessNumGCTotal: promauto.With(baseRegistry.GetRegistry()).NewGauge(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_process_num_gc_total",
+				Help: "Number of GC cycles",
+			},
+		),
+
+		// Timeout metrics
+		CollectionTimeoutSeconds: promauto.With(baseRegistry.GetRegistry()).NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "filesystem_exporter_collection_timeout_seconds",
+				Help: "Configured timeout per item",
+			},
+			[]string{"item_name", "item_type"},
 		),
 	}
 
