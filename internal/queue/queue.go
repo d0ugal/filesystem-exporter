@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"filesystem-exporter/internal/state"
+
 	"github.com/d0ugal/promexporter/tracing"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -119,7 +120,7 @@ func (q *Queue) Dequeue(ctx context.Context) (Job, error) {
 
 // Size returns the current queue size
 func (q *Queue) Size(ctx context.Context) int {
-	ctx, span := q.startSpan(ctx, "queue.size", trace.WithAttributes(
+	_, span := q.startSpan(ctx, "queue.size", trace.WithAttributes(
 		attribute.String("queue.name", q.name),
 	))
 	defer span.End()

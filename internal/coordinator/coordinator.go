@@ -12,6 +12,7 @@ import (
 	"filesystem-exporter/internal/scheduler"
 	"filesystem-exporter/internal/state"
 	"filesystem-exporter/internal/worker"
+
 	"github.com/d0ugal/promexporter/tracing"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -140,12 +141,12 @@ func (c *Coordinator) updateQueueDepths(ctx context.Context) {
 }
 
 // GetState returns the current state
-func (c *Coordinator) GetState(ctx context.Context) map[string]interface{} {
+func (c *Coordinator) GetState(ctx context.Context) map[string]any {
 	return c.state.GetAllStates(ctx)
 }
 
 // startSpan is a helper to start an OTEL span
-func (c *Coordinator) startSpan(ctx context.Context, name string, opts ...interface{}) (context.Context, trace.Span) {
+func (c *Coordinator) startSpan(ctx context.Context, name string, opts ...any) (context.Context, trace.Span) {
 	if c.tracer != nil && c.tracer.IsEnabled() {
 		return c.tracer.StartSpan(ctx, name)
 	}
