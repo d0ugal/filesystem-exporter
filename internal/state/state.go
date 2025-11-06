@@ -63,7 +63,7 @@ func NewTracker(tracer *tracing.Tracer) *Tracker {
 
 // SetRunningJob sets the currently running job for a queue type
 func (t *Tracker) SetRunningJob(ctx context.Context, queueType string, job *JobState) {
-	ctx, span := t.startSpan(ctx, "state.set_running_job", trace.WithAttributes(
+	_, span := t.startSpan(ctx, "state.set_running_job", trace.WithAttributes(
 		attribute.String("queue.type", queueType),
 		attribute.String("job.id", job.ID),
 		attribute.String("job.name", job.Name),
@@ -99,7 +99,7 @@ func (t *Tracker) SetRunningJob(ctx context.Context, queueType string, job *JobS
 
 // ClearRunningJob clears the currently running job for a queue type
 func (t *Tracker) ClearRunningJob(ctx context.Context, queueType string, jobID string, duration time.Duration) {
-	ctx, span := t.startSpan(ctx, "state.clear_running_job", trace.WithAttributes(
+	_, span := t.startSpan(ctx, "state.clear_running_job", trace.WithAttributes(
 		attribute.String("queue.type", queueType),
 		attribute.String("job.id", jobID),
 		attribute.Float64("job.duration_seconds", duration.Seconds()),
@@ -110,6 +110,7 @@ func (t *Tracker) ClearRunningJob(ctx context.Context, queueType string, jobID s
 	defer t.mu.Unlock()
 
 	var jobState *JobState
+
 	switch queueType {
 	case "filesystem":
 		jobState = t.runningFilesystem
@@ -133,7 +134,7 @@ func (t *Tracker) ClearRunningJob(ctx context.Context, queueType string, jobID s
 
 // IsRunning checks if a job is currently running for an item
 func (t *Tracker) IsRunning(ctx context.Context, queueType string, itemName string) bool {
-	ctx, span := t.startSpan(ctx, "state.is_running", trace.WithAttributes(
+	_, span := t.startSpan(ctx, "state.is_running", trace.WithAttributes(
 		attribute.String("queue.type", queueType),
 		attribute.String("item.name", itemName),
 	))
@@ -159,7 +160,7 @@ func (t *Tracker) IsRunning(ctx context.Context, queueType string, itemName stri
 
 // SetQueueDepth sets the queue depth for a queue type
 func (t *Tracker) SetQueueDepth(ctx context.Context, queueType string, depth int) {
-	ctx, span := t.startSpan(ctx, "state.set_queue_depth", trace.WithAttributes(
+	_, span := t.startSpan(ctx, "state.set_queue_depth", trace.WithAttributes(
 		attribute.String("queue.type", queueType),
 		attribute.Int("queue.depth", depth),
 	))
@@ -180,7 +181,7 @@ func (t *Tracker) SetQueueDepth(ctx context.Context, queueType string, depth int
 
 // GetQueueDepth gets the queue depth for a queue type
 func (t *Tracker) GetQueueDepth(ctx context.Context, queueType string) int {
-	ctx, span := t.startSpan(ctx, "state.get_queue_depth", trace.WithAttributes(
+	_, span := t.startSpan(ctx, "state.get_queue_depth", trace.WithAttributes(
 		attribute.String("queue.type", queueType),
 	))
 	defer span.End()
@@ -189,6 +190,7 @@ func (t *Tracker) GetQueueDepth(ctx context.Context, queueType string) int {
 	defer t.mu.RUnlock()
 
 	var depth int
+
 	switch queueType {
 	case "filesystem":
 		depth = t.filesystemQueueDepth
@@ -203,7 +205,7 @@ func (t *Tracker) GetQueueDepth(ctx context.Context, queueType string) int {
 
 // GetRunningJob gets the currently running job for a queue type
 func (t *Tracker) GetRunningJob(ctx context.Context, queueType string) *JobState {
-	ctx, span := t.startSpan(ctx, "state.get_running_job", trace.WithAttributes(
+	_, span := t.startSpan(ctx, "state.get_running_job", trace.WithAttributes(
 		attribute.String("queue.type", queueType),
 	))
 	defer span.End()
@@ -212,6 +214,7 @@ func (t *Tracker) GetRunningJob(ctx context.Context, queueType string) *JobState
 	defer t.mu.RUnlock()
 
 	var job *JobState
+
 	switch queueType {
 	case "filesystem":
 		job = t.runningFilesystem
@@ -231,7 +234,7 @@ func (t *Tracker) GetRunningJob(ctx context.Context, queueType string) *JobState
 
 // GetItemState gets the state for an item
 func (t *Tracker) GetItemState(ctx context.Context, queueType string, itemName string) *ItemState {
-	ctx, span := t.startSpan(ctx, "state.get_item_state", trace.WithAttributes(
+	_, span := t.startSpan(ctx, "state.get_item_state", trace.WithAttributes(
 		attribute.String("queue.type", queueType),
 		attribute.String("item.name", itemName),
 	))
@@ -268,7 +271,7 @@ func (t *Tracker) GetItemState(ctx context.Context, queueType string, itemName s
 
 // RegisterItem registers an item for state tracking
 func (t *Tracker) RegisterItem(ctx context.Context, queueType string, itemName string) {
-	ctx, span := t.startSpan(ctx, "state.register_item", trace.WithAttributes(
+	_, span := t.startSpan(ctx, "state.register_item", trace.WithAttributes(
 		attribute.String("queue.type", queueType),
 		attribute.String("item.name", itemName),
 	))
@@ -293,19 +296,19 @@ func (t *Tracker) RegisterItem(ctx context.Context, queueType string, itemName s
 }
 
 // GetAllStates returns all states (for debugging/status endpoint)
-func (t *Tracker) GetAllStates(ctx context.Context) map[string]interface{} {
-	ctx, span := t.startSpan(ctx, "state.get_all_states")
+func (t *Tracker) GetAllStates(ctx context.Context) map[string]any {
+	_, span := t.startSpan(ctx, "state.get_all_states")
 	defer span.End()
 
 	t.mu.RLock()
 	defer t.mu.RUnlock()
 
-	states := make(map[string]interface{})
+	states := make(map[string]any)
 
 	// Running jobs
-	running := make(map[string]interface{})
+	running := make(map[string]any)
 	if t.runningFilesystem != nil {
-		running["filesystem"] = map[string]interface{}{
+		running["filesystem"] = map[string]any{
 			"id":         t.runningFilesystem.ID,
 			"name":       t.runningFilesystem.Name,
 			"path":       t.runningFilesystem.Path,
@@ -315,7 +318,7 @@ func (t *Tracker) GetAllStates(ctx context.Context) map[string]interface{} {
 	}
 
 	if t.runningDirectory != nil {
-		running["directory"] = map[string]interface{}{
+		running["directory"] = map[string]any{
 			"id":         t.runningDirectory.ID,
 			"name":       t.runningDirectory.Name,
 			"path":       t.runningDirectory.Path,
@@ -333,9 +336,9 @@ func (t *Tracker) GetAllStates(ctx context.Context) map[string]interface{} {
 	}
 
 	// Item states
-	filesystemStates := make(map[string]interface{})
+	filesystemStates := make(map[string]any)
 	for name, state := range t.filesystemStates {
-		filesystemStates[name] = map[string]interface{}{
+		filesystemStates[name] = map[string]any{
 			"name":           state.Name,
 			"type":           state.Type,
 			"running":        state.Running,
@@ -346,9 +349,9 @@ func (t *Tracker) GetAllStates(ctx context.Context) map[string]interface{} {
 		}
 	}
 
-	directoryStates := make(map[string]interface{})
+	directoryStates := make(map[string]any)
 	for name, state := range t.directoryStates {
-		directoryStates[name] = map[string]interface{}{
+		directoryStates[name] = map[string]any{
 			"name":           state.Name,
 			"type":           state.Type,
 			"running":        state.Running,

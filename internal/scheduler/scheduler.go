@@ -40,7 +40,7 @@ type Scheduler struct {
 	directoryRunning  map[string]bool
 	runningMutex      sync.RWMutex
 
-	tracer       trace.Tracer
+	tracer             trace.Tracer
 	promexporterTracer *tracing.Tracer
 }
 
@@ -60,17 +60,18 @@ func NewScheduler(
 		// and use it in startSpan
 		otelTracer = nil // Will use tracer.StartSpan directly
 	}
+
 	return &Scheduler{
-		config:            cfg,
-		metrics:           m,
-		state:             s,
-		filesystemQueue:   fsQueue,
-		directoryQueue:    dirQueue,
-		filesystemTickers: make(map[string]*time.Ticker),
-		directoryTickers:  make(map[string]*time.Ticker),
-		filesystemRunning: make(map[string]bool),
-		directoryRunning:  make(map[string]bool),
-		tracer:            otelTracer,
+		config:             cfg,
+		metrics:            m,
+		state:              s,
+		filesystemQueue:    fsQueue,
+		directoryQueue:     dirQueue,
+		filesystemTickers:  make(map[string]*time.Ticker),
+		directoryTickers:   make(map[string]*time.Ticker),
+		filesystemRunning:  make(map[string]bool),
+		directoryRunning:   make(map[string]bool),
+		tracer:             otelTracer,
 		promexporterTracer: tracer,
 	}
 }
@@ -91,14 +92,14 @@ func (s *Scheduler) Start(ctx context.Context) {
 	// Register items in state tracker
 	for _, fs := range s.config.Filesystems {
 		s.state.RegisterItem(ctx, "filesystem", fs.Name)
-		
+
 		// Set timeout metric
 		timeout := s.config.GetFilesystemTimeout(fs)
 		s.metrics.CollectionTimeoutSeconds.WithLabelValues(
 			fs.Name,
 			"filesystem",
 		).Set(timeout.Seconds())
-		
+
 		// Set interval metric
 		interval := s.config.GetFilesystemInterval(fs)
 		s.metrics.CollectionIntervalGauge.WithLabelValues(
@@ -109,14 +110,14 @@ func (s *Scheduler) Start(ctx context.Context) {
 
 	for name, dir := range s.config.Directories {
 		s.state.RegisterItem(ctx, "directory", name)
-		
+
 		// Set timeout metric
 		timeout := s.config.GetDirectoryTimeout(dir)
 		s.metrics.CollectionTimeoutSeconds.WithLabelValues(
 			name,
 			"directory",
 		).Set(timeout.Seconds())
-		
+
 		// Set interval metric
 		interval := s.config.GetDirectoryInterval(dir)
 		s.metrics.CollectionIntervalGauge.WithLabelValues(
@@ -164,13 +165,14 @@ func (s *Scheduler) startFilesystemTicker(ctx context.Context, fs config.Filesys
 	}
 
 	ticker := time.NewTicker(intervalDuration)
-	
+
 	s.filesystemMutex.Lock()
 	s.filesystemTickers[fs.Name] = ticker
 	s.filesystemMutex.Unlock()
 
 	// Initial collection - create a root span for it
-	initCtx, initSpan := s.startSpan(context.Background(), "collection.cycle", trace.WithAttributes(
+	spanCtx := context.WithoutCancel(ctx)
+	initCtx, initSpan := s.startSpan(spanCtx, "collection.cycle", trace.WithAttributes(
 		attribute.String("item.type", "filesystem"),
 		attribute.String("item.name", fs.Name),
 		attribute.Float64("interval_seconds", intervalDuration.Seconds()),
@@ -183,13 +185,15 @@ func (s *Scheduler) startFilesystemTicker(ctx context.Context, fs config.Filesys
 	// Start goroutine for ticker
 	go func() {
 		defer ticker.Stop()
+
 		for {
 			select {
 			case <-ctx.Done():
 				return
 			case <-ticker.C:
 				// Create a new root span for each collection cycle
-				cycleCtx, cycleSpan := s.startSpan(context.Background(), "collection.cycle", trace.WithAttributes(
+				cycleCtx := context.WithoutCancel(ctx)
+				cycleCtx, cycleSpan := s.startSpan(cycleCtx, "collection.cycle", trace.WithAttributes(
 					attribute.String("item.type", "filesystem"),
 					attribute.String("item.name", fs.Name),
 					attribute.Float64("interval_seconds", intervalDuration.Seconds()),
@@ -229,13 +233,14 @@ func (s *Scheduler) startDirectoryTicker(ctx context.Context, name string, dir c
 	}
 
 	ticker := time.NewTicker(intervalDuration)
-	
+
 	s.directoryMutex.Lock()
 	s.directoryTickers[name] = ticker
 	s.directoryMutex.Unlock()
 
 	// Initial collection - create a root span for it
-	initCtx, initSpan := s.startSpan(context.Background(), "collection.cycle", trace.WithAttributes(
+	initCtx := context.WithoutCancel(ctx)
+	initCtx, initSpan := s.startSpan(initCtx, "collection.cycle", trace.WithAttributes(
 		attribute.String("item.type", "directory"),
 		attribute.String("item.name", name),
 		attribute.Float64("interval_seconds", intervalDuration.Seconds()),
@@ -248,13 +253,15 @@ func (s *Scheduler) startDirectoryTicker(ctx context.Context, name string, dir c
 	// Start goroutine for ticker
 	go func() {
 		defer ticker.Stop()
+
 		for {
 			select {
 			case <-ctx.Done():
 				return
 			case <-ticker.C:
 				// Create a new root span for each collection cycle
-				cycleCtx, cycleSpan := s.startSpan(context.Background(), "collection.cycle", trace.WithAttributes(
+				cycleCtx := context.WithoutCancel(ctx)
+				cycleCtx, cycleSpan := s.startSpan(cycleCtx, "collection.cycle", trace.WithAttributes(
 					attribute.String("item.type", "directory"),
 					attribute.String("item.name", name),
 					attribute.Float64("interval_seconds", intervalDuration.Seconds()),
@@ -298,6 +305,7 @@ func (s *Scheduler) scheduleFilesystem(ctx context.Context, fs config.Filesystem
 				attribute.String("scheduler.skip_reason", "previous_job_running"),
 			)
 			span.AddEvent("job_skipped")
+
 			return
 		}
 	}
@@ -306,26 +314,29 @@ func (s *Scheduler) scheduleFilesystem(ctx context.Context, fs config.Filesystem
 	s.runningMutex.Lock()
 	s.filesystemRunning[fs.Name] = true
 	s.runningMutex.Unlock()
-	
+
 	// Clear running flag when job completes (async check)
 	go func() {
 		// Wait for job to complete by checking state
 		ticker := time.NewTicker(100 * time.Millisecond)
 		defer ticker.Stop()
+
 		timeoutChan := time.After(timeout + 5*time.Second) // Wait a bit longer than timeout
-		
+
 		for {
 			select {
 			case <-timeoutChan:
 				s.runningMutex.Lock()
 				delete(s.filesystemRunning, fs.Name)
 				s.runningMutex.Unlock()
+
 				return
 			case <-ticker.C:
 				if !s.state.IsRunning(ctx, "filesystem", fs.Name) {
 					s.runningMutex.Lock()
 					delete(s.filesystemRunning, fs.Name)
 					s.runningMutex.Unlock()
+
 					return
 				}
 			}
@@ -334,13 +345,13 @@ func (s *Scheduler) scheduleFilesystem(ctx context.Context, fs config.Filesystem
 
 	// Create job
 	job := queue.Job{
-		ID:        fmt.Sprintf("%s-%s-%d", "filesystem", fs.Name, time.Now().Unix()),
-		Type:      "filesystem",
-		Name:      fs.Name,
-		Path:      fs.MountPoint,
-		Timeout:   timeout,
-		Interval:  interval,
-		Context:   ctx,
+		ID:       fmt.Sprintf("%s-%s-%d", "filesystem", fs.Name, time.Now().Unix()),
+		Type:     "filesystem",
+		Name:     fs.Name,
+		Path:     fs.MountPoint,
+		Timeout:  timeout,
+		Interval: interval,
+		Context:  ctx,
 	}
 
 	// Enqueue
@@ -351,6 +362,7 @@ func (s *Scheduler) scheduleFilesystem(ctx context.Context, fs config.Filesystem
 		s.runningMutex.Lock()
 		s.filesystemRunning[fs.Name] = false
 		s.runningMutex.Unlock()
+
 		return
 	}
 
@@ -391,6 +403,7 @@ func (s *Scheduler) scheduleDirectory(ctx context.Context, name string, dir conf
 				attribute.String("scheduler.skip_reason", "previous_job_running"),
 			)
 			span.AddEvent("job_skipped")
+
 			return
 		}
 	}
@@ -399,26 +412,29 @@ func (s *Scheduler) scheduleDirectory(ctx context.Context, name string, dir conf
 	s.runningMutex.Lock()
 	s.directoryRunning[name] = true
 	s.runningMutex.Unlock()
-	
+
 	// Clear running flag when job completes (async check)
 	go func() {
 		// Wait for job to complete by checking state
 		ticker := time.NewTicker(100 * time.Millisecond)
 		defer ticker.Stop()
+
 		timeoutChan := time.After(timeout + 5*time.Second) // Wait a bit longer than timeout
-		
+
 		for {
 			select {
 			case <-timeoutChan:
 				s.runningMutex.Lock()
 				delete(s.directoryRunning, name)
 				s.runningMutex.Unlock()
+
 				return
 			case <-ticker.C:
 				if !s.state.IsRunning(ctx, "directory", name) {
 					s.runningMutex.Lock()
 					delete(s.directoryRunning, name)
 					s.runningMutex.Unlock()
+
 					return
 				}
 			}
@@ -444,6 +460,7 @@ func (s *Scheduler) scheduleDirectory(ctx context.Context, name string, dir conf
 		s.runningMutex.Lock()
 		s.directoryRunning[name] = false
 		s.runningMutex.Unlock()
+
 		return
 	}
 
@@ -460,9 +477,10 @@ func (s *Scheduler) ClearRunning(queueType string, itemName string) {
 	s.runningMutex.Lock()
 	defer s.runningMutex.Unlock()
 
-	if queueType == "filesystem" {
+	switch queueType {
+	case "filesystem":
 		delete(s.filesystemRunning, itemName)
-	} else if queueType == "directory" {
+	case "directory":
 		delete(s.directoryRunning, itemName)
 	}
 }
@@ -472,8 +490,9 @@ func (s *Scheduler) waitForJobCompletionAndEndSpan(ctx context.Context, span tra
 	// Wait for job to complete by checking state
 	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
+
 	timeoutChan := time.After(timeout + 5*time.Second) // Wait a bit longer than timeout
-	
+
 	for {
 		select {
 		case <-timeoutChan:
@@ -482,6 +501,7 @@ func (s *Scheduler) waitForJobCompletionAndEndSpan(ctx context.Context, span tra
 			)
 			span.SetStatus(codes.Error, "job completion timeout")
 			span.End()
+
 			return
 		case <-ticker.C:
 			if !s.state.IsRunning(ctx, itemType, itemName) {
@@ -491,6 +511,7 @@ func (s *Scheduler) waitForJobCompletionAndEndSpan(ctx context.Context, span tra
 				)
 				span.SetStatus(codes.Ok, "job completed")
 				span.End()
+
 				return
 			}
 		}
@@ -502,10 +523,11 @@ func (s *Scheduler) startSpan(ctx context.Context, name string, opts ...trace.Sp
 	if s.promexporterTracer != nil && s.promexporterTracer.IsEnabled() {
 		return s.promexporterTracer.StartSpan(ctx, name, opts...)
 	}
+
 	span := trace.SpanFromContext(ctx)
 	if !span.IsRecording() {
 		return ctx, span
 	}
+
 	return ctx, span
 }
-

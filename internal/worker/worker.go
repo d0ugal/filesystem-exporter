@@ -17,6 +17,7 @@ import (
 	"filesystem-exporter/internal/queue"
 	"filesystem-exporter/internal/state"
 	"filesystem-exporter/internal/utils"
+
 	"github.com/d0ugal/promexporter/tracing"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -73,9 +74,9 @@ func (w *Worker) run(ctx context.Context) {
 }
 
 // processJob processes a single job
-func (w *Worker) processJob(ctx context.Context, job queue.Job) {
+func (w *Worker) processJob(_ context.Context, job queue.Job) {
 	// Use job context which has the trace span
-	ctx = job.Context
+	ctx := job.Context
 
 	ctx, span := w.startSpan(ctx, "worker.process_job", trace.WithAttributes(
 		attribute.String("worker.queue_type", w.queueType),
@@ -100,8 +101,10 @@ func (w *Worker) processJob(ctx context.Context, job queue.Job) {
 		Name:      job.Name,
 		Path:      job.Path,
 		StartedAt: startTime,
-		TraceID:   trace.SpanFromContext(ctx).SpanContext().TraceID().String(),
+		//nolint:contextcheck // Context is from job, not inherited
+		TraceID: trace.SpanFromContext(ctx).SpanContext().TraceID().String(),
 	}
+	//nolint:contextcheck // Context is from job, not inherited
 	w.state.SetRunningJob(ctx, w.queueType, jobState)
 
 	slog.Info("Processing job",
@@ -113,10 +116,13 @@ func (w *Worker) processJob(ctx context.Context, job queue.Job) {
 	)
 
 	var err error
+
 	switch job.Type {
 	case "filesystem":
+		//nolint:contextcheck // Context is from job, not inherited
 		err = w.processFilesystem(ctx, job)
 	case "directory":
+		//nolint:contextcheck // Context is from job, not inherited
 		err = w.processDirectory(ctx, job)
 	default:
 		err = fmt.Errorf("unknown job type: %s", job.Type)
@@ -132,25 +138,36 @@ func (w *Worker) processJob(ctx context.Context, job queue.Job) {
 	cpuUserSecs := 0.0
 	cpuSystemSecs := 0.0
 	// memAllocated can be negative if GC runs during job execution, so clamp to 0
-	memAllocatedDelta := int64(memEnd.Alloc - memStart.Alloc)
+	var memAllocatedDelta int64
+	if memEnd.Alloc > memStart.Alloc {
+		//nolint:gosec // Safe: uint64 subtraction with bounds checking
+		memAllocatedDelta = int64(memEnd.Alloc - memStart.Alloc)
+	}
 
 	memAllocated := memAllocatedDelta
 	if memAllocated < 0 {
 		memAllocated = 0
 	}
 	// TotalAlloc is cumulative and always increases, so this should be positive
-	memPeak := int64(memEnd.TotalAlloc - memStart.TotalAlloc)
+	var memPeak int64
+	if memEnd.TotalAlloc > memStart.TotalAlloc {
+		//nolint:gosec // Safe: uint64 subtraction with bounds checking
+		memPeak = int64(memEnd.TotalAlloc - memStart.TotalAlloc)
+	}
+
 	if memPeak < 0 {
 		memPeak = 0
 	}
 
 	// Clear running job state
+	//nolint:contextcheck // Context is from job, not inherited
 	w.state.ClearRunningJob(ctx, w.queueType, job.ID, duration)
 
 	// Note: Scheduler will clear its running flag when it detects the job is complete
 	// via the state tracker check
 
 	// Update resource metrics
+	//nolint:contextcheck // Context is from job, not inherited
 	w.updateResourceMetrics(ctx, job, duration, cpuUserSecs, cpuSystemSecs, memAllocated, memPeak)
 
 	// Update span attributes
@@ -429,7 +446,7 @@ func (w *Worker) executeDuCommand(ctx context.Context, path string, timeout time
 
 // parseDfOutput parses df command output
 func (w *Worker) parseDfOutput(ctx context.Context, output []byte) (sizeKB, availableKB int64, err error) {
-	ctx, span := w.startSpan(ctx, "parse.df_output", trace.WithAttributes(
+	_, span := w.startSpan(ctx, "parse.df_output", trace.WithAttributes(
 		attribute.Int("output.size_bytes", len(output)),
 	))
 	defer span.End()
@@ -523,7 +540,7 @@ func (w *Worker) parseDfOutput(ctx context.Context, output []byte) (sizeKB, avai
 
 // parseDuOutput parses du command output
 func (w *Worker) parseDuOutput(ctx context.Context, output []byte) (int64, error) {
-	ctx, span := w.startSpan(ctx, "parse.du_output", trace.WithAttributes(
+	_, span := w.startSpan(ctx, "parse.du_output", trace.WithAttributes(
 		attribute.Int("output.size_bytes", len(output)),
 	))
 	defer span.End()
@@ -549,7 +566,7 @@ func (w *Worker) parseDuOutput(ctx context.Context, output []byte) (int64, error
 
 // validatePath validates a path
 func (w *Worker) validatePath(ctx context.Context, path string) error {
-	ctx, span := w.startSpan(ctx, "validate.path", trace.WithAttributes(
+	_, span := w.startSpan(ctx, "validate.path", trace.WithAttributes(
 		attribute.String("path", path),
 	))
 	defer span.End()
@@ -584,7 +601,7 @@ func (w *Worker) validatePath(ctx context.Context, path string) error {
 
 // updateFilesystemMetrics updates filesystem metrics
 func (w *Worker) updateFilesystemMetrics(ctx context.Context, fs *config.FilesystemConfig, sizeBytes, availableBytes int64, usedRatio float64) {
-	ctx, span := w.startSpan(ctx, "worker.update_metrics", trace.WithAttributes(
+	_, span := w.startSpan(ctx, "worker.update_metrics", trace.WithAttributes(
 		attribute.String("metric.type", "filesystem"),
 	))
 	defer span.End()
@@ -612,7 +629,7 @@ func (w *Worker) updateFilesystemMetrics(ctx context.Context, fs *config.Filesys
 
 // updateDirectoryMetrics updates directory metrics
 func (w *Worker) updateDirectoryMetrics(ctx context.Context, groupName, path string, sizeBytes int64, subdirectoryLevel int) {
-	ctx, span := w.startSpan(ctx, "worker.update_metrics", trace.WithAttributes(
+	_, span := w.startSpan(ctx, "worker.update_metrics", trace.WithAttributes(
 		attribute.String("metric.type", "directory"),
 	))
 	defer span.End()
@@ -641,7 +658,7 @@ func (w *Worker) updateDirectoryMetrics(ctx context.Context, groupName, path str
 
 // updateResourceMetrics updates resource usage metrics
 func (w *Worker) updateResourceMetrics(ctx context.Context, job queue.Job, duration time.Duration, cpuUser, cpuSystem float64, memAllocated, memPeak int64) {
-	ctx, span := w.startSpan(ctx, "worker.update_resource_metrics")
+	_, span := w.startSpan(ctx, "worker.update_resource_metrics")
 	defer span.End()
 
 	// Update per-job metrics

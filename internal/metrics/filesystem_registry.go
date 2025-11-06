@@ -183,7 +183,7 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 		),
 		GoroutineCountGauge: promauto.With(baseRegistry.GetRegistry()).NewGauge(
 			prometheus.GaugeOpts{
-				Name: "filesystem_exporter_goroutine_count",
+				Name: "filesystem_exporter_goroutines",
 				Help: "Number of goroutines (for debugging)",
 			},
 		),
@@ -252,7 +252,7 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 		),
 		ProcessNumGCTotal: promauto.With(baseRegistry.GetRegistry()).NewGauge(
 			prometheus.GaugeOpts{
-				Name: "filesystem_exporter_process_num_gc_total",
+				Name: "filesystem_exporter_process_num_gc",
 				Help: "Number of GC cycles",
 			},
 		),
