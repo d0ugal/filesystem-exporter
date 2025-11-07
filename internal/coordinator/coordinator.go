@@ -13,6 +13,7 @@ import (
 	"filesystem-exporter/internal/state"
 	"filesystem-exporter/internal/worker"
 	"github.com/d0ugal/promexporter/tracing"
+	"github.com/prometheus/client_golang/prometheus"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -117,23 +118,23 @@ func (c *Coordinator) updateQueueDepths(ctx context.Context) {
 			fsDepth := c.filesystemQueue.Size(ctx)
 			dirDepth := c.directoryQueue.Size(ctx)
 
-			c.metrics.QueueDepthGauge.WithLabelValues("filesystem").Set(float64(fsDepth))
-			c.metrics.QueueDepthGauge.WithLabelValues("directory").Set(float64(dirDepth))
+			c.metrics.QueueDepthGauge.With(prometheus.Labels{"queue_type": "filesystem"}).Set(float64(fsDepth))
+			c.metrics.QueueDepthGauge.With(prometheus.Labels{"queue_type": "directory"}).Set(float64(dirDepth))
 
 			// Update collection active metric
 			fsRunning := c.state.GetRunningJob(ctx, "filesystem")
 			dirRunning := c.state.GetRunningJob(ctx, "directory")
 
 			if fsRunning != nil {
-				c.metrics.CollectionActiveGauge.WithLabelValues("filesystem").Set(1)
+				c.metrics.CollectionActiveGauge.With(prometheus.Labels{"queue_type": "filesystem"}).Set(1)
 			} else {
-				c.metrics.CollectionActiveGauge.WithLabelValues("filesystem").Set(0)
+				c.metrics.CollectionActiveGauge.With(prometheus.Labels{"queue_type": "filesystem"}).Set(0)
 			}
 
 			if dirRunning != nil {
-				c.metrics.CollectionActiveGauge.WithLabelValues("directory").Set(1)
+				c.metrics.CollectionActiveGauge.With(prometheus.Labels{"queue_type": "directory"}).Set(1)
 			} else {
-				c.metrics.CollectionActiveGauge.WithLabelValues("directory").Set(0)
+				c.metrics.CollectionActiveGauge.With(prometheus.Labels{"queue_type": "directory"}).Set(0)
 			}
 		}
 	}
