@@ -183,9 +183,9 @@ func (w *Worker) processJob(_ context.Context, job queue.Job) {
 		span.SetStatus(codes.Error, err.Error())
 
 		w.metrics.CollectionFailedCounter.WithLabelValues(
-			job.Type,
 			job.Name,
 			strconv.Itoa(int(job.Interval.Seconds())),
+			job.Type,
 		).Inc()
 
 		slog.Error("Job failed",
@@ -203,9 +203,9 @@ func (w *Worker) processJob(_ context.Context, job queue.Job) {
 	span.SetStatus(codes.Ok, "job completed successfully")
 
 	w.metrics.CollectionSuccess.WithLabelValues(
-		job.Type,
 		job.Name,
 		strconv.Itoa(int(job.Interval.Seconds())),
+		job.Type,
 	).Inc()
 
 	w.metrics.CollectionDuration.WithLabelValues(
