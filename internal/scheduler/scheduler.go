@@ -12,6 +12,7 @@ import (
 	"filesystem-exporter/internal/queue"
 	"filesystem-exporter/internal/state"
 	"github.com/d0ugal/promexporter/tracing"
+	"github.com/prometheus/client_golang/prometheus"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
@@ -95,17 +96,17 @@ func (s *Scheduler) Start(ctx context.Context) {
 
 		// Set timeout metric
 		timeout := s.config.GetFilesystemTimeout(fs)
-		s.metrics.CollectionTimeoutSeconds.WithLabelValues(
-			fs.Name,
-			"filesystem",
-		).Set(timeout.Seconds())
+		s.metrics.CollectionTimeoutSeconds.With(prometheus.Labels{
+			"item_name": fs.Name,
+			"item_type": "filesystem",
+		}).Set(timeout.Seconds())
 
 		// Set interval metric
 		interval := s.config.GetFilesystemInterval(fs)
-		s.metrics.CollectionIntervalGauge.WithLabelValues(
-			fs.Name,
-			"filesystem",
-		).Set(float64(interval))
+		s.metrics.CollectionIntervalGauge.With(prometheus.Labels{
+			"group": fs.Name,
+			"type":  "filesystem",
+		}).Set(float64(interval))
 	}
 
 	for name, dir := range s.config.Directories {
@@ -113,17 +114,17 @@ func (s *Scheduler) Start(ctx context.Context) {
 
 		// Set timeout metric
 		timeout := s.config.GetDirectoryTimeout(dir)
-		s.metrics.CollectionTimeoutSeconds.WithLabelValues(
-			name,
-			"directory",
-		).Set(timeout.Seconds())
+		s.metrics.CollectionTimeoutSeconds.With(prometheus.Labels{
+			"item_name": name,
+			"item_type": "directory",
+		}).Set(timeout.Seconds())
 
 		// Set interval metric
 		interval := s.config.GetDirectoryInterval(dir)
-		s.metrics.CollectionIntervalGauge.WithLabelValues(
-			name,
-			"directory",
-		).Set(float64(interval))
+		s.metrics.CollectionIntervalGauge.With(prometheus.Labels{
+			"group": name,
+			"type":  "directory",
+		}).Set(float64(interval))
 	}
 
 	// Start filesystem tickers
@@ -295,11 +296,11 @@ func (s *Scheduler) scheduleFilesystem(ctx context.Context, fs config.Filesystem
 			slog.Warn("Skipping filesystem collection - previous job still running",
 				"filesystem", fs.Name,
 			)
-			s.metrics.CollectionSkippedCounter.WithLabelValues(
-				"filesystem",
-				fs.Name,
-				"previous_job_running",
-			).Inc()
+			s.metrics.CollectionSkippedCounter.With(prometheus.Labels{
+				"queue_type": "filesystem",
+				"item_name":  fs.Name,
+				"reason":     "previous_job_running",
+			}).Inc()
 			span.SetAttributes(
 				attribute.Bool("scheduler.skipped", true),
 				attribute.String("scheduler.skip_reason", "previous_job_running"),
@@ -393,11 +394,11 @@ func (s *Scheduler) scheduleDirectory(ctx context.Context, name string, dir conf
 			slog.Warn("Skipping directory collection - previous job still running",
 				"directory", name,
 			)
-			s.metrics.CollectionSkippedCounter.WithLabelValues(
-				"directory",
-				name,
-				"previous_job_running",
-			).Inc()
+			s.metrics.CollectionSkippedCounter.With(prometheus.Labels{
+				"queue_type": "directory",
+				"item_name":  name,
+				"reason":     "previous_job_running",
+			}).Inc()
 			span.SetAttributes(
 				attribute.Bool("scheduler.skipped", true),
 				attribute.String("scheduler.skip_reason", "previous_job_running"),

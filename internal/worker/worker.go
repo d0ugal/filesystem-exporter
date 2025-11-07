@@ -334,23 +334,52 @@ func (w *Worker) processDirectory(ctx context.Context, job queue.Job) error {
 		return err
 	}
 
-	// Execute du command
-	sizeKB, err := w.executeDuCommand(ctx, job.Path, job.Timeout)
-	if err != nil {
-		span.RecordError(err)
-		return fmt.Errorf("du command failed: %w", err)
+	// Default subdirectory_levels to 0 if not specified
+	subdirectoryLevels := dirConfig.SubdirectoryLevels
+	if subdirectoryLevels < 0 {
+		subdirectoryLevels = 0
 	}
 
-	// Convert to bytes
-	sizeBytes := sizeKB * 1024
+	// Collect directory and subdirectories based on subdirectory_levels
+	if subdirectoryLevels == 0 {
+		// Just collect the directory itself
+		sizeKB, err := w.executeDuCommand(ctx, job.Path, job.Timeout)
+		if err != nil {
+			span.RecordError(err)
+			return fmt.Errorf("du command failed: %w", err)
+		}
 
-	// Update metrics
-	w.updateDirectoryMetrics(ctx, job.Name, job.Path, sizeBytes, 0)
+		// Convert to bytes
+		sizeBytes := sizeKB * 1024
 
-	span.SetAttributes(
-		attribute.Int64("directory.size_bytes", sizeBytes),
-		attribute.Int64("directory.size_kb", sizeKB),
-	)
+		// Update metrics
+		w.updateDirectoryMetrics(ctx, job.Name, job.Path, sizeBytes, 0)
+
+		span.SetAttributes(
+			attribute.Int64("directory.size_bytes", sizeBytes),
+			attribute.Int64("directory.size_kb", sizeKB),
+		)
+	} else {
+		// Collect directory and all subdirectories up to specified depth
+		subdirSizes, err := w.executeDuCommandWithDepth(ctx, job.Path, subdirectoryLevels, job.Timeout)
+		if err != nil {
+			span.RecordError(err)
+			return fmt.Errorf("du command with depth failed: %w", err)
+		}
+
+		// Update metrics for each subdirectory found
+		for path, sizeKB := range subdirSizes {
+			sizeBytes := sizeKB * 1024
+			// Calculate subdirectory level (depth from base path)
+			level := w.calculateSubdirectoryLevel(job.Path, path)
+			w.updateDirectoryMetrics(ctx, job.Name, path, sizeBytes, level)
+		}
+
+		span.SetAttributes(
+			attribute.Int("directory.subdirectories_collected", len(subdirSizes)),
+		)
+	}
+
 	span.AddEvent("directory_collected")
 
 	return nil
@@ -441,6 +470,151 @@ func (w *Worker) executeDuCommand(ctx context.Context, path string, timeout time
 	span.AddEvent("command_completed")
 
 	return sizeKB, nil
+}
+
+// executeDuCommandWithDepth executes du with --max-depth to collect subdirectories
+// Returns a map of path -> size in KB
+func (w *Worker) executeDuCommandWithDepth(ctx context.Context, path string, maxDepth int, timeout time.Duration) (map[string]int64, error) {
+	ctx, span := w.startSpan(ctx, "command.du_depth", trace.WithAttributes(
+		attribute.String("command.path", path),
+		attribute.Int("command.max_depth", maxDepth),
+		attribute.Float64("command.timeout_seconds", timeout.Seconds()),
+	))
+	defer span.End()
+
+	timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	// Use du with --max-depth to get all subdirectories in one pass
+	// -x: don't cross filesystem boundaries
+	// --max-depth: maximum depth to traverse (0 = base dir only, 1 = base + direct subdirs, etc.)
+	// Note: We don't use -s (summarize) here because it conflicts with --max-depth
+	cmd := exec.CommandContext(timeoutCtx, "du", "-x", fmt.Sprintf("--max-depth=%d", maxDepth), path)
+
+	// Set I/O priority
+	if err := utils.SetupCommandWithIOPriority(cmd); err != nil {
+		slog.Debug("Failed to set I/O priority", "error", err)
+	}
+
+	execStart := time.Now()
+	output, err := cmd.Output()
+	execDuration := time.Since(execStart)
+
+	span.SetAttributes(
+		attribute.Float64("command.duration_seconds", execDuration.Seconds()),
+		attribute.Int("command.output_size_bytes", len(output)),
+	)
+
+	if err != nil {
+		if timeoutCtx.Err() == context.DeadlineExceeded {
+			span.SetAttributes(attribute.String("command.error_type", "timeout"))
+			slog.Error("du command with depth timed out", "path", path, "max_depth", maxDepth, "duration", execDuration, "timeout", timeout)
+		}
+
+		span.RecordError(err)
+
+		return nil, err
+	}
+
+	// Parse output to extract all subdirectory sizes
+	subdirSizes, err := w.parseDuOutputWithDepth(ctx, output, path)
+	if err != nil {
+		span.RecordError(err)
+		return nil, err
+	}
+
+	span.SetAttributes(
+		attribute.Int("command.subdirectories_found", len(subdirSizes)),
+	)
+	span.AddEvent("command_completed")
+
+	return subdirSizes, nil
+}
+
+// parseDuOutputWithDepth parses du output with depth information
+// du --max-depth outputs lines like: "1024\t/path/to/dir"
+// Returns a map of path -> size in KB
+func (w *Worker) parseDuOutputWithDepth(ctx context.Context, output []byte, basePath string) (map[string]int64, error) {
+	_, span := w.startSpan(ctx, "parse.du_output_depth", trace.WithAttributes(
+		attribute.Int("output.size_bytes", len(output)),
+	))
+	defer span.End()
+
+	result := make(map[string]int64)
+	lines := strings.Split(strings.TrimSpace(string(output)), "\n")
+
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
+		// du output format: "SIZE\tPATH"
+		// Split on tab (du uses tab separator)
+		parts := strings.SplitN(line, "\t", 2)
+		if len(parts) != 2 {
+			span.SetAttributes(
+				attribute.String("parse.error", "invalid line format"),
+				attribute.String("parse.line", line),
+			)
+
+			continue
+		}
+
+		sizeStr := strings.TrimSpace(parts[0])
+		dirPath := strings.TrimSpace(parts[1])
+
+		// Parse size (in KB)
+		sizeKB, err := strconv.ParseInt(sizeStr, 10, 64)
+		if err != nil {
+			span.SetAttributes(
+				attribute.String("parse.error", "invalid size"),
+				attribute.String("parse.size", sizeStr),
+			)
+
+			continue
+		}
+
+		// Normalize path (remove trailing slashes for consistency)
+		dirPath = strings.TrimRight(dirPath, "/")
+		result[dirPath] = sizeKB
+	}
+
+	span.SetAttributes(
+		attribute.Int("parse.directories_parsed", len(result)),
+	)
+	span.AddEvent("parse_completed")
+
+	return result, nil
+}
+
+// calculateSubdirectoryLevel calculates the depth level of a subdirectory relative to the base path
+// Returns 0 for the base directory itself, 1 for direct subdirectories, etc.
+func (w *Worker) calculateSubdirectoryLevel(basePath, subdirPath string) int {
+	// Normalize paths
+	basePath = strings.TrimRight(filepath.Clean(basePath), "/")
+	subdirPath = strings.TrimRight(filepath.Clean(subdirPath), "/")
+
+	// If paths are the same, it's level 0 (the base directory)
+	if basePath == subdirPath {
+		return 0
+	}
+
+	// Count path separators in the relative path
+	relPath, err := filepath.Rel(basePath, subdirPath)
+	if err != nil {
+		// If we can't calculate relative path, assume it's a direct subdirectory
+		return 1
+	}
+
+	// Count the number of path separators to determine depth
+	level := strings.Count(relPath, string(filepath.Separator))
+	if level == 0 {
+		// Same directory or immediate subdirectory
+		return 1
+	}
+
+	return level + 1
 }
 
 // parseDfOutput parses df command output
