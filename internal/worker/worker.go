@@ -17,7 +17,6 @@ import (
 	"filesystem-exporter/internal/queue"
 	"filesystem-exporter/internal/state"
 	"filesystem-exporter/internal/utils"
-
 	"github.com/d0ugal/promexporter/tracing"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"

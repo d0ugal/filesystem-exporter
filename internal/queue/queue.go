@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"filesystem-exporter/internal/state"
-
 	"github.com/d0ugal/promexporter/tracing"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"

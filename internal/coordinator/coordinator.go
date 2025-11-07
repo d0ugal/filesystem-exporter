@@ -12,7 +12,6 @@ import (
 	"filesystem-exporter/internal/scheduler"
 	"filesystem-exporter/internal/state"
 	"filesystem-exporter/internal/worker"
-
 	"github.com/d0ugal/promexporter/tracing"
 	"go.opentelemetry.io/otel/trace"
 )
