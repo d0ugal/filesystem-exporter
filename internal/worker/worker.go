@@ -780,9 +780,9 @@ func (w *Worker) updateFilesystemMetrics(ctx context.Context, fs *config.Filesys
 	defer span.End()
 
 	volumeLabels := prometheus.Labels{
-		"device":     fs.Device,
+		"device":      fs.Device,
 		"mount_point": fs.MountPoint,
-		"volume":     fs.Name,
+		"volume":      fs.Name,
 	}
 
 	w.metrics.VolumeSizeGauge.With(volumeLabels).Set(float64(sizeBytes))
@@ -800,9 +800,9 @@ func (w *Worker) updateDirectoryMetrics(ctx context.Context, groupName, path str
 	defer span.End()
 
 	directoryLabels := prometheus.Labels{
-		"group":             groupName,
-		"directory":         path,
-		"mode":              "du",
+		"group":              groupName,
+		"directory":          path,
+		"mode":               "du",
 		"subdirectory_level": strconv.Itoa(subdirectoryLevel),
 	}
 	w.metrics.DirectorySizeGauge.With(directoryLabels).Set(float64(sizeBytes))
