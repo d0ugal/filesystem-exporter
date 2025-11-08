@@ -23,6 +23,7 @@ func TestFilesystemRegistry(t *testing.T) {
 	registry.CollectionDuration.With(prometheus.Labels{"group": "test", "interval_seconds": "60", "type": "test"}).Set(1)
 	registry.CollectionSuccess.With(prometheus.Labels{"group": "test", "interval_seconds": "60", "type": "test"}).Inc()
 	registry.CollectionFailedCounter.With(prometheus.Labels{"group": "test", "interval_seconds": "60", "type": "test"}).Inc()
+	registry.CollectionTotal.With(prometheus.Labels{"group": "test", "interval_seconds": "60", "type": "test"}).Inc()
 
 	// Test that all documented metrics are registered
 	expectedMetrics := []string{
@@ -33,6 +34,7 @@ func TestFilesystemRegistry(t *testing.T) {
 		"filesystem_exporter_collection_duration_seconds",
 		"filesystem_exporter_collection_success_total",
 		"filesystem_exporter_collection_failed_total",
+		"filesystem_exporter_collection_total",
 	}
 
 	// Test that documented metrics exist
@@ -169,6 +171,12 @@ func TestCollectionMetrics(t *testing.T) {
 	}).Inc()
 
 	registry.CollectionFailedCounter.With(prometheus.Labels{
+		"group":            "test",
+		"interval_seconds": "60",
+		"type":             "filesystem",
+	}).Inc()
+
+	registry.CollectionTotal.With(prometheus.Labels{
 		"group":            "test",
 		"interval_seconds": "60",
 		"type":             "filesystem",
