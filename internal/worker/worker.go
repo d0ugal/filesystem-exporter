@@ -485,11 +485,12 @@ func (w *Worker) executeDuCommandWithDepth(ctx context.Context, path string, max
 	timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	// Use du with --max-depth to get all subdirectories in one pass
+	// Use du with -d (max depth) to get all subdirectories in one pass
 	// -x: don't cross filesystem boundaries
-	// --max-depth: maximum depth to traverse (0 = base dir only, 1 = base + direct subdirs, etc.)
-	// Note: We don't use -s (summarize) here because it conflicts with --max-depth
-	cmd := exec.CommandContext(timeoutCtx, "du", "-x", fmt.Sprintf("--max-depth=%d", maxDepth), path)
+	// -d: maximum depth to traverse (0 = base dir only, 1 = base + direct subdirs, etc.)
+	// Note: BusyBox du uses -d instead of --max-depth
+	// Note: We don't use -s (summarize) here because it conflicts with -d
+	cmd := exec.CommandContext(timeoutCtx, "du", "-x", "-d", strconv.Itoa(maxDepth), path)
 
 	// Set I/O priority
 	if err := utils.SetupCommandWithIOPriority(cmd); err != nil {
@@ -532,7 +533,7 @@ func (w *Worker) executeDuCommandWithDepth(ctx context.Context, path string, max
 }
 
 // parseDuOutputWithDepth parses du output with depth information
-// du --max-depth outputs lines like: "1024\t/path/to/dir"
+// du -d outputs lines like: "1024\t/path/to/dir"
 // Returns a map of path -> size in KB
 func (w *Worker) parseDuOutputWithDepth(ctx context.Context, output []byte, basePath string) (map[string]int64, error) {
 	_, span := w.startSpan(ctx, "parse.du_output_depth", trace.WithAttributes(
