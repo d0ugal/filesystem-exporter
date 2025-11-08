@@ -18,6 +18,7 @@ import (
 	"filesystem-exporter/internal/state"
 	"filesystem-exporter/internal/utils"
 	"github.com/d0ugal/promexporter/tracing"
+	"github.com/prometheus/client_golang/prometheus"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
@@ -182,14 +183,14 @@ func (w *Worker) processJob(_ context.Context, job queue.Job) {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 
-		labels := []string{
-			job.Name,
-			strconv.Itoa(int(job.Interval.Seconds())),
-			job.Type,
+		labels := prometheus.Labels{
+			"group":            job.Name,
+			"interval_seconds": strconv.Itoa(int(job.Interval.Seconds())),
+			"type":             job.Type,
 		}
 
-		w.metrics.CollectionFailedCounter.WithLabelValues(labels...).Inc()
-		w.metrics.CollectionTotal.WithLabelValues(labels...).Inc()
+		w.metrics.CollectionFailedCounter.With(labels).Inc()
+		w.metrics.CollectionTotal.With(labels).Inc()
 
 		slog.Error("Job failed",
 			"queue_type", w.queueType,
@@ -205,27 +206,19 @@ func (w *Worker) processJob(_ context.Context, job queue.Job) {
 
 	span.SetStatus(codes.Ok, "job completed successfully")
 
-	labels := []string{
-		job.Name,
-		strconv.Itoa(int(job.Interval.Seconds())),
-		job.Type,
+	labels := prometheus.Labels{
+		"group":            job.Name,
+		"interval_seconds": strconv.Itoa(int(job.Interval.Seconds())),
+		"type":             job.Type,
 	}
 
-	w.metrics.CollectionSuccess.WithLabelValues(labels...).Inc()
-	w.metrics.CollectionTotal.WithLabelValues(labels...).Inc()
+	w.metrics.CollectionSuccess.With(labels).Inc()
+	w.metrics.CollectionTotal.With(labels).Inc()
 
-	w.metrics.CollectionDuration.WithLabelValues(
-		job.Name,
-		strconv.Itoa(int(job.Interval.Seconds())),
-		job.Type,
-	).Set(duration.Seconds())
+	w.metrics.CollectionDuration.With(labels).Set(duration.Seconds())
 
 	// Update collection timestamp for alerting compatibility
-	w.metrics.CollectionTimestampGauge.WithLabelValues(
-		job.Name,
-		strconv.Itoa(int(job.Interval.Seconds())),
-		job.Type,
-	).Set(float64(time.Now().Unix()))
+	w.metrics.CollectionTimestampGauge.With(labels).Set(float64(time.Now().Unix()))
 
 	slog.Info("Job completed",
 		"queue_type", w.queueType,
@@ -786,23 +779,15 @@ func (w *Worker) updateFilesystemMetrics(ctx context.Context, fs *config.Filesys
 	))
 	defer span.End()
 
-	w.metrics.VolumeSizeGauge.WithLabelValues(
-		fs.Device,
-		fs.MountPoint,
-		fs.Name,
-	).Set(float64(sizeBytes))
+	volumeLabels := prometheus.Labels{
+		"device":     fs.Device,
+		"mount_point": fs.MountPoint,
+		"volume":     fs.Name,
+	}
 
-	w.metrics.VolumeAvailableGauge.WithLabelValues(
-		fs.Device,
-		fs.MountPoint,
-		fs.Name,
-	).Set(float64(availableBytes))
-
-	w.metrics.VolumeUsedRatioGauge.WithLabelValues(
-		fs.Device,
-		fs.MountPoint,
-		fs.Name,
-	).Set(usedRatio)
+	w.metrics.VolumeSizeGauge.With(volumeLabels).Set(float64(sizeBytes))
+	w.metrics.VolumeAvailableGauge.With(volumeLabels).Set(float64(availableBytes))
+	w.metrics.VolumeUsedRatioGauge.With(volumeLabels).Set(usedRatio)
 
 	span.AddEvent("metrics_updated")
 }
@@ -814,24 +799,27 @@ func (w *Worker) updateDirectoryMetrics(ctx context.Context, groupName, path str
 	))
 	defer span.End()
 
-	w.metrics.DirectorySizeGauge.WithLabelValues(
-		groupName,
-		path,
-		"du",
-		strconv.Itoa(subdirectoryLevel),
-	).Set(float64(sizeBytes))
+	directoryLabels := prometheus.Labels{
+		"group":             groupName,
+		"directory":         path,
+		"mode":              "du",
+		"subdirectory_level": strconv.Itoa(subdirectoryLevel),
+	}
+	w.metrics.DirectorySizeGauge.With(directoryLabels).Set(float64(sizeBytes))
 
-	w.metrics.DirectoriesProcessedCounter.WithLabelValues(
-		groupName,
-		"du",
-	).Inc()
+	processedLabels := prometheus.Labels{
+		"group":  groupName,
+		"method": "du",
+	}
+	w.metrics.DirectoriesProcessedCounter.With(processedLabels).Inc()
 
 	// Update du_lock_wait_duration_seconds for alerting compatibility
 	// Set to 0 since new architecture uses separate queues (no global lock contention)
-	w.metrics.DuLockWaitDurationGauge.WithLabelValues(
-		groupName,
-		path,
-	).Set(0)
+	duLockLabels := prometheus.Labels{
+		"group": groupName,
+		"path":  path,
+	}
+	w.metrics.DuLockWaitDurationGauge.With(duLockLabels).Set(0)
 
 	span.AddEvent("metrics_updated")
 }
@@ -842,25 +830,15 @@ func (w *Worker) updateResourceMetrics(ctx context.Context, job queue.Job, durat
 	defer span.End()
 
 	// Update per-job metrics
-	w.metrics.JobCPUUserSeconds.WithLabelValues(
-		job.Type,
-		job.Name,
-	).Set(cpuUser)
+	jobLabels := prometheus.Labels{
+		"job_type": job.Type,
+		"job_name": job.Name,
+	}
 
-	w.metrics.JobCPUSystemSeconds.WithLabelValues(
-		job.Type,
-		job.Name,
-	).Set(cpuSystem)
-
-	w.metrics.JobMemoryAllocatedBytes.WithLabelValues(
-		job.Type,
-		job.Name,
-	).Set(float64(memAllocated))
-
-	w.metrics.JobMemoryPeakBytes.WithLabelValues(
-		job.Type,
-		job.Name,
-	).Set(float64(memPeak))
+	w.metrics.JobCPUUserSeconds.With(jobLabels).Set(cpuUser)
+	w.metrics.JobCPUSystemSeconds.With(jobLabels).Set(cpuSystem)
+	w.metrics.JobMemoryAllocatedBytes.With(jobLabels).Set(float64(memAllocated))
+	w.metrics.JobMemoryPeakBytes.With(jobLabels).Set(float64(memPeak))
 
 	// Update process-level metrics (accumulative)
 	var memStats runtime.MemStats
