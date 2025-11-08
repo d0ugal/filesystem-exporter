@@ -22,6 +22,7 @@ type FilesystemRegistry struct {
 	CollectionDuration      *prometheus.GaugeVec
 	CollectionSuccess       *prometheus.CounterVec
 	CollectionFailedCounter *prometheus.CounterVec
+	CollectionTotal         *prometheus.CounterVec
 
 	// Additional operational metrics (used by collectors but not documented)
 	CollectionIntervalGauge     *prometheus.GaugeVec
@@ -111,6 +112,13 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 			prometheus.CounterOpts{
 				Name: "filesystem_exporter_collection_failed_total",
 				Help: "Total number of failed collections",
+			},
+			[]string{"group", "interval_seconds", "type"},
+		),
+		CollectionTotal: promauto.With(baseRegistry.GetRegistry()).NewCounterVec(
+			prometheus.CounterOpts{
+				Name: "filesystem_exporter_collection_total",
+				Help: "Total number of collections (successful and failed)",
 			},
 			[]string{"group", "interval_seconds", "type"},
 		),
@@ -276,6 +284,7 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 	filesystem.AddMetricInfo("filesystem_exporter_collection_duration_seconds", "Duration of collection in seconds", []string{"group", "interval_seconds", "type"})
 	filesystem.AddMetricInfo("filesystem_exporter_collection_success_total", "Total number of successful collections", []string{"group", "interval_seconds", "type"})
 	filesystem.AddMetricInfo("filesystem_exporter_collection_failed_total", "Total number of failed collections", []string{"group", "interval_seconds", "type"})
+	filesystem.AddMetricInfo("filesystem_exporter_collection_total", "Total number of collections (successful and failed)", []string{"group", "interval_seconds", "type"})
 
 	return filesystem
 }

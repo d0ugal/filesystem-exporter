@@ -182,11 +182,14 @@ func (w *Worker) processJob(_ context.Context, job queue.Job) {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 
-		w.metrics.CollectionFailedCounter.WithLabelValues(
+		labels := []string{
 			job.Name,
 			strconv.Itoa(int(job.Interval.Seconds())),
 			job.Type,
-		).Inc()
+		}
+
+		w.metrics.CollectionFailedCounter.WithLabelValues(labels...).Inc()
+		w.metrics.CollectionTotal.WithLabelValues(labels...).Inc()
 
 		slog.Error("Job failed",
 			"queue_type", w.queueType,
@@ -202,11 +205,14 @@ func (w *Worker) processJob(_ context.Context, job queue.Job) {
 
 	span.SetStatus(codes.Ok, "job completed successfully")
 
-	w.metrics.CollectionSuccess.WithLabelValues(
+	labels := []string{
 		job.Name,
 		strconv.Itoa(int(job.Interval.Seconds())),
 		job.Type,
-	).Inc()
+	}
+
+	w.metrics.CollectionSuccess.WithLabelValues(labels...).Inc()
+	w.metrics.CollectionTotal.WithLabelValues(labels...).Inc()
 
 	w.metrics.CollectionDuration.WithLabelValues(
 		job.Name,

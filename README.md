@@ -18,6 +18,7 @@ A lightweight Go-based metrics collection service for Prometheus that monitors f
 - `filesystem_exporter_collection_duration_seconds`: Duration of collection in seconds
 - `filesystem_exporter_collection_success_total`: Total number of successful collections
 - `filesystem_exporter_collection_failed_total`: Total number of failed collections
+- `filesystem_exporter_collection_total`: Total number of collections (successful and failed)
 
 ### Endpoints
 - `GET /`: HTML dashboard with service status and metrics information
