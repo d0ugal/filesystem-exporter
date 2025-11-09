@@ -276,7 +276,6 @@ func NewFilesystemRegistry(baseRegistry *promexporter_metrics.Registry) *Filesys
 	}
 
 	// Add metric metadata for UI (only documented metrics)
-	filesystem.AddMetricInfo("filesystem_exporter_info", "Information about the filesystem exporter", []string{"version", "commit", "build_date"})
 	filesystem.AddMetricInfo("filesystem_exporter_volume_size_bytes", "Total size of volume in bytes", []string{"volume", "mount_point", "device"})
 	filesystem.AddMetricInfo("filesystem_exporter_volume_available_bytes", "Available space on volume in bytes", []string{"volume", "mount_point", "device"})
 	filesystem.AddMetricInfo("filesystem_exporter_volume_used_ratio", "Ratio of used space on volume (0.0 to 1.0)", []string{"volume", "mount_point", "device"})
