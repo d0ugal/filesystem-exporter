@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.24.4...v2.0.0) (2025-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* Complete rewrite of filesystem-exporter from ground up with new queue-based architecture, separate workers, comprehensive observability, and full OTEL tracing.
+
+### Features
+
+* complete rewrite with queue-based architecture and full observability ([b75c62c](https://github.com/d0ugal/filesystem-exporter/commit/b75c62c6e62614ee31c2758ed92b53b501d99373))
+* implement efficient subdirectory_levels collection using du --max-depth ([6b21d7b](https://github.com/d0ugal/filesystem-exporter/commit/6b21d7b868d9e78ba2f64897a90acd70608ec3bd))
+* **metrics:** add collection_total metric for success rate calculation ([a3ce47c](https://github.com/d0ugal/filesystem-exporter/commit/a3ce47cf0c19ac67c1d000c915ad629ccbbbe017))
+
+
+### Bug Fixes
+
+* correct label order for CollectionSuccess and CollectionFailedCounter metrics ([92d881e](https://github.com/d0ugal/filesystem-exporter/commit/92d881edea0905a38fd8ec94b9a318b5610d80e2))
+* Remove duplicate info metric registration ([64c2bfc](https://github.com/d0ugal/filesystem-exporter/commit/64c2bfc965903c75e6f0752d9a09b5cfe91951d0))
+* resolve linting errors ([0a8aff2](https://github.com/d0ugal/filesystem-exporter/commit/0a8aff20a22b15d02dc843d6d26e327e5661e2d6))
+* update module github.com/d0ugal/promexporter to v1.11.2 ([99c66a4](https://github.com/d0ugal/filesystem-exporter/commit/99c66a401d6df8d6ac3d3778891bd68b734a11b2))
+* update module github.com/d0ugal/promexporter to v1.12.0 ([de4f184](https://github.com/d0ugal/filesystem-exporter/commit/de4f184b3dc08879fc058059527a45970b732709))
+* update module github.com/quic-go/quic-go to v0.56.0 ([8088d02](https://github.com/d0ugal/filesystem-exporter/commit/8088d029d1fd276bd34bba43dc5f5b0698cf3463))
+* update module golang.org/x/arch to v0.23.0 ([0ad722c](https://github.com/d0ugal/filesystem-exporter/commit/0ad722cc2e13a31b37ab7ce8acc436074a9d2d7a))
+* update module golang.org/x/sys to v0.38.0 ([0e83a72](https://github.com/d0ugal/filesystem-exporter/commit/0e83a7262f577588a09e5387353e2d4851e901d5))
+* use BusyBox-compatible du -d flag instead of --max-depth ([8721210](https://github.com/d0ugal/filesystem-exporter/commit/8721210f63531850b00ea3b373dad28ed457eebb))
+
 ## [1.24.4](https://github.com/d0ugal/filesystem-exporter/compare/v1.24.3...v1.24.4) (2025-11-06)
 
 
