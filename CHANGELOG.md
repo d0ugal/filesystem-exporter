@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1](https://github.com/d0ugal/filesystem-exporter/compare/v2.0.0...v2.0.1) (2025-11-11)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to 83f4791 ([194f282](https://github.com/d0ugal/filesystem-exporter/commit/194f2820ccb692dbc05a41e3b58f3988e1f5a694))
+* update google.golang.org/genproto/googleapis/api digest to 95abcf5 ([d74ed47](https://github.com/d0ugal/filesystem-exporter/commit/d74ed475250d89e30bb07ce656ef82d0c11a14c5))
+* update google.golang.org/genproto/googleapis/rpc digest to 83f4791 ([853d49e](https://github.com/d0ugal/filesystem-exporter/commit/853d49e713d0540745d601ba2f6e3a64b8989d4f))
+* update google.golang.org/genproto/googleapis/rpc digest to 95abcf5 ([cc45699](https://github.com/d0ugal/filesystem-exporter/commit/cc456996bc24712ac446c68e16f6a4512c54bc94))
+* update module github.com/d0ugal/promexporter to v1.12.1 ([465569e](https://github.com/d0ugal/filesystem-exporter/commit/465569ea103387c430fb57670580db885e0294b3))
+* update module golang.org/x/crypto to v0.44.0 ([b79c749](https://github.com/d0ugal/filesystem-exporter/commit/b79c7490ba641655ca6eddfdcf8a908c5993e1d0))
+* update module golang.org/x/net to v0.47.0 ([41f2db9](https://github.com/d0ugal/filesystem-exporter/commit/41f2db9b703fd21abd0ab060757f3bdb5aa8446f))
+
 ## [2.0.0](https://github.com/d0ugal/filesystem-exporter/compare/v1.24.4...v2.0.0) (2025-11-10)
 
 
