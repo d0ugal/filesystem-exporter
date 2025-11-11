@@ -33,16 +33,6 @@ jobs:
         default-branch: main
         fork: false
 
-    # Debug info
-    - name: Debug Release Info
-      if: steps.release_please.outputs.release_created == 'true'
-      run: |
-        echo "Release created!"
-        echo "Tag: ${{ steps.release_please.outputs.tag_name }}"
-        echo "Name: ${{ steps.release_please.outputs.name }}"
-        echo "Draft: ${{ steps.release_please.outputs.draft }}"
-        echo "Prerelease: ${{ steps.release_please.outputs.prerelease }}"
-
     # Build and push Docker image
     - name: Set up Docker Buildx
       if: steps.release_please.outputs.release_created == 'true'
