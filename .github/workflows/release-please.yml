@@ -30,6 +30,8 @@ jobs:
         release-type: go
         path: .
         token: ${{ secrets.RELEASE_TOKEN }}
+        default-branch: main
+        fork: false
 
     # Debug info
     - name: Debug Release Info
