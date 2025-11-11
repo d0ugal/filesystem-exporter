@@ -23,6 +23,15 @@ jobs:
       with:
         fetch-depth: 0
     
+    - name: Debug git state
+      run: |
+        echo "Current branch: $(git branch --show-current)"
+        echo "Current commit: $(git rev-parse HEAD)"
+        echo "Remote branches:"
+        git branch -r | head -10
+        echo "Checking for release-please branches:"
+        git branch -r | grep -i release || echo "No release branches found"
+    
     - name: Set token for release-please
       id: set_token
       run: |
@@ -42,6 +51,8 @@ jobs:
         release-type: go
         path: .
         token: ${{ steps.set_token.outputs.token }}
+        default-branch: main
+        fork: false
 
     # Debug info
     - name: Debug Release Info
