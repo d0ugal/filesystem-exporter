@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.1...v2.1.2) (2025-11-18)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.13.2 ([f4784d3](https://github.com/d0ugal/filesystem-exporter/commit/f4784d32ce3a06906fd14710d4e6a3926014f113))
+* update module github.com/prometheus/common to v0.67.3 ([85f9c59](https://github.com/d0ugal/filesystem-exporter/commit/85f9c59dd74b15227eae4d821c3e2df052426855))
+* update module google.golang.org/grpc to v1.77.0 ([cbcafc7](https://github.com/d0ugal/filesystem-exporter/commit/cbcafc7723cf86a07cde5afa36d348c304df3ddd))
+
 ## [2.1.1](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.0...v2.1.1) (2025-11-12)
 
 
