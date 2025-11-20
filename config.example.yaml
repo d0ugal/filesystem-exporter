@@ -20,12 +20,12 @@ filesystems:
     mount_point: "/"       # Mount point path
     device: "sda1"         # Device identifier
     interval: "1m"         # Collection interval (overrides default)
-  
+
   - name: "data"
     mount_point: "/data"
     device: "sdb1"
     interval: "2m"
-  
+
   - name: "backup"
     mount_point: "/backup"
     device: "sdc1"
@@ -39,22 +39,22 @@ directories:
     path: "/home"
     subdirectory_levels: 1  # How many subdirectory levels to monitor
     interval: "10m"         # Optional: override default interval
-  
+
   # Monitor system directories
   system:
     path: "/var"
     subdirectory_levels: 0  # 0 = only the specified directory
-  
+
   # Monitor temporary directories
   temp:
     path: "/tmp"
     subdirectory_levels: 0
-  
+
   # Monitor application data
   apps:
     path: "/opt/apps"
     subdirectory_levels: 2  # Monitor 2 levels deep
-  
+
   # Monitor backup directories
   backups:
     path: "/backups"
@@ -73,7 +73,7 @@ directories:
 #     mount_point: "/volumeUSB1/usbshare"
 #     device: "usb1p1"
 #     interval: "2m"
-# 
+#
 # directories:
 #   nas:
 #     path: "/volume1/nas/"
@@ -91,7 +91,7 @@ directories:
 #     mount_point: "/host"
 #     device: "host"
 #     interval: "1m"
-# 
+#
 # directories:
 #   containers:
 #     path: "/host/var/lib/docker/containers"
