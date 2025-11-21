@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.5](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.4...v2.1.5) (2025-11-21)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.13.6 ([4031612](https://github.com/d0ugal/filesystem-exporter/commit/4031612561ff034a2b05d1b127b8a9a6f5a7d35f))
+* update module github.com/prometheus/common to v0.67.4 ([fad9804](https://github.com/d0ugal/filesystem-exporter/commit/fad9804f32bc0998aa51ff2bbd15ccc98d535793))
+
 ## [2.1.4](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.3...v2.1.4) (2025-11-20)
 
 
