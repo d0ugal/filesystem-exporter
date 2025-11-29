@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.8](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.7...v2.1.8) (2025-11-29)
+
+
+### Bug Fixes
+
+* update module github.com/goccy/go-yaml to v1.19.0 ([060f97a](https://github.com/d0ugal/filesystem-exporter/commit/060f97a361dea638ab8e7ef2fe5f2ab8dd43a8a1))
+
 ## [2.1.7](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.6...v2.1.7) (2025-11-26)
 
 
