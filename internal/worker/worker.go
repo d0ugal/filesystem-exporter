@@ -139,7 +139,7 @@ func (w *Worker) processJob(_ context.Context, job queue.Job) {
 	// memAllocated can be negative if GC runs during job execution, so clamp to 0
 	var memAllocatedDelta int64
 	if memEnd.Alloc > memStart.Alloc {
-		//nolint:gosec // G115: Safe conversion - memory allocation difference will not exceed int64 max
+
 		memAllocatedDelta = int64(memEnd.Alloc - memStart.Alloc)
 	}
 
@@ -150,7 +150,7 @@ func (w *Worker) processJob(_ context.Context, job queue.Job) {
 	// TotalAlloc is cumulative and always increases, so this should be positive
 	var memPeak int64
 	if memEnd.TotalAlloc > memStart.TotalAlloc {
-		//nolint:gosec // G115: Safe conversion - memory allocation difference will not exceed int64 max
+
 		memPeak = int64(memEnd.TotalAlloc - memStart.TotalAlloc)
 	}
 
