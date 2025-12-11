@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.12](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.11...v2.1.12) (2025-12-11)
+
+
+### Bug Fixes
+
+* **ci:** add GOMODCACHE env var to fix permission denied error ([2db9c8a](https://github.com/d0ugal/filesystem-exporter/commit/2db9c8a20a9eba340f0d6a5db468d689b3bda049))
+* **lint:** add nolint comments for gosec integer overflow warnings ([58c5a17](https://github.com/d0ugal/filesystem-exporter/commit/58c5a17ea4864516ebd8a760ae66be6153212474))
+* update module github.com/d0ugal/promexporter to v1.14.4 ([f7106d2](https://github.com/d0ugal/filesystem-exporter/commit/f7106d2e74563ac98d423c7f3a9189e58d395e5e))
+* update module golang.org/x/crypto to v0.46.0 ([3b24174](https://github.com/d0ugal/filesystem-exporter/commit/3b24174e114c284dc3cfb57512cbba54485da6fc))
+* update module golang.org/x/net to v0.48.0 ([7eac298](https://github.com/d0ugal/filesystem-exporter/commit/7eac29824fb7bfc854b309be86dc1ebe7a920c78))
+* update module golang.org/x/sys to v0.39.0 ([2237282](https://github.com/d0ugal/filesystem-exporter/commit/2237282c8d4b8ecf2deab191c472a1739b2e7a14))
+* update opentelemetry-go monorepo to v1.39.0 ([7393c71](https://github.com/d0ugal/filesystem-exporter/commit/7393c7112f5dc3fc75901d562a018997635d13cb))
+* update opentelemetry-go-contrib monorepo to v0.64.0 ([7a9e8bd](https://github.com/d0ugal/filesystem-exporter/commit/7a9e8bd74be674cbaffa783fd46d34af344dd382))
+
 ## [2.1.11](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.10...v2.1.11) (2025-12-04)
 
 
