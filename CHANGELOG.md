@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.13](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.12...v2.1.13) (2025-12-12)
+
+
+### Bug Fixes
+
+* update module google.golang.org/protobuf to v1.36.11 ([e7fd401](https://github.com/d0ugal/filesystem-exporter/commit/e7fd4018b43d2bf69a863e101a389a2f37fc4789))
+
 ## [2.1.12](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.11...v2.1.12) (2025-12-11)
 
 
