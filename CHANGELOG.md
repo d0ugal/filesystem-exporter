@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.14](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.13...v2.1.14) (2025-12-14)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to 97cd9d5 ([9dc5487](https://github.com/d0ugal/filesystem-exporter/commit/9dc5487718976d9cdac61f3c450f0b78c96d0d9a))
+* update google.golang.org/genproto/googleapis/rpc digest to 97cd9d5 ([05b9dae](https://github.com/d0ugal/filesystem-exporter/commit/05b9daeac14e981c2cb732c920c1c1d21686db15))
+* update module github.com/d0ugal/promexporter to v1.14.5 ([7e441b5](https://github.com/d0ugal/filesystem-exporter/commit/7e441b52009b149f2a97eec6f38c2f03be3f4f7f))
+* update module github.com/d0ugal/promexporter to v1.14.6 ([f0523cb](https://github.com/d0ugal/filesystem-exporter/commit/f0523cb3fc0cdd6861bc5994ed0355f61f25a59a))
+* update module github.com/gabriel-vasile/mimetype to v1.4.12 ([eb3a298](https://github.com/d0ugal/filesystem-exporter/commit/eb3a29840de05f0d92dd2bd8716bbeffd4115a55))
+* update module github.com/go-playground/validator/v10 to v10.29.0 ([d2f1fde](https://github.com/d0ugal/filesystem-exporter/commit/d2f1fde5a2ddada8227a71b0460b171ea70e00d1))
+
 ## [2.1.13](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.12...v2.1.13) (2025-12-12)
 
 
