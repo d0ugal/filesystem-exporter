@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.17](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.16...v2.1.17) (2025-12-21)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.8 ([a0ff0c4](https://github.com/d0ugal/filesystem-exporter/commit/a0ff0c458816120edaf8d1bcfb9dde5b80231da9))
+* update module github.com/quic-go/quic-go to v0.58.0 ([a5020b7](https://github.com/d0ugal/filesystem-exporter/commit/a5020b7cb7d2dfc2d6ba5c4f2fd370946e6f4392))
+
 ## [2.1.16](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.15...v2.1.16) (2025-12-20)
 
 
