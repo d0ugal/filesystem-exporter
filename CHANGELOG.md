@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.20](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.19...v2.1.20) (2025-12-23)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.10 ([6b3f118](https://github.com/d0ugal/filesystem-exporter/commit/6b3f118b6e46d1f759445330cf617a166bd2e029))
+* update module google.golang.org/grpc to v1.78.0 ([7f18a1b](https://github.com/d0ugal/filesystem-exporter/commit/7f18a1b366ff8b8f2b5709832fbce9fbd679bdf0))
+
 ## [2.1.19](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.18...v2.1.19) (2025-12-23)
 
 
