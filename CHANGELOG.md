@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.22](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.21...v2.1.22) (2025-12-24)
+
+
+### Bug Fixes
+
+* update module github.com/go-playground/validator/v10 to v10.30.1 ([f6f5825](https://github.com/d0ugal/filesystem-exporter/commit/f6f5825c7764edc3cc8f82ad94fa36a6188fe2e4))
+
 ## [2.1.21](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.20...v2.1.21) (2025-12-23)
 
 
