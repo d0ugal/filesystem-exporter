@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.28](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.27...v2.1.28) (2026-01-10)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.16 ([ab3da84](https://github.com/d0ugal/filesystem-exporter/commit/ab3da840bc6ca573c39383e930a1fcc466d2c8d9))
+* update module golang.org/x/text to v0.33.0 ([07f2741](https://github.com/d0ugal/filesystem-exporter/commit/07f2741fe0b4d76378a8c9c7d87adcdb0b9c239c))
+
 ## [2.1.27](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.26...v2.1.27) (2026-01-08)
 
 
