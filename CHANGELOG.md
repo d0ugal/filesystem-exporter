@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.31](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.30...v2.1.31) (2026-01-16)
+
+
+### Bug Fixes
+
+* update dependency go to v1.25.6 ([f086bb8](https://github.com/d0ugal/filesystem-exporter/commit/f086bb89db596a947a5db055737b97d6d0271e9b))
+* update module github.com/klauspost/compress to v1.18.3 ([d86ccce](https://github.com/d0ugal/filesystem-exporter/commit/d86ccced355e8a02b1113816e43ee4088e0886db))
+
 ## [2.1.30](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.29...v2.1.30) (2026-01-14)
 
 
