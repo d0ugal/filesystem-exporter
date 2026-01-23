@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.33](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.32...v2.1.33) (2026-01-23)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to 409b4a9 ([fe4a98b](https://github.com/d0ugal/filesystem-exporter/commit/fe4a98bb6e09f8d23f03f95aac2a2b4ef7d82f75))
+* update google.golang.org/genproto/googleapis/api digest to 8e98ce8 ([f5847d9](https://github.com/d0ugal/filesystem-exporter/commit/f5847d9a170680798fdeb969859ab7fe5ef09fb4))
+* update google.golang.org/genproto/googleapis/api digest to b8f7ae3 ([b968de5](https://github.com/d0ugal/filesystem-exporter/commit/b968de5250b79d2a7d51f83cf1261d282f4b5331))
+* update google.golang.org/genproto/googleapis/rpc digest to 8e98ce8 ([7a22c5d](https://github.com/d0ugal/filesystem-exporter/commit/7a22c5dc0abfce80b4bedde684089e3625576a70))
+* update google.golang.org/genproto/googleapis/rpc digest to b8f7ae3 ([d7dab80](https://github.com/d0ugal/filesystem-exporter/commit/d7dab80ece4f15dfc93cead3c8e013e0e6e26bcd))
+* update module github.com/bytedance/sonic to v1.15.0 ([a196159](https://github.com/d0ugal/filesystem-exporter/commit/a196159832ceb8280663c740fee23fb022b4c926))
+* update module github.com/d0ugal/promexporter to v1.14.22 ([71194f3](https://github.com/d0ugal/filesystem-exporter/commit/71194f37c1be9b314e87e1bd87b768383dd3bb28))
+* update module github.com/d0ugal/promexporter to v1.14.23 ([d798f21](https://github.com/d0ugal/filesystem-exporter/commit/d798f21351bb463ce41b0172ff31b778cf55a5e2))
+* update module github.com/d0ugal/promexporter to v1.14.24 ([36738a8](https://github.com/d0ugal/filesystem-exporter/commit/36738a86947a86380230d525bc30f1032662a328))
+* update module github.com/grpc-ecosystem/grpc-gateway/v2 to v2.27.5 ([fb1036c](https://github.com/d0ugal/filesystem-exporter/commit/fb1036cd29d146f0e0572745e0c7b2c7ebe00173))
+
 ## [2.1.32](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.31...v2.1.32) (2026-01-17)
 
 
