@@ -32,7 +32,7 @@ RUN VERSION=${VERSION:-$(git describe --tags --always --dirty 2>/dev/null || ech
     -o filesystem-exporter ./cmd/main.go
 
 # Final stage
-FROM alpine:3.23.2
+FROM alpine:3.23.3@sha256:eb37f58646a901dc7727cf448cae36daaefaba79de33b5058dab79aa4c04aefb
 
 # Install ca-certificates for HTTPS and util-linux for ionice (I/O priority control)
 RUN apk --no-cache add ca-certificates util-linux
