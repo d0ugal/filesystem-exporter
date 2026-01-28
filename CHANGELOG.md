@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.34](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.33...v2.1.34) (2026-01-28)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to 8636f87 ([080ee3f](https://github.com/d0ugal/filesystem-exporter/commit/080ee3f8e18a6e62d527e92406cb4226ae3cdbab))
+* update google.golang.org/genproto/googleapis/api digest to d11affd ([6176b9f](https://github.com/d0ugal/filesystem-exporter/commit/6176b9fb6308b9c0cc3ff1829fd9e730ad1af680))
+* update google.golang.org/genproto/googleapis/rpc digest to 8636f87 ([4b848cf](https://github.com/d0ugal/filesystem-exporter/commit/4b848cf157fa4037992f143b76c068b1b7891469))
+* update google.golang.org/genproto/googleapis/rpc digest to d11affd ([cf14339](https://github.com/d0ugal/filesystem-exporter/commit/cf1433972294cdf9e0d55834d86edc6f23196951))
+* update module github.com/d0ugal/promexporter to v1.14.25 ([278bff8](https://github.com/d0ugal/filesystem-exporter/commit/278bff86b91911f8b3ee4416beb28e63ba433834))
+
 ## [2.1.33](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.32...v2.1.33) (2026-01-23)
 
 
