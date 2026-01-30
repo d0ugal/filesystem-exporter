@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.35](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.34...v2.1.35) (2026-01-30)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.26 ([ee3b46d](https://github.com/d0ugal/filesystem-exporter/commit/ee3b46d35e7defbd9252562b8dd07c081c3d7e1c))
+* update module github.com/grpc-ecosystem/grpc-gateway/v2 to v2.27.6 ([ab87d5b](https://github.com/d0ugal/filesystem-exporter/commit/ab87d5b9d5ebccc8f1122b3f2277d8597215aad2))
+* update module github.com/grpc-ecosystem/grpc-gateway/v2 to v2.27.7 ([11f6e98](https://github.com/d0ugal/filesystem-exporter/commit/11f6e98adab4020ba5f9696b07135482f365508e))
+
 ## [2.1.34](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.33...v2.1.34) (2026-01-28)
 
 
