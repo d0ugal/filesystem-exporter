@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.36](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.35...v2.1.36) (2026-02-18)
+
+
+### Bug Fixes
+
+* update dependency go to v1.26.0 ([038f19f](https://github.com/d0ugal/filesystem-exporter/commit/038f19fe204e795237e38720f676d2bcbda2cdc5))
+* update google.golang.org/genproto/googleapis/api digest to 42d3e9b ([6ad86bb](https://github.com/d0ugal/filesystem-exporter/commit/6ad86bbb5b1c46884cb18be0c5996074d04ec3d7))
+* update google.golang.org/genproto/googleapis/api digest to 4cfbd41 ([deaf62c](https://github.com/d0ugal/filesystem-exporter/commit/deaf62c985d2ac9d14bc94550fa35746f7fedb53))
+* update google.golang.org/genproto/googleapis/api digest to a2cb227 ([1446a94](https://github.com/d0ugal/filesystem-exporter/commit/1446a9428c5f28578dc0e46ac5a1eaae69eab8ec))
+* update google.golang.org/genproto/googleapis/rpc digest to 42d3e9b ([83cce48](https://github.com/d0ugal/filesystem-exporter/commit/83cce48ceab5334dedf822ee8b9a5e38f572c14f))
+* update google.golang.org/genproto/googleapis/rpc digest to 4cfbd41 ([310a19e](https://github.com/d0ugal/filesystem-exporter/commit/310a19ed5541747815644cc29216ffc4fdd49103))
+* update module github.com/grpc-ecosystem/grpc-gateway/v2 to v2.27.8 ([85592fa](https://github.com/d0ugal/filesystem-exporter/commit/85592fa2f200dd08120153d29ebbafff1c8a4d32))
+* update module github.com/grpc-ecosystem/grpc-gateway/v2 to v2.28.0 ([41da3be](https://github.com/d0ugal/filesystem-exporter/commit/41da3beb6380e97c298c8c7b47bbed8649455e5f))
+* update module github.com/klauspost/compress to v1.18.4 ([37ab5f6](https://github.com/d0ugal/filesystem-exporter/commit/37ab5f62f925ea4f3ca4afcc7c25e6abb3bbad7e))
+* update module golang.org/x/arch to v0.24.0 ([0b39eca](https://github.com/d0ugal/filesystem-exporter/commit/0b39ecac09dabc8faf06f11c6af0c9cd11d883c3))
+* update module golang.org/x/crypto to v0.48.0 ([112495b](https://github.com/d0ugal/filesystem-exporter/commit/112495bd6463a467547a45bcd89731a47478e1db))
+* update module golang.org/x/net to v0.50.0 ([e0cfa7c](https://github.com/d0ugal/filesystem-exporter/commit/e0cfa7c640878d7af8329352c0b8c2f4698f5a93))
+* update module golang.org/x/sys to v0.41.0 ([ff623a0](https://github.com/d0ugal/filesystem-exporter/commit/ff623a0ca7bb8dbaac5c3ae4ebcd0da351ddaf70))
+* update module google.golang.org/grpc to v1.79.0 ([a100def](https://github.com/d0ugal/filesystem-exporter/commit/a100defb25c5cb3890c8a579a2432f13176e2cad))
+* update module google.golang.org/grpc to v1.79.1 ([df231cb](https://github.com/d0ugal/filesystem-exporter/commit/df231cb5eef0bbfcd12d933414499d2d555612e8))
+
 ## [2.1.35](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.34...v2.1.35) (2026-02-05)
 
 
