@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.37](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.36...v2.1.37) (2026-03-23)
+
+
+### Bug Fixes
+
+* suppress gosec G706/G115 false positives with nolint comments ([8498032](https://github.com/d0ugal/filesystem-exporter/commit/849803228f7a3b52d88960aea5019b10808e0b6b))
+
 ## [2.1.36](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.35...v2.1.36) (2026-03-23)
 
 
