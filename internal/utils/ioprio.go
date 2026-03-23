@@ -47,7 +47,7 @@ func SetIOIdlePriority() error {
 
 	sysno := uintptr(sysIoprioSet)
 
-	_, _, errno := unix.Syscall(sysno, IOPRIO_WHO_PROCESS, 0, uintptr(ioprio))
+	_, _, errno := unix.Syscall(sysno, IOPRIO_WHO_PROCESS, 0, uintptr(ioprio)) //nolint:gosec // G115: ioprio is constructed from known-small constants, no overflow possible
 
 	var err error
 	if errno != 0 {
@@ -78,7 +78,7 @@ func SetIOIdlePriorityForProcess(pid int) error {
 
 	sysno := uintptr(sysIoprioSet)
 
-	_, _, errno := unix.Syscall(sysno, IOPRIO_WHO_PROCESS, uintptr(pid), uintptr(ioprio))
+	_, _, errno := unix.Syscall(sysno, IOPRIO_WHO_PROCESS, uintptr(pid), uintptr(ioprio)) //nolint:gosec // G115: pid and ioprio are bounded values passed to a syscall, no overflow risk
 
 	var err error
 	if errno != 0 {
