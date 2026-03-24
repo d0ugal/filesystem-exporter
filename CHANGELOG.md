@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.38](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.37...v2.1.38) (2026-03-24)
+
+
+### Bug Fixes
+
+* update module github.com/pelletier/go-toml/v2 to v2.3.0 ([26e64bd](https://github.com/d0ugal/filesystem-exporter/commit/26e64bd1199f9eeb5092bb6ac9eab545246e4a48))
+
 ## [2.1.37](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.36...v2.1.37) (2026-03-23)
 
 
