@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.40](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.39...v2.1.40) (2026-03-26)
+
+
+### Bug Fixes
+
+* update module github.com/grafana/pyroscope-go to v1.2.8 ([1d2f802](https://github.com/d0ugal/filesystem-exporter/commit/1d2f802a641abf68e15c3570773afedc403ac5a2))
+
 ## [2.1.39](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.38...v2.1.39) (2026-03-25)
 
 
