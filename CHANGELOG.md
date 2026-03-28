@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.41](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.40...v2.1.41) (2026-03-28)
+
+
+### Bug Fixes
+
+* update module github.com/bytedance/sonic/loader to v0.5.1 ([f3f06df](https://github.com/d0ugal/filesystem-exporter/commit/f3f06dfb84087f1b3464eb08b7f6a02c7399ed24))
+* update module github.com/d0ugal/promexporter to v1.14.29 ([be3f888](https://github.com/d0ugal/filesystem-exporter/commit/be3f888da55a845785194b58a6f5c520799cbea3))
+* update module github.com/gin-contrib/sse to v1.1.1 ([24e7ef7](https://github.com/d0ugal/filesystem-exporter/commit/24e7ef76944e26e610216131f5445f5a51ad9c65))
+
 ## [2.1.40](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.39...v2.1.40) (2026-03-26)
 
 
