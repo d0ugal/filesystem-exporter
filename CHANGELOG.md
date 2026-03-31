@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.42](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.41...v2.1.42) (2026-03-31)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to d5a96ad ([0346440](https://github.com/d0ugal/filesystem-exporter/commit/0346440f62504a08b675863b11cae632d38b4aa3))
+* update google.golang.org/genproto/googleapis/rpc digest to d5a96ad ([5aed5af](https://github.com/d0ugal/filesystem-exporter/commit/5aed5afa45ab5459b5b908dee6b4328f51d163bf))
+* update module github.com/d0ugal/promexporter to v1.14.30 ([7790721](https://github.com/d0ugal/filesystem-exporter/commit/7790721b1b1331851a4be3b6c3d462194e457127))
+* update module github.com/go-playground/validator/v10 to v10.30.2 ([e64bc98](https://github.com/d0ugal/filesystem-exporter/commit/e64bc9831463fecaf31081b0fc60a51ab352543f))
+
 ## [2.1.41](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.40...v2.1.41) (2026-03-28)
 
 
