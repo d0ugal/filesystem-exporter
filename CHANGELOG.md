@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.46](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.45...v2.1.46) (2026-04-03)
+
+
+### Bug Fixes
+
+* update opentelemetry-go monorepo to v1.43.0 ([4a2b1d9](https://github.com/d0ugal/filesystem-exporter/commit/4a2b1d983bad906401c8b856bbac0b12d629c056))
+
 ## [2.1.45](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.44...v2.1.45) (2026-04-01)
 
 
