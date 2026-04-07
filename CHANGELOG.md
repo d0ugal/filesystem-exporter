@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.49](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.48...v2.1.49) (2026-04-07)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.34 ([063f728](https://github.com/d0ugal/filesystem-exporter/commit/063f72891f0f72560ff76bc4daa3eb089632060c))
+* update opentelemetry-go-contrib monorepo to v0.68.0 ([2dcf756](https://github.com/d0ugal/filesystem-exporter/commit/2dcf756686a4821e771c873a9bf343ab4659365a))
+
 ## [2.1.48](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.47...v2.1.48) (2026-04-07)
 
 
