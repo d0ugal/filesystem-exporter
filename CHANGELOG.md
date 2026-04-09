@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.54](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.53...v2.1.54) (2026-04-09)
+
+
+### Bug Fixes
+
+* update module golang.org/x/crypto to v0.50.0 ([fc16e39](https://github.com/d0ugal/filesystem-exporter/commit/fc16e3937864440ae41b55ee74435498a7c1cbcb))
+* update module golang.org/x/text to v0.36.0 ([6623602](https://github.com/d0ugal/filesystem-exporter/commit/662360264d5c462bf7cbc344bc6e865622716fff))
+
 ## [2.1.53](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.52...v2.1.53) (2026-04-09)
 
 
