@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.52](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.51...v2.1.52) (2026-04-09)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.36 ([229c46e](https://github.com/d0ugal/filesystem-exporter/commit/229c46e4a210174fd90bd449fc0bce997f04a25b))
+* update module github.com/mattn/go-isatty to v0.0.21 ([81ec395](https://github.com/d0ugal/filesystem-exporter/commit/81ec3958538bc843e4e278d2096cd80154ef2e46))
+* update module golang.org/x/sys to v0.43.0 ([9c12d61](https://github.com/d0ugal/filesystem-exporter/commit/9c12d6138d0e6870a61621a0bab8e892d3cb7304))
+
 ## [2.1.51](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.50...v2.1.51) (2026-04-08)
 
 
