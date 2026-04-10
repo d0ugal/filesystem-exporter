@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.56](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.55...v2.1.56) (2026-04-10)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.39 ([2fd23d4](https://github.com/d0ugal/filesystem-exporter/commit/2fd23d496bb1ef04ceafb423b12550f726c0c4fb))
+* update module golang.org/x/arch to v0.26.0 ([19c6058](https://github.com/d0ugal/filesystem-exporter/commit/19c6058fead1abecffe7321b1988df4b42480ca6))
+
 ## [2.1.55](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.54...v2.1.55) (2026-04-10)
 
 
