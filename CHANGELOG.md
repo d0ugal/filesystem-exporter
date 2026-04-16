@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.58](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.57...v2.1.58) (2026-04-16)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to 85fdc51 ([a96aada](https://github.com/d0ugal/filesystem-exporter/commit/a96aadaf5a9d815137f4f0e5dd86b3ebba867bb1))
+* update google.golang.org/genproto/googleapis/api digest to afd174a ([469cc34](https://github.com/d0ugal/filesystem-exporter/commit/469cc34185dc0b0727ea6001a0ed810d2502688c))
+* update google.golang.org/genproto/googleapis/rpc digest to afd174a ([8fb916a](https://github.com/d0ugal/filesystem-exporter/commit/8fb916a03d18cdb00aa51d02b387a500f93f7d7b))
+* update module github.com/grpc-ecosystem/grpc-gateway/v2 to v2.29.0 ([a32db6d](https://github.com/d0ugal/filesystem-exporter/commit/a32db6d8a58ef89578b7eb61ed204e230bc64bc2))
+* update module go.mongodb.org/mongo-driver/v2 to v2.5.1 ([40c82b6](https://github.com/d0ugal/filesystem-exporter/commit/40c82b66b9e17ad41751e590a4ffef30002b70c8))
+
 ## [2.1.57](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.56...v2.1.57) (2026-04-11)
 
 
