@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.63](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.62...v2.1.63) (2026-04-23)
+
+
+### Bug Fixes
+
+* remove trailing blank line in commits.yml ([95fcfb2](https://github.com/d0ugal/filesystem-exporter/commit/95fcfb2b7d655ea1adaa3ede219bcb1c729d02f6))
+* update module github.com/d0ugal/promexporter to v1.14.43 ([f03802f](https://github.com/d0ugal/filesystem-exporter/commit/f03802f58b886918c956718cbb09e2c88cc9c3ef))
+
 ## [2.1.62](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.61...v2.1.62) (2026-04-21)
 
 
