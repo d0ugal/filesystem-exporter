@@ -84,6 +84,7 @@ func applyEnvVars(cfg *Config) error {
 	if address := os.Getenv("FILESYSTEM_EXPORTER_SERVER_ADDRESS"); address != "" {
 		if host, portStr, err := net.SplitHostPort(address); err == nil {
 			cfg.Server.Host = host
+
 			if port, err := strconv.Atoi(portStr); err != nil {
 				return fmt.Errorf("invalid server port in address: %w", err)
 			} else {
