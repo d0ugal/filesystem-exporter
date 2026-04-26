@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.64](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.63...v2.1.64) (2026-04-26)
+
+
+### Bug Fixes
+
+* make yaml optional and always overlay env vars on config ([6a353fc](https://github.com/d0ugal/filesystem-exporter/commit/6a353fc6a12f84f6d8836917c2fbbffff53be9ca))
+
 ## [2.1.63](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.62...v2.1.63) (2026-04-23)
 
 
