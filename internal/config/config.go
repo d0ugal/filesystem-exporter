@@ -43,26 +43,29 @@ type DirectoryGroup struct {
 	Timeout            Duration `yaml:"timeout"` // Timeout for du command execution (default: 5m)
 }
 
-// LoadConfig loads configuration from a YAML file
-func LoadConfig(path string, configFromEnv bool) (*Config, error) {
-	if configFromEnv {
-		return loadFromEnv()
-	}
-
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read config file: %w", err)
-	}
-
+// LoadConfig loads configuration from an optional YAML file, then overlays environment variables.
+func LoadConfig(path string) (*Config, error) {
 	var config Config
-	if err := yaml.Unmarshal(data, &config); err != nil {
-		return nil, fmt.Errorf("failed to parse config file: %w", err)
+
+	if path != "" {
+		data, err := os.ReadFile(path)
+		if err == nil {
+			if err := yaml.Unmarshal(data, &config); err != nil {
+				return nil, fmt.Errorf("failed to parse config file %s: %w", path, err)
+			}
+		} else if !os.IsNotExist(err) {
+			return nil, fmt.Errorf("failed to read config file %s: %w", path, err)
+		}
 	}
 
 	// Apply generic environment variables (TRACING_ENABLED, PROFILING_ENABLED, etc.)
-	// These are handled by promexporter and are shared across all exporters
 	if err := promexporter_config.ApplyGenericEnvVars(&config.BaseConfig); err != nil {
 		return nil, fmt.Errorf("failed to apply generic environment variables: %w", err)
+	}
+
+	// Overlay exporter-specific environment variables
+	if err := applyEnvVars(&config); err != nil {
+		return nil, fmt.Errorf("failed to apply environment overrides: %w", err)
 	}
 
 	// Set defaults
@@ -76,85 +79,42 @@ func LoadConfig(path string, configFromEnv bool) (*Config, error) {
 	return &config, nil
 }
 
-// loadFromEnv loads configuration from environment variables
-func loadFromEnv() (*Config, error) {
-	config := &Config{}
-
-	// Load base configuration from environment
-	baseConfig := &promexporter_config.BaseConfig{}
-
-	// Server configuration
+// applyEnvVars overlays FILESYSTEM_EXPORTER_* environment variables onto cfg.
+func applyEnvVars(cfg *Config) error {
 	if address := os.Getenv("FILESYSTEM_EXPORTER_SERVER_ADDRESS"); address != "" {
-		// Parse host:port from address
 		if host, portStr, err := net.SplitHostPort(address); err == nil {
-			baseConfig.Server.Host = host
-
+			cfg.Server.Host = host
 			if port, err := strconv.Atoi(portStr); err != nil {
-				return nil, fmt.Errorf("invalid server port in address: %w", err)
+				return fmt.Errorf("invalid server port in address: %w", err)
 			} else {
-				baseConfig.Server.Port = port
+				cfg.Server.Port = port
 			}
 		} else {
-			return nil, fmt.Errorf("invalid server address format: %w", err)
+			return fmt.Errorf("invalid server address format: %w", err)
 		}
-	} else {
-		baseConfig.Server.Host = "0.0.0.0"
-		baseConfig.Server.Port = 8080
 	}
 
-	// Logging configuration
 	if level := os.Getenv("FILESYSTEM_EXPORTER_LOGGING_LEVEL"); level != "" {
-		baseConfig.Logging.Level = level
-	} else {
-		baseConfig.Logging.Level = "info"
+		cfg.Logging.Level = level
 	}
 
 	if format := os.Getenv("FILESYSTEM_EXPORTER_LOGGING_FORMAT"); format != "" {
-		baseConfig.Logging.Format = format
-	} else {
-		baseConfig.Logging.Format = "json"
+		cfg.Logging.Format = format
 	}
 
-	// Metrics configuration
 	if intervalStr := os.Getenv("FILESYSTEM_EXPORTER_METRICS_COLLECTION_DEFAULT_INTERVAL"); intervalStr != "" {
 		if interval, err := time.ParseDuration(intervalStr); err != nil {
-			return nil, fmt.Errorf("invalid metrics default interval: %w", err)
+			return fmt.Errorf("invalid metrics default interval: %w", err)
 		} else {
-			baseConfig.Metrics.Collection.DefaultInterval = promexporter_config.Duration{Duration: interval}
-			baseConfig.Metrics.Collection.DefaultIntervalSet = true
+			cfg.Metrics.Collection.DefaultInterval = promexporter_config.Duration{Duration: interval}
+			cfg.Metrics.Collection.DefaultIntervalSet = true
 		}
-	} else {
-		baseConfig.Metrics.Collection.DefaultInterval = promexporter_config.Duration{Duration: time.Second * 30}
 	}
 
-	// Tracing configuration
-	if enabledStr := os.Getenv("TRACING_ENABLED"); enabledStr != "" {
-		enabled := enabledStr == "true"
-		baseConfig.Tracing.Enabled = &enabled
-	}
+	// Append directories defined in environment variables
+	cfg.loadDirectoriesFromEnv()
 
-	if serviceName := os.Getenv("TRACING_SERVICE_NAME"); serviceName != "" {
-		baseConfig.Tracing.ServiceName = serviceName
-	}
-
-	if endpoint := os.Getenv("TRACING_ENDPOINT"); endpoint != "" {
-		baseConfig.Tracing.Endpoint = endpoint
-	}
-
-	config.BaseConfig = *baseConfig
-
-	// Load directories from environment variables
-	config.loadDirectoriesFromEnv()
-
-	// Set defaults for any missing values
-	setDefaults(config)
-
-	// Validate configuration
-	if err := config.Validate(); err != nil {
-		return nil, fmt.Errorf("configuration validation failed: %w", err)
-	}
-
-	return config, nil
+	return nil
 }
 
 // loadDirectoriesFromEnv loads directory configuration from environment variables

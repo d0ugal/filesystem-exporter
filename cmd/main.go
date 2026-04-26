@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
@@ -32,29 +33,20 @@ func main() {
 		os.Exit(0)
 	}
 
-	// Check if we should use environment variables
-	configFromEnv := os.Getenv("FILESYSTEM_EXPORTER_CONFIG_FROM_ENV") == "true"
-
-	// Load configuration
-	var (
-		cfg *config.Config
-		err error
-	)
-
-	if configFromEnv {
-		cfg, err = config.LoadConfig("", true)
-	} else {
-		// Use environment variable if config flag is not provided
-		if configPath == "" {
-			if envConfig := os.Getenv("CONFIG_PATH"); envConfig != "" {
-				configPath = envConfig
-			} else {
-				configPath = "config.yaml"
-			}
-		}
-
-		cfg, err = config.LoadConfig(configPath, false)
+	if os.Getenv("FILESYSTEM_EXPORTER_CONFIG_FROM_ENV") == "true" {
+		fmt.Fprintln(os.Stderr, "Warning: FILESYSTEM_EXPORTER_CONFIG_FROM_ENV is deprecated and has no effect. Env vars are always applied on top of yaml config.")
 	}
+
+	// Use environment variable if config flag is not provided
+	if configPath == "" {
+		if envConfig := os.Getenv("CONFIG_PATH"); envConfig != "" {
+			configPath = envConfig
+		} else {
+			configPath = "config.yaml"
+		}
+	}
+
+	cfg, err := config.LoadConfig(configPath)
 
 	if err != nil {
 		slog.Error("Failed to load configuration", "error", err, "path", configPath) //nolint:gosec // G706: configPath is from CLI/env, not HTTP input; slog structures the value safely
