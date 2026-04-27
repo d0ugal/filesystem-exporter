@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.66](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.65...v2.1.66) (2026-04-27)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to 7cedc36 ([45908b9](https://github.com/d0ugal/filesystem-exporter/commit/45908b9c655ebc5c830bf517d665d2ed58bfe1fe))
+* update google.golang.org/genproto/googleapis/rpc digest to 7cedc36 ([b559004](https://github.com/d0ugal/filesystem-exporter/commit/b5590040034d5051d86744d53bd36d2bd5084417))
+* update module github.com/bytedance/sonic to v1.15.1 ([8d72d07](https://github.com/d0ugal/filesystem-exporter/commit/8d72d07a9796d33fa4725370c00368cd9c640aea))
+* update module github.com/d0ugal/promexporter to v1.14.45 ([05449dd](https://github.com/d0ugal/filesystem-exporter/commit/05449dde6c20ef42b8cc34ed499194baec717760))
+
 ## [2.1.65](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.64...v2.1.65) (2026-04-27)
 
 
