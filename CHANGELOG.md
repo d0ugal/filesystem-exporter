@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.65](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.64...v2.1.65) (2026-04-27)
+
+
+### Bug Fixes
+
+* update module github.com/mattn/go-isatty to v0.0.22 ([3bdd0cb](https://github.com/d0ugal/filesystem-exporter/commit/3bdd0cb7aaba1d55e7f8a70040c244b43c4dadaf))
+
 ## [2.1.64](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.63...v2.1.64) (2026-04-26)
 
 
