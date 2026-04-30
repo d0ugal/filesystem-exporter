@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.67](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.66...v2.1.67) (2026-04-30)
+
+
+### Bug Fixes
+
+* update module github.com/cloudwego/base64x to v0.1.7 ([df64f5b](https://github.com/d0ugal/filesystem-exporter/commit/df64f5bb253ab31504a1e71769ecc84f2ccaf99b))
+* update module github.com/d0ugal/promexporter to v1.14.46 ([01b0673](https://github.com/d0ugal/filesystem-exporter/commit/01b0673504edf545087036b8458069d74ed1d8ae))
+* update module github.com/klauspost/compress to v1.18.6 ([8c37e39](https://github.com/d0ugal/filesystem-exporter/commit/8c37e39dc55999d5164e601db0270d181a6f4031))
+
 ## [2.1.66](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.65...v2.1.66) (2026-04-27)
 
 
