@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.68](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.67...v2.1.68) (2026-05-01)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.47 ([33f6c69](https://github.com/d0ugal/filesystem-exporter/commit/33f6c69e604c2e3b89952465e85dcd8847b1dccc))
+* update module github.com/pelletier/go-toml/v2 to v2.3.1 ([af414ea](https://github.com/d0ugal/filesystem-exporter/commit/af414ea03009f0f7cacc48b8be40cbd671668fb8))
+
 ## [2.1.67](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.66...v2.1.67) (2026-04-30)
 
 
