@@ -48,7 +48,7 @@ func main() {
 
 	cfg, err := config.LoadConfig(configPath)
 	if err != nil {
-		slog.Error("Failed to load configuration", "error", err, "path", configPath) //nolint:gosec // G706: configPath is from CLI/env, not HTTP input; slog structures the value safely
+		slog.Error("Failed to load configuration", "error", err, "path", configPath)
 		os.Exit(1)
 	}
 
@@ -59,7 +59,7 @@ func main() {
 	})
 
 	// Validation already checks that at least one filesystem or directory is configured
-	slog.Info("Initializing filesystem-exporter", //nolint:gosec // G706: values are from trusted config/system, not user HTTP input
+	slog.Info("Initializing filesystem-exporter",
 		"pid", os.Getpid(),
 		"num_directories", len(cfg.Directories),
 		"num_filesystems", len(cfg.Filesystems))
