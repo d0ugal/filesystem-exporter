@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.69](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.68...v2.1.69) (2026-05-02)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.48 ([83a5ddf](https://github.com/d0ugal/filesystem-exporter/commit/83a5ddfc499eb355a99b7fcf056b170210704845))
+
 ## [2.1.68](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.67...v2.1.68) (2026-05-01)
 
 
