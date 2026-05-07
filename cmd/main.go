@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -70,23 +69,19 @@ func main() {
 	// Add custom metrics to the registry
 	filesystemRegistry := metrics.NewFilesystemRegistry(metricsRegistry)
 
-	// Build application with promexporter
+	// Build the app first (without the collector) so we can get its tracer
+	// to wire into the coordinator. Then re-build with the collector attached
+	// so app.Run() owns the coordinator's lifecycle and SIGTERM cancels its
+	// context cleanly instead of leaking goroutines under context.Background().
 	application := app.New("Filesystem Exporter").
 		WithConfig(&cfg.BaseConfig).
 		WithMetrics(metricsRegistry).
 		WithVersionInfo(version.Version, version.Commit, version.BuildDate).
 		Build()
 
-	// Get tracer for OTEL tracing
 	tracer := application.GetTracer()
-
-	// Create coordinator
 	coord := coordinator.NewCoordinator(cfg, filesystemRegistry, tracer)
-
-	// Start coordinator (will be started when app.Run() is called)
-	// We need to pass a context - use context.Background() for now
-	// The app will manage its own context
-	coord.Start(context.Background())
+	application.WithCollector(coord)
 
 	slog.Info("Initialization complete, starting application.Run()",
 		"pid", os.Getpid())
