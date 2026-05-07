@@ -8,7 +8,6 @@ import (
 
 	"filesystem-exporter/internal/config"
 	"filesystem-exporter/internal/metrics"
-
 	promexporter_config "github.com/d0ugal/promexporter/config"
 	promexporter_metrics "github.com/d0ugal/promexporter/metrics"
 )
