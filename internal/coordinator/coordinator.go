@@ -65,7 +65,11 @@ func NewCoordinator(cfg *config.Config, m *metrics.FilesystemRegistry, tracer *t
 	}
 }
 
-// Start starts all components
+// Start starts all components. The supplied context controls the lifetime of
+// every goroutine spawned by the coordinator (workers, scheduler tickers,
+// goroutine-count updater, queue-depth updater). Cancelling it shuts everything
+// down cleanly; this is what allows promexporter's app.Run() to manage our
+// lifecycle via app.WithCollector.
 func (c *Coordinator) Start(ctx context.Context) {
 	ctx, span := c.startSpan(ctx, "coordinator.start")
 	defer span.End()
@@ -88,6 +92,11 @@ func (c *Coordinator) Start(ctx context.Context) {
 	span.AddEvent("coordinator_started")
 	slog.Info("Coordinator started")
 }
+
+// Stop satisfies the promexporter app.Collector interface. All shutdown work is
+// driven by the context cancellation propagated from app.Run, so this is a
+// no-op — every goroutine spawned by Start respects ctx.Done().
+func (c *Coordinator) Stop() {}
 
 // updateGoroutineCount periodically updates goroutine count metric
 func (c *Coordinator) updateGoroutineCount(ctx context.Context) {
