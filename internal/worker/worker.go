@@ -16,7 +16,6 @@ import (
 	"filesystem-exporter/internal/metrics"
 	"filesystem-exporter/internal/queue"
 	"filesystem-exporter/internal/state"
-	"filesystem-exporter/internal/utils"
 	"github.com/d0ugal/promexporter/tracing"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -441,11 +440,6 @@ func (w *Worker) executeDuCommand(ctx context.Context, path string, timeout time
 
 	cmd := exec.CommandContext(timeoutCtx, "du", "-s", "-x", path)
 
-	// Set I/O priority
-	if err := utils.SetupCommandWithIOPriority(cmd); err != nil {
-		slog.Debug("Failed to set I/O priority", "error", err)
-	}
-
 	execStart := time.Now()
 	output, err := cmd.Output()
 	execDuration := time.Since(execStart)
@@ -497,11 +491,6 @@ func (w *Worker) executeDuCommandWithDepth(ctx context.Context, path string, max
 	// Note: BusyBox du uses -d instead of --max-depth
 	// Note: We don't use -s (summarize) here because it conflicts with -d
 	cmd := exec.CommandContext(timeoutCtx, "du", "-x", "-d", strconv.Itoa(maxDepth), path)
-
-	// Set I/O priority
-	if err := utils.SetupCommandWithIOPriority(cmd); err != nil {
-		slog.Debug("Failed to set I/O priority", "error", err)
-	}
 
 	execStart := time.Now()
 	output, err := cmd.Output()
