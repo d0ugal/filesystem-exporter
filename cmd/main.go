@@ -32,10 +32,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	if os.Getenv("FILESYSTEM_EXPORTER_CONFIG_FROM_ENV") == "true" {
-		fmt.Fprintln(os.Stderr, "Warning: FILESYSTEM_EXPORTER_CONFIG_FROM_ENV is deprecated and has no effect. Env vars are always applied on top of yaml config.")
-	}
-
 	// Use environment variable if config flag is not provided
 	if configPath == "" {
 		if envConfig := os.Getenv("CONFIG_PATH"); envConfig != "" {
