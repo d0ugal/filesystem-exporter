@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.75](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.74...v2.1.75) (2026-05-14)
+
+
+### Bug Fixes
+
+* update module google.golang.org/grpc to v1.81.1 ([82c1e71](https://github.com/d0ugal/filesystem-exporter/commit/82c1e71a01769401de5d2a1be43ea6f368405b5a))
+
 ## [2.1.74](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.73...v2.1.74) (2026-05-12)
 
 
