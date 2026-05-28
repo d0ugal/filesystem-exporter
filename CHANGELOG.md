@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.81](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.80...v2.1.81) (2026-05-28)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.60 ([2a709c8](https://github.com/d0ugal/filesystem-exporter/commit/2a709c82a80fabeaac1e9e0069e50f98031af4fd))
+* update module github.com/grafana/pyroscope-go to v1.3.1 ([bcd16c2](https://github.com/d0ugal/filesystem-exporter/commit/bcd16c2c839630cb4d42781f5fe32c20726de058))
+* update opentelemetry-go monorepo to v1.44.0 ([a60ab22](https://github.com/d0ugal/filesystem-exporter/commit/a60ab2231abc107705bd0d175a5c8349514ac326))
+* update opentelemetry-go-contrib monorepo to v0.69.0 ([aeb3747](https://github.com/d0ugal/filesystem-exporter/commit/aeb37471022f7f32dc6bd574919bcb929b85009d))
+
 ## [2.1.80](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.79...v2.1.80) (2026-05-27)
 
 
