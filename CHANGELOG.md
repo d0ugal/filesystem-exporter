@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.83](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.82...v2.1.83) (2026-06-03)
+
+
+### Bug Fixes
+
+* update go toolchain directive to v1.26.4 ([e3a973e](https://github.com/d0ugal/filesystem-exporter/commit/e3a973eb627b2b2c0cc26c86e8d049308e0fcb82))
+* update module github.com/d0ugal/promexporter to v1.14.62 ([47c1cd6](https://github.com/d0ugal/filesystem-exporter/commit/47c1cd61de4e782ed5d1a3d5cb96ca19a6bbbd2e))
+* update module github.com/go-playground/validator/v10 to v10.30.3 ([33d12b3](https://github.com/d0ugal/filesystem-exporter/commit/33d12b36b11267ea96015cd2bcf7a755ca55eb66))
+* update module github.com/prometheus/common to v0.68.1 ([ea33e35](https://github.com/d0ugal/filesystem-exporter/commit/ea33e3531b06bffde20f4632101e59e6f77b7cad))
+
 ## [2.1.82](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.81...v2.1.82) (2026-05-29)
 
 
