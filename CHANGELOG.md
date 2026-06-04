@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.84](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.83...v2.1.84) (2026-06-04)
+
+
+### Bug Fixes
+
+* update module github.com/bytedance/sonic to v1.15.2 ([141d578](https://github.com/d0ugal/filesystem-exporter/commit/141d578c7e5fc29f8bcdbdc16efeddce7b0546d3))
+* update module github.com/d0ugal/promexporter to v1.14.63 ([ba2a0e3](https://github.com/d0ugal/filesystem-exporter/commit/ba2a0e3cb47dcb960e368260a65663487b1b4eb5))
+
 ## [2.1.83](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.82...v2.1.83) (2026-06-03)
 
 
