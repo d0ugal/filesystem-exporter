@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.87](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.86...v2.1.87) (2026-06-10)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to 4308a22 ([51c1ba0](https://github.com/d0ugal/filesystem-exporter/commit/51c1ba0b7b3903d5ac9400a3c496f62e44d73211))
+* update google.golang.org/genproto/googleapis/rpc digest to 4308a22 ([3706e88](https://github.com/d0ugal/filesystem-exporter/commit/3706e887f47c881d05ddf669481cd330404764c2))
+* update module golang.org/x/arch to v0.28.0 ([02fce12](https://github.com/d0ugal/filesystem-exporter/commit/02fce12304b6fc675744858edbe0703adc192961))
+* update module golang.org/x/crypto to v0.53.0 ([3a93510](https://github.com/d0ugal/filesystem-exporter/commit/3a93510f160ba9b8317968df8ae8a2ba63694baa))
+* update module golang.org/x/text to v0.38.0 ([48273a5](https://github.com/d0ugal/filesystem-exporter/commit/48273a5936f996f8d9bebf0db8a4a7db924f389c))
+
 ## [2.1.86](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.85...v2.1.86) (2026-06-07)
 
 
