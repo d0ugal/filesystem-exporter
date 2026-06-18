@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.89](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.88...v2.1.89) (2026-06-18)
+
+
+### Bug Fixes
+
+* update module github.com/cenkalti/backoff/v5 to v6 ([7785014](https://github.com/d0ugal/filesystem-exporter/commit/7785014ed6d077a7007caf6a1f7972aa7e835c66))
+* update module github.com/pelletier/go-toml/v2 to v2.4.0 ([8a72294](https://github.com/d0ugal/filesystem-exporter/commit/8a72294a79ef526f1496a15b2eeb2339bfae50eb))
+* update module github.com/prometheus/common to v0.69.0 ([f42a799](https://github.com/d0ugal/filesystem-exporter/commit/f42a799c407c9fcaa404fcdf80004f3936e426d6))
+* update module go.mongodb.org/mongo-driver/v2 to v2.6.1 ([c832d4b](https://github.com/d0ugal/filesystem-exporter/commit/c832d4b97f47b3a48e4ff3abf76db690cb0f2aad))
+* update module go.mongodb.org/mongo-driver/v2 to v2.7.0 ([52e83f1](https://github.com/d0ugal/filesystem-exporter/commit/52e83f1869915a9647895d9f1a9f35201e4f7b0a))
+
 ## [2.1.88](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.87...v2.1.88) (2026-06-16)
 
 
