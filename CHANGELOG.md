@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.91](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.90...v2.1.91) (2026-06-24)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to 1f2690b ([27de57f](https://github.com/d0ugal/filesystem-exporter/commit/27de57fdfcc828550e66a79644b6eee0e3f63645))
+* update google.golang.org/genproto/googleapis/api digest to b703f56 ([a10967a](https://github.com/d0ugal/filesystem-exporter/commit/a10967ab0714ff2b6be1c7802a93c71b9f459828))
+* update google.golang.org/genproto/googleapis/rpc digest to b703f56 ([b3839d4](https://github.com/d0ugal/filesystem-exporter/commit/b3839d456b19b0508ec81627cd4ff1e5cbcfc5d3))
+* update module github.com/pelletier/go-toml/v2 to v2.4.1 ([2a48959](https://github.com/d0ugal/filesystem-exporter/commit/2a4895989813067a3e132ee29ce7180d11521467))
+* update module github.com/pelletier/go-toml/v2 to v2.4.2 ([6b56a1a](https://github.com/d0ugal/filesystem-exporter/commit/6b56a1a7c9369e0112326eb182554bd63bc5f6d2))
+
 ## [2.1.90](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.89...v2.1.90) (2026-06-19)
 
 
