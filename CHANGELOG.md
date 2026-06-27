@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.92](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.91...v2.1.92) (2026-06-27)
+
+
+### Bug Fixes
+
+* update module github.com/prometheus/procfs to v0.21.0 ([3335074](https://github.com/d0ugal/filesystem-exporter/commit/3335074043b87e872d959bf84400f63ba4fd9e5c))
+
 ## [2.1.91](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.90...v2.1.91) (2026-06-24)
 
 
