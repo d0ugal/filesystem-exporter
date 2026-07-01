@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.93](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.92...v2.1.93) (2026-07-01)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to 925bb5d ([6f084ea](https://github.com/d0ugal/filesystem-exporter/commit/6f084ea038d63f1d43e6b7e50080481dc8eeca49))
+* update google.golang.org/genproto/googleapis/rpc digest to 74b09df ([60f8868](https://github.com/d0ugal/filesystem-exporter/commit/60f8868b24ce00c4b2bd6a9dafad48bd8562da8d))
+* update google.golang.org/genproto/googleapis/rpc digest to 925bb5d ([74c71ff](https://github.com/d0ugal/filesystem-exporter/commit/74c71ff012d36b9e3aa61a092ddb488dba219f05))
+* update module github.com/cenkalti/backoff/v5 to v7 ([502c3ae](https://github.com/d0ugal/filesystem-exporter/commit/502c3ae6e5c81fb1a8fd7b1888f6f7cf76c1068a))
+* update module github.com/klauspost/compress to v1.18.7 ([868c29a](https://github.com/d0ugal/filesystem-exporter/commit/868c29a9244796c5709b0a29853c7f3ae44382e0))
+* update module github.com/klauspost/compress to v1.19.0 ([65d2cf7](https://github.com/d0ugal/filesystem-exporter/commit/65d2cf7b1ca32bfb593c0a88eb68bb8385e17ae5))
+* update module github.com/klauspost/cpuid/v2 to v2.4.0 ([175e6f4](https://github.com/d0ugal/filesystem-exporter/commit/175e6f4d13aa42e1f17e69d3a5bcc3bdedd73fda))
+* update module github.com/prometheus/procfs to v0.21.1 ([627d8e4](https://github.com/d0ugal/filesystem-exporter/commit/627d8e44e192bd4199d827b3314eb25adb5594c0))
+* update module google.golang.org/grpc to v1.82.0 ([56c2bbd](https://github.com/d0ugal/filesystem-exporter/commit/56c2bbd646c0bf5f203859bd6342a53fa585c18d))
+
 ## [2.1.92](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.91...v2.1.92) (2026-06-27)
 
 
