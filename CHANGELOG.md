@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.94](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.93...v2.1.94) (2026-07-05)
+
+
+### Bug Fixes
+
+* update module github.com/grafana/pyroscope-go to v1.4.0 ([82121d9](https://github.com/d0ugal/filesystem-exporter/commit/82121d98123ea7bc4cc959b38bfc3e2167dee25b))
+* update module github.com/pelletier/go-toml/v2 to v2.4.3 ([ca99025](https://github.com/d0ugal/filesystem-exporter/commit/ca9902578a00df21c0f9e32ab3cc2e22532b70da))
+
 ## [2.1.93](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.92...v2.1.93) (2026-07-01)
 
 
