@@ -2,7 +2,7 @@ module filesystem-exporter
 
 go 1.25.0
 
-toolchain go1.26.4
+toolchain go1.26.5
 
 require (
 	github.com/d0ugal/promexporter v1.14.65
