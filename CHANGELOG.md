@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.97](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.96...v2.1.97) (2026-07-09)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.66 ([39866be](https://github.com/d0ugal/filesystem-exporter/commit/39866bebbfba0be5315b6b0d17f3c28d9f357a15))
+* update module golang.org/x/arch to v0.29.0 ([b9a0ab4](https://github.com/d0ugal/filesystem-exporter/commit/b9a0ab413eddedff86c88ddca3873d108f3f9e61))
+* update module golang.org/x/crypto to v0.54.0 ([cedce97](https://github.com/d0ugal/filesystem-exporter/commit/cedce9760c84df3ad04a9816a4efcd6f45d265ed))
+* update module golang.org/x/net to v0.57.0 ([f610cc8](https://github.com/d0ugal/filesystem-exporter/commit/f610cc838fb8aeff83198a873a2a09c0eb0c2b2f))
+* update module golang.org/x/sys to v0.47.0 ([8799a1e](https://github.com/d0ugal/filesystem-exporter/commit/8799a1eb01191b462ad9762becf7544f63baad62))
+
 ## [2.1.96](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.95...v2.1.96) (2026-07-08)
 
 
