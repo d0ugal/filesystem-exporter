@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.98](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.97...v2.1.98) (2026-07-10)
+
+
+### Bug Fixes
+
+* update module github.com/grafana/pyroscope-go to v1.4.1 ([be6fd3b](https://github.com/d0ugal/filesystem-exporter/commit/be6fd3bf008d7987562185bf973e0ff66042934e))
+* update module github.com/grafana/pyroscope-go/godeltaprof to v0.1.12 ([6c682a8](https://github.com/d0ugal/filesystem-exporter/commit/6c682a832e29aa58b4de089ba1be17a2e214f98a))
+* update module github.com/prometheus/common to v0.70.0 ([4c061b0](https://github.com/d0ugal/filesystem-exporter/commit/4c061b0575e7fa56f81960cce6b9bf41cdc87b89))
+* update module go.mongodb.org/mongo-driver/v2 to v2.8.0 ([a7631ce](https://github.com/d0ugal/filesystem-exporter/commit/a7631ce5e0aa8f2903b60a3c7c73a430330a517d))
+
 ## [2.1.97](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.96...v2.1.97) (2026-07-09)
 
 
