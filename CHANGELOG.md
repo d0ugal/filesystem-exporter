@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.103](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.102...v2.1.103) (2026-08-20)
+
+
+### Bug Fixes
+
+* update go toolchain directive to v1.26.6 ([#935](https://github.com/d0ugal/filesystem-exporter/issues/935)) ([d5d2015](https://github.com/d0ugal/filesystem-exporter/commit/d5d20155b74d9d3c4475363ad24a8f61adca0276))
+* update go toolchain directive to v1.27.0 ([#948](https://github.com/d0ugal/filesystem-exporter/issues/948)) ([5d7fb52](https://github.com/d0ugal/filesystem-exporter/commit/5d7fb52ef4fb8ddba49abd50acff217131cf2d7c))
+* update google.golang.org/genproto/googleapis/api digest to 08b0e42 ([#943](https://github.com/d0ugal/filesystem-exporter/issues/943)) ([3091da2](https://github.com/d0ugal/filesystem-exporter/commit/3091da2b63722271077e717c131adfbaaa583a40))
+* update google.golang.org/genproto/googleapis/api digest to 1b09341 ([#940](https://github.com/d0ugal/filesystem-exporter/issues/940)) ([57b67a8](https://github.com/d0ugal/filesystem-exporter/commit/57b67a81a78b9f0c091ff9d7f1857f3aa4439664))
+* update google.golang.org/genproto/googleapis/api digest to 6ac0973 ([#917](https://github.com/d0ugal/filesystem-exporter/issues/917)) ([e6c702f](https://github.com/d0ugal/filesystem-exporter/commit/e6c702f7dd69dfe49a25b849c7dbe9372bd1a334))
+* update google.golang.org/genproto/googleapis/api digest to ac3dfec ([#938](https://github.com/d0ugal/filesystem-exporter/issues/938)) ([3cacaa5](https://github.com/d0ugal/filesystem-exporter/commit/3cacaa57a7df50c0b74bdd01e13d5a9906e09951))
+* update google.golang.org/genproto/googleapis/api digest to c8921c7 ([#924](https://github.com/d0ugal/filesystem-exporter/issues/924)) ([8501c7c](https://github.com/d0ugal/filesystem-exporter/commit/8501c7caa8445c063a5a5ed831238016ddfe1030))
+* update google.golang.org/genproto/googleapis/api digest to ec0a776 ([#927](https://github.com/d0ugal/filesystem-exporter/issues/927)) ([2626e4c](https://github.com/d0ugal/filesystem-exporter/commit/2626e4cc5d13f4b448734e32eeabc55d146e660a))
+* update google.golang.org/genproto/googleapis/rpc digest to 08b0e42 ([#944](https://github.com/d0ugal/filesystem-exporter/issues/944)) ([fce892e](https://github.com/d0ugal/filesystem-exporter/commit/fce892e400261a6154d47b67fe9824a593d49465))
+* update google.golang.org/genproto/googleapis/rpc digest to 1b09341 ([#941](https://github.com/d0ugal/filesystem-exporter/issues/941)) ([4b2b746](https://github.com/d0ugal/filesystem-exporter/commit/4b2b746f73faa3e5f290f11e13da903501183c4f))
+* update google.golang.org/genproto/googleapis/rpc digest to 6ac0973 ([#918](https://github.com/d0ugal/filesystem-exporter/issues/918)) ([7843d63](https://github.com/d0ugal/filesystem-exporter/commit/7843d63f93ff3b68f683c818dfb33ce261dea8af))
+* update google.golang.org/genproto/googleapis/rpc digest to ac3dfec ([#939](https://github.com/d0ugal/filesystem-exporter/issues/939)) ([097d48a](https://github.com/d0ugal/filesystem-exporter/commit/097d48a1773f6749702e4970ef62200d6c668486))
+* update google.golang.org/genproto/googleapis/rpc digest to c8921c7 ([#925](https://github.com/d0ugal/filesystem-exporter/issues/925)) ([298ea60](https://github.com/d0ugal/filesystem-exporter/commit/298ea6080a1bd5955e09c866832c5564d82ad466))
+* update google.golang.org/genproto/googleapis/rpc digest to ec0a776 ([#928](https://github.com/d0ugal/filesystem-exporter/issues/928)) ([55b2e70](https://github.com/d0ugal/filesystem-exporter/commit/55b2e701fd75f6a0cb8b181ee1e3a338c8142a2c))
+* update module github.com/d0ugal/promexporter to v1.14.68 ([#915](https://github.com/d0ugal/filesystem-exporter/issues/915)) ([dfc8727](https://github.com/d0ugal/filesystem-exporter/commit/dfc87274655a19478837ab44aab154b3cba20386))
+* update module github.com/d0ugal/promexporter to v1.14.69 ([#932](https://github.com/d0ugal/filesystem-exporter/issues/932)) ([be3e838](https://github.com/d0ugal/filesystem-exporter/commit/be3e8386b6aad591adc1b15b3eff80a7d48356c5))
+* update module github.com/grafana/pyroscope-go to v1.4.2 ([#930](https://github.com/d0ugal/filesystem-exporter/issues/930)) ([2496e3f](https://github.com/d0ugal/filesystem-exporter/commit/2496e3f517885503fba17b854a6ea449a1a3d416))
+* update module github.com/grpc-ecosystem/grpc-gateway/v2 to v2.30.0 ([#922](https://github.com/d0ugal/filesystem-exporter/issues/922)) ([547004e](https://github.com/d0ugal/filesystem-exporter/commit/547004e7f76ee92db45d7a1c3adbbdef4a0409c7))
+* update module github.com/klauspost/compress to v1.19.2 ([#923](https://github.com/d0ugal/filesystem-exporter/issues/923)) ([61d167a](https://github.com/d0ugal/filesystem-exporter/commit/61d167afbd1e7baf88b73710aec146bf4c7a180f))
+* update module github.com/ugorji/go/codec to v1.3.2 ([#920](https://github.com/d0ugal/filesystem-exporter/issues/920)) ([6c074ec](https://github.com/d0ugal/filesystem-exporter/commit/6c074ec99bda6d0ee5ec71a8cd8965dfbfbfbbc9))
+* update module golang.org/x/arch to v0.30.0 ([#926](https://github.com/d0ugal/filesystem-exporter/issues/926)) ([b183517](https://github.com/d0ugal/filesystem-exporter/commit/b18351703074b946186a4b0eb084e38581cac7b7))
+* update module golang.org/x/crypto to v0.55.0 ([#931](https://github.com/d0ugal/filesystem-exporter/issues/931)) ([94b66f8](https://github.com/d0ugal/filesystem-exporter/commit/94b66f8d89c0eae0ccb80ba40475af8c0fbda647))
+* update module golang.org/x/net to v0.58.0 ([#933](https://github.com/d0ugal/filesystem-exporter/issues/933)) ([e4cba27](https://github.com/d0ugal/filesystem-exporter/commit/e4cba271c966998e1074eadde7f9584de1aefed4))
+* update module google.golang.org/grpc to v1.83.1 ([#945](https://github.com/d0ugal/filesystem-exporter/issues/945)) ([13e48dd](https://github.com/d0ugal/filesystem-exporter/commit/13e48dd84e8e70332568da803ae2bd474c9dd261))
+* update module google.golang.org/protobuf to v1.36.12 ([#929](https://github.com/d0ugal/filesystem-exporter/issues/929)) ([9b2e4b8](https://github.com/d0ugal/filesystem-exporter/commit/9b2e4b8f2f9b25559ca2cc8693b020cfa4f25c80))
+* update opentelemetry-go monorepo to v1.45.0 ([#919](https://github.com/d0ugal/filesystem-exporter/issues/919)) ([584ac4e](https://github.com/d0ugal/filesystem-exporter/commit/584ac4e1b91cc96e048963d9c5328124a55b6e74))
+* update opentelemetry-go-contrib monorepo to v0.70.0 ([#921](https://github.com/d0ugal/filesystem-exporter/issues/921)) ([814818a](https://github.com/d0ugal/filesystem-exporter/commit/814818a8eceeb4d5704cd3cbb4e63471e8bf5f71))
+
 ## [2.1.102](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.101...v2.1.102) (2026-07-30)
 
 
