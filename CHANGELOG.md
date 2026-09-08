@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.104](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.103...v2.1.104) (2026-09-08)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/rpc digest to f8649dd ([#978](https://github.com/d0ugal/filesystem-exporter/issues/978)) ([90b5d9c](https://github.com/d0ugal/filesystem-exporter/commit/90b5d9cd743e9ce3005a79969ca37b2226c23144))
+
 ## [2.1.103](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.102...v2.1.103) (2026-09-08)
 
 
