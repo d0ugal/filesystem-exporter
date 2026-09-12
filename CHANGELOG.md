@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.105](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.104...v2.1.105) (2026-09-12)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to f61a6ca ([#990](https://github.com/d0ugal/filesystem-exporter/issues/990)) ([a5aa8aa](https://github.com/d0ugal/filesystem-exporter/commit/a5aa8aa96aeed065d81bf1972682271f5230fd13))
+* update google.golang.org/genproto/googleapis/rpc digest to f61a6ca ([#991](https://github.com/d0ugal/filesystem-exporter/issues/991)) ([b3ecc7e](https://github.com/d0ugal/filesystem-exporter/commit/b3ecc7eaabdb63a742440cce9554c87f7de749f9))
+* update module github.com/bytedance/sonic to v1.15.4 ([#989](https://github.com/d0ugal/filesystem-exporter/issues/989)) ([2e86fd1](https://github.com/d0ugal/filesystem-exporter/commit/2e86fd1e04cf9a455aac4fb1a82014c27b5b9168))
+* update module go.mongodb.org/mongo-driver/v2 to v2.9.1 ([#988](https://github.com/d0ugal/filesystem-exporter/issues/988)) ([1de5f2a](https://github.com/d0ugal/filesystem-exporter/commit/1de5f2a2ad0f2f9e08d4a0b1d737eb5e7ae9acc3))
+* update module golang.org/x/arch to v0.31.0 ([#982](https://github.com/d0ugal/filesystem-exporter/issues/982)) ([99aa704](https://github.com/d0ugal/filesystem-exporter/commit/99aa70450a37aba846c7efa95697d42cd49da114))
+* update module golang.org/x/crypto to v0.57.0 ([#986](https://github.com/d0ugal/filesystem-exporter/issues/986)) ([1cedede](https://github.com/d0ugal/filesystem-exporter/commit/1cedede407ca5e02e4e051709c1314669ba54887))
+* update module golang.org/x/net to v0.59.0 ([#987](https://github.com/d0ugal/filesystem-exporter/issues/987)) ([ab3000a](https://github.com/d0ugal/filesystem-exporter/commit/ab3000a26862923747d97d792c2cfbfb25c0c6b7))
+* update module golang.org/x/sys to v0.48.0 ([#983](https://github.com/d0ugal/filesystem-exporter/issues/983)) ([8dd18e2](https://github.com/d0ugal/filesystem-exporter/commit/8dd18e270447cdf7b13a5ade98dff978f333312c))
+* update module golang.org/x/text to v0.42.0 ([#985](https://github.com/d0ugal/filesystem-exporter/issues/985)) ([98f65e7](https://github.com/d0ugal/filesystem-exporter/commit/98f65e74c3a84b7cf6852c32a0f58a4795f7eec4))
+
 ## [2.1.104](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.103...v2.1.104) (2026-09-08)
 
 
