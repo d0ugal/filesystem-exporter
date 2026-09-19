@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.106](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.105...v2.1.106) (2026-09-19)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to cecb647 ([#1004](https://github.com/d0ugal/filesystem-exporter/issues/1004)) ([2e5123b](https://github.com/d0ugal/filesystem-exporter/commit/2e5123b272b2e4eefc731502998efde75cc98ba2))
+* update google.golang.org/genproto/googleapis/api digest to eeb232e ([#1000](https://github.com/d0ugal/filesystem-exporter/issues/1000)) ([f185893](https://github.com/d0ugal/filesystem-exporter/commit/f18589394ebe14514cea88ee24aa9c03b92a87d9))
+* update google.golang.org/genproto/googleapis/rpc digest to cecb647 ([#1005](https://github.com/d0ugal/filesystem-exporter/issues/1005)) ([6747e25](https://github.com/d0ugal/filesystem-exporter/commit/6747e25918ad8a73057f75bb9057387cdd2f23e4))
+* update google.golang.org/genproto/googleapis/rpc digest to eeb232e ([#1003](https://github.com/d0ugal/filesystem-exporter/issues/1003)) ([0f5bc88](https://github.com/d0ugal/filesystem-exporter/commit/0f5bc88a4504105b3df403e1cc83eace9bd94c3a))
+
 ## [2.1.105](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.104...v2.1.105) (2026-09-12)
 
 
