@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.106](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.105...v2.1.106) (2026-09-22)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to b142276 ([#1010](https://github.com/d0ugal/filesystem-exporter/issues/1010)) ([d3e85a2](https://github.com/d0ugal/filesystem-exporter/commit/d3e85a226a77dd777f073ef9a59b609fbc9c6787))
+* update google.golang.org/genproto/googleapis/api digest to cecb647 ([#1004](https://github.com/d0ugal/filesystem-exporter/issues/1004)) ([2e5123b](https://github.com/d0ugal/filesystem-exporter/commit/2e5123b272b2e4eefc731502998efde75cc98ba2))
+* update google.golang.org/genproto/googleapis/api digest to eeb232e ([#1000](https://github.com/d0ugal/filesystem-exporter/issues/1000)) ([f185893](https://github.com/d0ugal/filesystem-exporter/commit/f18589394ebe14514cea88ee24aa9c03b92a87d9))
+* update google.golang.org/genproto/googleapis/rpc digest to b142276 ([#1011](https://github.com/d0ugal/filesystem-exporter/issues/1011)) ([d696851](https://github.com/d0ugal/filesystem-exporter/commit/d69685125a35da7332b5e21db6fe54cdd46c9c11))
+* update google.golang.org/genproto/googleapis/rpc digest to cecb647 ([#1005](https://github.com/d0ugal/filesystem-exporter/issues/1005)) ([6747e25](https://github.com/d0ugal/filesystem-exporter/commit/6747e25918ad8a73057f75bb9057387cdd2f23e4))
+* update google.golang.org/genproto/googleapis/rpc digest to eeb232e ([#1003](https://github.com/d0ugal/filesystem-exporter/issues/1003)) ([0f5bc88](https://github.com/d0ugal/filesystem-exporter/commit/0f5bc88a4504105b3df403e1cc83eace9bd94c3a))
+* update module github.com/go-playground/universal-translator to v0.18.2 ([#1007](https://github.com/d0ugal/filesystem-exporter/issues/1007)) ([efd6295](https://github.com/d0ugal/filesystem-exporter/commit/efd62957d764a36af741c65fabd570faca28fc0f))
+* update module github.com/go-playground/validator/v10 to v10.30.5 ([#1008](https://github.com/d0ugal/filesystem-exporter/issues/1008)) ([217f80c](https://github.com/d0ugal/filesystem-exporter/commit/217f80c505853cb9b533dd1160d8c7042ce72e13))
+
 ## [2.1.105](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.104...v2.1.105) (2026-09-12)
 
 
