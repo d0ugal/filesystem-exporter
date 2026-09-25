@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.107](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.106...v2.1.107) (2026-09-25)
+
+
+### Bug Fixes
+
+* update module github.com/klauspost/compress to v1.20.1 ([#1016](https://github.com/d0ugal/filesystem-exporter/issues/1016)) ([533caac](https://github.com/d0ugal/filesystem-exporter/commit/533caacce9337d776e61537bc0666e0847c6e6a1))
+* update module github.com/quic-go/quic-go to v0.63.0 ([#1012](https://github.com/d0ugal/filesystem-exporter/issues/1012)) ([5f9e501](https://github.com/d0ugal/filesystem-exporter/commit/5f9e501d1f4b8d88d8b20997a560af461e01df46))
+
 ## [2.1.106](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.105...v2.1.106) (2026-09-22)
 
 
