@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.107](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.106...v2.1.107) (2026-09-29)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/rpc digest to 8a89bd6 ([#1023](https://github.com/d0ugal/filesystem-exporter/issues/1023)) ([14ffb96](https://github.com/d0ugal/filesystem-exporter/commit/14ffb967638b391c1446de4cde7975f39ff1ade3))
+* update module github.com/go-playground/locales to v0.14.2 ([#1020](https://github.com/d0ugal/filesystem-exporter/issues/1020)) ([c813319](https://github.com/d0ugal/filesystem-exporter/commit/c81331905391e5b0f0ab176bfbf7d1f2dd35e7ec))
+* update module github.com/goccy/go-json to v0.11.0 ([#1018](https://github.com/d0ugal/filesystem-exporter/issues/1018)) ([35609ef](https://github.com/d0ugal/filesystem-exporter/commit/35609ef0ca46f65ed2b073b2002cffaad8e98edd))
+* update module github.com/goccy/go-json to v0.11.1 ([#1019](https://github.com/d0ugal/filesystem-exporter/issues/1019)) ([05af7f3](https://github.com/d0ugal/filesystem-exporter/commit/05af7f362493b7d586788403999694ae3805d9d1))
+* update module github.com/grpc-ecosystem/grpc-gateway/v2 to v2.31.0 ([#1017](https://github.com/d0ugal/filesystem-exporter/issues/1017)) ([b9b9712](https://github.com/d0ugal/filesystem-exporter/commit/b9b9712d17314f0768a269e4a1695203d425cd02))
+* update module github.com/klauspost/compress to v1.20.1 ([#1016](https://github.com/d0ugal/filesystem-exporter/issues/1016)) ([533caac](https://github.com/d0ugal/filesystem-exporter/commit/533caacce9337d776e61537bc0666e0847c6e6a1))
+* update module github.com/prometheus/common to v0.72.0 ([#1021](https://github.com/d0ugal/filesystem-exporter/issues/1021)) ([a7e61dc](https://github.com/d0ugal/filesystem-exporter/commit/a7e61dcff7b74ef3ca9e57e75871bf6f825b2f48))
+* update module github.com/quic-go/quic-go to v0.63.0 ([#1012](https://github.com/d0ugal/filesystem-exporter/issues/1012)) ([5f9e501](https://github.com/d0ugal/filesystem-exporter/commit/5f9e501d1f4b8d88d8b20997a560af461e01df46))
+* update module google.golang.org/grpc to v1.84.0 ([#998](https://github.com/d0ugal/filesystem-exporter/issues/998)) ([c1ec32d](https://github.com/d0ugal/filesystem-exporter/commit/c1ec32d9dc459ea93ad8cfdd8b25f8887cd26437))
+
 ## [2.1.106](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.105...v2.1.106) (2026-09-22)
 
 
