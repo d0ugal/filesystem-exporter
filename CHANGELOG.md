@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.108](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.107...v2.1.108) (2026-10-02)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to 8a89bd6 ([#1022](https://github.com/d0ugal/filesystem-exporter/issues/1022)) ([10d750b](https://github.com/d0ugal/filesystem-exporter/commit/10d750bc6575556377d6ea82469430284141ba10))
+* update module github.com/d0ugal/promexporter to v1.14.70 ([#1027](https://github.com/d0ugal/filesystem-exporter/issues/1027)) ([2e072c5](https://github.com/d0ugal/filesystem-exporter/commit/2e072c5fa82d7ed014522c5c8e3dad2562696e38))
+* update module github.com/d0ugal/promexporter to v1.14.71 ([#1030](https://github.com/d0ugal/filesystem-exporter/issues/1030)) ([ce3c7bc](https://github.com/d0ugal/filesystem-exporter/commit/ce3c7bc90a85c0643b7d3bc909a2cb4b7bfedd97))
+* update module github.com/goccy/go-json to v0.11.2 ([#1026](https://github.com/d0ugal/filesystem-exporter/issues/1026)) ([5bf9ba3](https://github.com/d0ugal/filesystem-exporter/commit/5bf9ba366f0c92cea6ce01805ca076981e8e2fd4))
+* update module github.com/grafana/pyroscope-go to v1.4.3 ([#1028](https://github.com/d0ugal/filesystem-exporter/issues/1028)) ([fd7f37c](https://github.com/d0ugal/filesystem-exporter/commit/fd7f37c9f8bb8b5bca5dc96de59e95b551b95242))
+* update module go.opentelemetry.io/proto/otlp to v1.11.1 ([#1029](https://github.com/d0ugal/filesystem-exporter/issues/1029)) ([7feffa6](https://github.com/d0ugal/filesystem-exporter/commit/7feffa68f0e30f29ea8eb97d30315d482ecd07da))
+* update opentelemetry-go monorepo to v1.47.0 ([#1031](https://github.com/d0ugal/filesystem-exporter/issues/1031)) ([b120f2b](https://github.com/d0ugal/filesystem-exporter/commit/b120f2b48f5213c936f169ce0de139e19019c86e))
+
 ## [2.1.107](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.106...v2.1.107) (2026-09-29)
 
 
