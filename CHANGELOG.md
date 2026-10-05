@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.109](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.108...v2.1.109) (2026-10-05)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to fad4113 ([#1035](https://github.com/d0ugal/filesystem-exporter/issues/1035)) ([180f01a](https://github.com/d0ugal/filesystem-exporter/commit/180f01a3c8c47de069bebc3e05aa8b13d25ee1c4))
+* update google.golang.org/genproto/googleapis/rpc digest to fad4113 ([#1036](https://github.com/d0ugal/filesystem-exporter/issues/1036)) ([0f19c4b](https://github.com/d0ugal/filesystem-exporter/commit/0f19c4b90bc493a1504c26a8a20d272e0e1bd8f3))
+* update opentelemetry-go-contrib monorepo to v0.72.0 ([#1033](https://github.com/d0ugal/filesystem-exporter/issues/1033)) ([15b0fa4](https://github.com/d0ugal/filesystem-exporter/commit/15b0fa4f53ee4b46bf46a68c1dc61405e6808f69))
+
 ## [2.1.108](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.107...v2.1.108) (2026-10-02)
 
 
