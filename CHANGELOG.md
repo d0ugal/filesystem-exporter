@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.110](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.109...v2.1.110) (2026-10-07)
+
+
+### Bug Fixes
+
+* update module go.mongodb.org/mongo-driver/v2 to v2.9.2 ([#1038](https://github.com/d0ugal/filesystem-exporter/issues/1038)) ([77dfbbe](https://github.com/d0ugal/filesystem-exporter/commit/77dfbbeb74d1123834b8d061e541c3e577a58b46))
+
 ## [2.1.109](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.108...v2.1.109) (2026-10-05)
 
 
