@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.111](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.110...v2.1.111) (2026-10-10)
+
+
+### Bug Fixes
+
+* update go toolchain directive to v1.27.2 ([#1045](https://github.com/d0ugal/filesystem-exporter/issues/1045)) ([c5af44f](https://github.com/d0ugal/filesystem-exporter/commit/c5af44f4fd15f9ba8d9e82f554b514a173f4b222))
+* update module github.com/prometheus/client_golang to v1.25.0 ([#1042](https://github.com/d0ugal/filesystem-exporter/issues/1042)) ([1a842f0](https://github.com/d0ugal/filesystem-exporter/commit/1a842f0364dd86439a25d6025a23afc9022ba91b))
+* update module golang.org/x/arch to v0.32.0 ([#1048](https://github.com/d0ugal/filesystem-exporter/issues/1048)) ([6d01002](https://github.com/d0ugal/filesystem-exporter/commit/6d01002abd3e219d485097df18bdcdb066abefca))
+* update module golang.org/x/crypto to v0.58.0 ([#1050](https://github.com/d0ugal/filesystem-exporter/issues/1050)) ([763ca8f](https://github.com/d0ugal/filesystem-exporter/commit/763ca8fd049febf83f7a28abfc078da6921be987))
+* update module golang.org/x/net to v0.60.0 ([#1046](https://github.com/d0ugal/filesystem-exporter/issues/1046)) ([a7e7b33](https://github.com/d0ugal/filesystem-exporter/commit/a7e7b3329c59df72b9aa0fa671c2cb0ef548bacb))
+* update module golang.org/x/net to v0.61.0 ([#1052](https://github.com/d0ugal/filesystem-exporter/issues/1052)) ([7507326](https://github.com/d0ugal/filesystem-exporter/commit/75073263b69b458fa2adf82edf7cd725a90185e5))
+* update module golang.org/x/sys to v0.49.0 ([#1049](https://github.com/d0ugal/filesystem-exporter/issues/1049)) ([779c3e2](https://github.com/d0ugal/filesystem-exporter/commit/779c3e24a59f0dd3cd7bc1649b0011f4815b8ade))
+* update module golang.org/x/text to v0.43.0 ([#1051](https://github.com/d0ugal/filesystem-exporter/issues/1051)) ([50200dc](https://github.com/d0ugal/filesystem-exporter/commit/50200dce918ca2deaf912383dec91cf29e710f96))
+
 ## [2.1.110](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.109...v2.1.110) (2026-10-07)
 
 
