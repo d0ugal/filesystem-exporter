@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.112](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.111...v2.1.112) (2026-10-19)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.72 ([#1059](https://github.com/d0ugal/filesystem-exporter/issues/1059)) ([cac3738](https://github.com/d0ugal/filesystem-exporter/commit/cac373894a803330ebbdc77e70fafb90ab20bac2))
+* update module github.com/gabriel-vasile/mimetype to v1.4.16 ([#1065](https://github.com/d0ugal/filesystem-exporter/issues/1065)) ([ab3bdeb](https://github.com/d0ugal/filesystem-exporter/commit/ab3bdeb253f5ee4ff19a58402ca606641e0f997c))
+* update module github.com/grpc-ecosystem/grpc-gateway/v2 to v2.32.0 ([#1061](https://github.com/d0ugal/filesystem-exporter/issues/1061)) ([9ba5fae](https://github.com/d0ugal/filesystem-exporter/commit/9ba5fae1e6aa0d1f9d9b8cdd12eccd1836ed2103))
+* update module github.com/klauspost/cpuid/v2 to v2.4.1 ([#1063](https://github.com/d0ugal/filesystem-exporter/issues/1063)) ([883380a](https://github.com/d0ugal/filesystem-exporter/commit/883380ae2977ad15fc174ba1d0a4f58c6672a498))
+* update module github.com/quic-go/quic-go to v0.64.0 ([#1062](https://github.com/d0ugal/filesystem-exporter/issues/1062)) ([974b45a](https://github.com/d0ugal/filesystem-exporter/commit/974b45afe9409032b350052096ebd56eedbf2858))
+* update module github.com/quic-go/quic-go to v0.64.1 ([#1066](https://github.com/d0ugal/filesystem-exporter/issues/1066)) ([5c0cad3](https://github.com/d0ugal/filesystem-exporter/commit/5c0cad3a236b7cb6bae7a0eb530789c2a3afdc34))
+
 ## [2.1.111](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.110...v2.1.111) (2026-10-13)
 
 
