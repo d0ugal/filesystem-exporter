@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.113](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.112...v2.1.113) (2026-10-23)
+
+
+### Bug Fixes
+
+* update go toolchain directive to v1.27.3 ([#1072](https://github.com/d0ugal/filesystem-exporter/issues/1072)) ([fed9e10](https://github.com/d0ugal/filesystem-exporter/commit/fed9e10128712405b0b4ca3de6042fe4ab5bcb5e))
+* update google.golang.org/genproto/googleapis/api digest to ce908d2 ([#1067](https://github.com/d0ugal/filesystem-exporter/issues/1067)) ([baeb5f9](https://github.com/d0ugal/filesystem-exporter/commit/baeb5f968e620169dda78518590605957b9d683f))
+* update google.golang.org/genproto/googleapis/rpc digest to ce908d2 ([#1068](https://github.com/d0ugal/filesystem-exporter/issues/1068)) ([32373bb](https://github.com/d0ugal/filesystem-exporter/commit/32373bbdc9daa46371455bc1342d5e4ba6459c72))
+* update module github.com/bytedance/sonic/loader to v0.5.3 ([#1074](https://github.com/d0ugal/filesystem-exporter/issues/1074)) ([f2b77c2](https://github.com/d0ugal/filesystem-exporter/commit/f2b77c21e1f72b9e8d60eff40e4cd1dffc2f0b15))
+* update module github.com/d0ugal/promexporter to v1.14.73 ([#1073](https://github.com/d0ugal/filesystem-exporter/issues/1073)) ([b70782e](https://github.com/d0ugal/filesystem-exporter/commit/b70782e519a13eaf1df4f0116f42f9acc228cf58))
+* update module github.com/prometheus/procfs to v0.23.0 ([#1081](https://github.com/d0ugal/filesystem-exporter/issues/1081)) ([f3df487](https://github.com/d0ugal/filesystem-exporter/commit/f3df487ef31bcdb934a84b93ba04190dde2d1f61))
+
 ## [2.1.112](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.111...v2.1.112) (2026-10-19)
 
 
