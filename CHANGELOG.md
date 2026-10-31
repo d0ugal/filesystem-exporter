@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.116](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.115...v2.1.116) (2026-10-31)
+
+
+### Bug Fixes
+
+* update module github.com/gin-contrib/sse to v1.2.0 ([#1103](https://github.com/d0ugal/filesystem-exporter/issues/1103)) ([7f915c2](https://github.com/d0ugal/filesystem-exporter/commit/7f915c21fa6cf2c1283b99d5586b396075d9ffea))
+* update module github.com/goccy/go-json to v0.12.0 ([#1098](https://github.com/d0ugal/filesystem-exporter/issues/1098)) ([9f5725f](https://github.com/d0ugal/filesystem-exporter/commit/9f5725fe19dfcd34fa9cdbee59154a86da0d0ddd))
+* update module github.com/grpc-ecosystem/grpc-gateway/v2 to v2.33.0 ([#1092](https://github.com/d0ugal/filesystem-exporter/issues/1092)) ([e279e31](https://github.com/d0ugal/filesystem-exporter/commit/e279e310b9640b2368e0a042bd4ccbecd61bb273))
+* update module github.com/hashicorp/go-uuid to v1.0.4 ([#1097](https://github.com/d0ugal/filesystem-exporter/issues/1097)) ([33c8304](https://github.com/d0ugal/filesystem-exporter/commit/33c8304a37c581d35dacd8280a77939911565ecd))
+* update module github.com/pandatix/go-abnf to v0.5.2 ([#1099](https://github.com/d0ugal/filesystem-exporter/issues/1099)) ([b743635](https://github.com/d0ugal/filesystem-exporter/commit/b743635d702fdfd74fdd5eb1f3b45a4a1e110e27))
+* update module github.com/pandatix/go-abnf to v0.5.3 ([#1100](https://github.com/d0ugal/filesystem-exporter/issues/1100)) ([02a25dd](https://github.com/d0ugal/filesystem-exporter/commit/02a25ddd334ffe3f319e14efc6823f363e1789d5))
+* update module github.com/pandatix/go-abnf to v0.5.4 ([#1102](https://github.com/d0ugal/filesystem-exporter/issues/1102)) ([27bec7e](https://github.com/d0ugal/filesystem-exporter/commit/27bec7e0c871f7bbef6876b0aa4438334b6562c1))
+* update module github.com/pandatix/go-abnf to v0.5.5 ([#1104](https://github.com/d0ugal/filesystem-exporter/issues/1104)) ([3e865d7](https://github.com/d0ugal/filesystem-exporter/commit/3e865d7284baf376777509343f6a5915b5dbdbec))
+* update module github.com/prometheus/common to v0.73.0 ([#1096](https://github.com/d0ugal/filesystem-exporter/issues/1096)) ([0c256e5](https://github.com/d0ugal/filesystem-exporter/commit/0c256e53b5d2dda9b7e238790fad3c712687ca47))
+* update module github.com/prometheus/common to v0.73.1 ([#1101](https://github.com/d0ugal/filesystem-exporter/issues/1101)) ([7697362](https://github.com/d0ugal/filesystem-exporter/commit/7697362bef2a99288f3d1a1c981c888533e9d5dd))
+* update module golang.org/x/net to v0.62.0 ([#1094](https://github.com/d0ugal/filesystem-exporter/issues/1094)) ([f7c712e](https://github.com/d0ugal/filesystem-exporter/commit/f7c712e0bb967d66ffa8461fa0407a48f11855c2))
+* update module google.golang.org/grpc to v1.85.0 ([#1095](https://github.com/d0ugal/filesystem-exporter/issues/1095)) ([1a185e3](https://github.com/d0ugal/filesystem-exporter/commit/1a185e32d9d2a87f057a0d96b786dd05ccf687f2))
+
 ## [2.1.115](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.114...v2.1.115) (2026-10-27)
 
 
