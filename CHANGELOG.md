@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.117](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.116...v2.1.117) (2026-11-06)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to d1e00e9 ([#1112](https://github.com/d0ugal/filesystem-exporter/issues/1112)) ([996a0dc](https://github.com/d0ugal/filesystem-exporter/commit/996a0dc473e74ee3c95ecf7aa7aaaf651affa59f))
+* update google.golang.org/genproto/googleapis/rpc digest to d1e00e9 ([#1113](https://github.com/d0ugal/filesystem-exporter/issues/1113)) ([1fbf74c](https://github.com/d0ugal/filesystem-exporter/commit/1fbf74c9024c1d35ef9d0b028a4cd121ca8ee681))
+* update module github.com/d0ugal/promexporter to v1.14.75 ([#1105](https://github.com/d0ugal/filesystem-exporter/issues/1105)) ([a574561](https://github.com/d0ugal/filesystem-exporter/commit/a57456150c237a377c527bf8f40bf98dc4946f97))
+* update module github.com/go-playground/validator/v10 to v10.30.6 ([#1106](https://github.com/d0ugal/filesystem-exporter/issues/1106)) ([3faab3d](https://github.com/d0ugal/filesystem-exporter/commit/3faab3d9df407765ebec6572144fc3c1bb3c20e7))
+* update module github.com/klauspost/cpuid/v2 to v2.4.2 ([#1109](https://github.com/d0ugal/filesystem-exporter/issues/1109)) ([5b31eaa](https://github.com/d0ugal/filesystem-exporter/commit/5b31eaaf46d0991bf2614daabc568bcb3d5137a1))
+* update module github.com/quic-go/quic-go to v0.65.0 ([#1111](https://github.com/d0ugal/filesystem-exporter/issues/1111)) ([f648f81](https://github.com/d0ugal/filesystem-exporter/commit/f648f81483dc69dc6d54deb553567aeb1fd397c4))
+* update module go.mongodb.org/mongo-driver/v2 to v2.9.3 ([#1110](https://github.com/d0ugal/filesystem-exporter/issues/1110)) ([b0420b8](https://github.com/d0ugal/filesystem-exporter/commit/b0420b8fc784f1d5e31a28a4a58e901f0bdcf37f))
+
 ## [2.1.116](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.115...v2.1.116) (2026-10-31)
 
 
