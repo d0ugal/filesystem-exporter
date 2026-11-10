@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.118](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.117...v2.1.118) (2026-11-10)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to 09e21b2 ([#1126](https://github.com/d0ugal/filesystem-exporter/issues/1126)) ([1f9bae6](https://github.com/d0ugal/filesystem-exporter/commit/1f9bae645063d24a3d72379441803334cd73cfb1))
+* update google.golang.org/genproto/googleapis/rpc digest to 09e21b2 ([#1127](https://github.com/d0ugal/filesystem-exporter/issues/1127)) ([beac948](https://github.com/d0ugal/filesystem-exporter/commit/beac9487f853a0495ec145e899d4b154e8a2ea38))
+* update module github.com/gin-contrib/sse to v1.2.1 ([#1122](https://github.com/d0ugal/filesystem-exporter/issues/1122)) ([2153be7](https://github.com/d0ugal/filesystem-exporter/commit/2153be7472f138c5baf06b7ed3f246c05b2f85ae))
+* update module github.com/klauspost/compress to v1.20.4 ([#1124](https://github.com/d0ugal/filesystem-exporter/issues/1124)) ([b0e83ec](https://github.com/d0ugal/filesystem-exporter/commit/b0e83ecfa584dc2c6c7247232c0efc01dbc96d5c))
+* update module go.mongodb.org/mongo-driver/v2 to v2.10.0 ([#1120](https://github.com/d0ugal/filesystem-exporter/issues/1120)) ([8b76669](https://github.com/d0ugal/filesystem-exporter/commit/8b766697df38139ce51f6f09e84fa9e3ae9646b6))
+* update module golang.org/x/arch to v0.33.0 ([#1125](https://github.com/d0ugal/filesystem-exporter/issues/1125)) ([d05da89](https://github.com/d0ugal/filesystem-exporter/commit/d05da89f19e08ac04ce1468ae31d1884394554bd))
+* update module golang.org/x/sys to v0.50.0 ([#1128](https://github.com/d0ugal/filesystem-exporter/issues/1128)) ([dde133e](https://github.com/d0ugal/filesystem-exporter/commit/dde133e1b3300397ebddd7f8802d38caf0284b09))
+
 ## [2.1.117](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.116...v2.1.117) (2026-11-06)
 
 
