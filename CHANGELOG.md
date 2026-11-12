@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.119](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.118...v2.1.119) (2026-11-12)
+
+
+### Bug Fixes
+
+* update module github.com/d0ugal/promexporter to v1.14.76 ([#1132](https://github.com/d0ugal/filesystem-exporter/issues/1132)) ([fc0dcc1](https://github.com/d0ugal/filesystem-exporter/commit/fc0dcc19677ea67e3d8f8026e0f674fa583ffa97))
+* update module github.com/d0ugal/promexporter to v1.14.77 ([#1137](https://github.com/d0ugal/filesystem-exporter/issues/1137)) ([4e85901](https://github.com/d0ugal/filesystem-exporter/commit/4e8590151da3252febabd83ac51bb281f4629ae4))
+* update module github.com/grafana/pyroscope-go to v1.5.0 ([#1134](https://github.com/d0ugal/filesystem-exporter/issues/1134)) ([4390145](https://github.com/d0ugal/filesystem-exporter/commit/4390145d90af2929df9dde83cb45cd7c0486b7aa))
+* update module github.com/prometheus/common to v0.74.0 ([#1138](https://github.com/d0ugal/filesystem-exporter/issues/1138)) ([9c1e0c8](https://github.com/d0ugal/filesystem-exporter/commit/9c1e0c8befe2c6d14749f12bf7fe90527417e05b))
+* update module golang.org/x/crypto to v0.59.0 ([#1136](https://github.com/d0ugal/filesystem-exporter/issues/1136)) ([f185440](https://github.com/d0ugal/filesystem-exporter/commit/f1854400bd889f2b9633e81eb5d394f59cd2a075))
+* update module golang.org/x/text to v0.44.0 ([#1129](https://github.com/d0ugal/filesystem-exporter/issues/1129)) ([dcda997](https://github.com/d0ugal/filesystem-exporter/commit/dcda997e45d96974f2a2275b3d8f70136c841e29))
+
 ## [2.1.118](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.117...v2.1.118) (2026-11-10)
 
 
