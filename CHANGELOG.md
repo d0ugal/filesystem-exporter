@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.120](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.119...v2.1.120) (2026-11-20)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to c8830f6 ([#1147](https://github.com/d0ugal/filesystem-exporter/issues/1147)) ([ba479b0](https://github.com/d0ugal/filesystem-exporter/commit/ba479b00c1d344dafbbb3c983971ffc83a5295b8))
+* update google.golang.org/genproto/googleapis/rpc digest to c8830f6 ([#1148](https://github.com/d0ugal/filesystem-exporter/issues/1148)) ([5a70557](https://github.com/d0ugal/filesystem-exporter/commit/5a70557110a2ebd2be8bbabd5ff4e0f53f1f310b))
+* update module go.mongodb.org/mongo-driver/v2 to v2.10.1 ([#1149](https://github.com/d0ugal/filesystem-exporter/issues/1149)) ([1df6ea2](https://github.com/d0ugal/filesystem-exporter/commit/1df6ea217f6e98b3bd3af17f904d61fc907b0c40))
+* update module golang.org/x/net to v0.63.0 ([#1145](https://github.com/d0ugal/filesystem-exporter/issues/1145)) ([6f2d608](https://github.com/d0ugal/filesystem-exporter/commit/6f2d608eced33f940bb18bc352c8d01bf71c0d49))
+
 ## [2.1.119](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.118...v2.1.119) (2026-11-17)
 
 
