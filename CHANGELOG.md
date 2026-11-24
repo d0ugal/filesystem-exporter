@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.121](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.120...v2.1.121) (2026-11-24)
+
+
+### Bug Fixes
+
+* update google.golang.org/genproto/googleapis/api digest to 1e707ab ([#1155](https://github.com/d0ugal/filesystem-exporter/issues/1155)) ([ca541c8](https://github.com/d0ugal/filesystem-exporter/commit/ca541c899fd979919aba5491aa3be705ebd48b09))
+* update google.golang.org/genproto/googleapis/rpc digest to 1e707ab ([#1156](https://github.com/d0ugal/filesystem-exporter/issues/1156)) ([fa7447d](https://github.com/d0ugal/filesystem-exporter/commit/fa7447de84175387e09943b0068a2a656d644a22))
+* update module github.com/d0ugal/promexporter to v1.14.78 ([#1153](https://github.com/d0ugal/filesystem-exporter/issues/1153)) ([df2bf2e](https://github.com/d0ugal/filesystem-exporter/commit/df2bf2e26e58b2abaae6c866d37c0297ceff55af))
+* update module github.com/klauspost/compress to v1.20.5 ([#1150](https://github.com/d0ugal/filesystem-exporter/issues/1150)) ([501f47c](https://github.com/d0ugal/filesystem-exporter/commit/501f47cb47092f6ab615b2c7c90b18115c62dd82))
+* update module github.com/quic-go/quic-go to v0.66.0 ([#1157](https://github.com/d0ugal/filesystem-exporter/issues/1157)) ([e2a2ca8](https://github.com/d0ugal/filesystem-exporter/commit/e2a2ca8a1939855f622d1f9ce072c6ad0a1b00ab))
+* update module go.opentelemetry.io/auto/sdk to v1.2.2 ([#1154](https://github.com/d0ugal/filesystem-exporter/issues/1154)) ([9b87b02](https://github.com/d0ugal/filesystem-exporter/commit/9b87b02b97861c0e2436bbe957105bd5e8f2d9d1))
+
 ## [2.1.120](https://github.com/d0ugal/filesystem-exporter/compare/v2.1.119...v2.1.120) (2026-11-20)
 
 
